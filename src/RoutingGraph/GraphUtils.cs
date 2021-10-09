@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RoutingVisualizer.NavigationGraph
+{
+    static class GraphUtils
+    {
+        public static double getDistance(GraphNode first, GraphNode second)
+        {
+            return Math.Sqrt(Math.Pow(first.point.X - second.point.X, 2) + Math.Pow(first.point.Y - second.point.Y, 2));
+        }
+    }
+}
