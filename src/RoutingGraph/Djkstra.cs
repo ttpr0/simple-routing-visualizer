@@ -6,12 +6,20 @@ using System.Threading.Tasks;
 
 namespace RoutingVisualizer.NavigationGraph
 {
+    /// <summary>
+    /// basic implementation of Djkstra algorithm
+    /// </summary>
     class Djkstra : ShortestPathInterface
     {
         private SortedDictionary<double, GraphNode> visited;
         private GraphNode endnode;
         private GraphNode startnode;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="start">startnode</param>
+        /// <param name="end">endnode</param>
         public Djkstra(GraphNode start, GraphNode end)
         {
             this.endnode = end;
@@ -23,6 +31,10 @@ namespace RoutingVisualizer.NavigationGraph
 
         private GraphNode currnode;
         private double currkey;
+        /// <summary>
+        /// performs one step of Djkstra algorithm
+        /// </summary>
+        /// <returns>false of shortest path is found</returns>
         public bool step()
         {
             currkey = visited.Keys.First();
@@ -62,6 +74,12 @@ namespace RoutingVisualizer.NavigationGraph
             return true;
         }
 
+        /// <summary>
+        /// function to avoid similar entries in dict
+        /// </summary>
+        /// <param name="newkey">key/pathlength of visited node</param>
+        /// <param name="newnode">visited node</param>
+        /// <returns>entry to dict, might differ from newkey param</returns>
         private double addToVisited(double newkey, GraphNode newnode)
         {
             try
@@ -75,6 +93,10 @@ namespace RoutingVisualizer.NavigationGraph
             }
         }
 
+        /// <summary>
+        /// use only after path finsing finished
+        /// </summary>
+        /// <returns>list of LineD representing shortest path</returns>
         public List<LineD> getShortestPath()
         {
             List<LineD> waylist = new List<LineD>();

@@ -7,6 +7,9 @@ using System.Drawing;
 
 namespace RoutingVisualizer.TileMapRenderer
 {
+    /// <summary>
+    /// Map-Tile class
+    /// </summary>
     class Tile
     {
         public Bitmap maptile { get; }
@@ -17,6 +20,13 @@ namespace RoutingVisualizer.TileMapRenderer
         private double tilesize;
         public PointD upperleft { get; }
 
+        /// <summary>
+        /// Constructor using vector-tile (TileData)
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <param name="tiledata"></param>
         public Tile(int x, int y, int z, TileData tiledata)
         {
             this.x = x;
@@ -28,6 +38,13 @@ namespace RoutingVisualizer.TileMapRenderer
             this.createTileMap(tiledata);
         }
 
+        /// <summary>
+        /// Constructor using raster-tile (Bitmap)
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <param name="map"></param>
         public Tile(int x, int y, int z, Bitmap map)
         {
             this.x = x;
@@ -42,6 +59,10 @@ namespace RoutingVisualizer.TileMapRenderer
         private Pen majorstreetpen = new Pen(Color.DarkRed, 1);
         private Pen streetpen = new Pen(Color.Green, 1);
         private Pen trackpen = new Pen(Color.LightGray, 1);
+        /// <summary>
+        /// draws vector-tile data to Bitmap
+        /// </summary>
+        /// <param name="tiledata"></param>
         private void createTileMap(TileData tiledata)
         {
             Graphics g = Graphics.FromImage(this.maptile);
@@ -68,6 +89,11 @@ namespace RoutingVisualizer.TileMapRenderer
             }
         }
 
+        /// <summary>
+        /// transforms LineD (web-mercator) to Point[] (screen coordinates)
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns></returns>
         private Point[] transformLine(LineD line)
         {
             Point[] points = new Point[line.points.Length];

@@ -17,9 +17,15 @@ using RoutingVisualizer.TileMapRenderer;
 
 namespace RoutingVisualizer
 {
+    /// <summary>
+    /// basic Form window
+    /// </summary>
     public partial class NavForm : Form
     {
         private static bool haschanged;
+        /// <summary>
+        /// used to trigger map to be redrawn
+        /// </summary>
         public static void changed()
         {
             haschanged = true;
@@ -31,7 +37,7 @@ namespace RoutingVisualizer
         private Graph graph;
         private PointD upperleft = new PointD(1314905, 6716660);
         private int zoom = 12;
-        private GeomentryContainer container = new GeomentryContainer();
+        private GeometryContainer container = new GeometryContainer();
         private Bitmap screen = new Bitmap(1000, 600);
         Graphics g;
 
@@ -40,6 +46,11 @@ namespace RoutingVisualizer
             InitializeComponent();
         }
 
+        /// <summary>
+        /// loads Graph and Maps
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
@@ -49,13 +60,17 @@ namespace RoutingVisualizer
             cbxShortestPath.Text = "Djkstra";
             this.tilemap = new TileMap(1000, 600);
             this.start();
+            container.startnode = graph.getNodeById(Convert.ToInt64(txtstart.Text)).getGeometry();
+            container.endnode = graph.getNodeById(Convert.ToInt64(txtend.Text)).getGeometry();
             this.graphmap = new GraphMap(1000, 600, this.graph);
             this.utilitymap = new UtilityMap(1000, 600, this.container);
             haschanged = true;
             //drawMap();
         }
 
-
+        /// <summary>
+        /// loads and initializes graph from xml file,
+        /// </summary>
         private void start()
         {
             int i = 0;
@@ -103,10 +118,14 @@ namespace RoutingVisualizer
                 }
             }
             graph = new Graph(nodes, edges);
-            container.startnode = graph.getNodeById(Convert.ToInt64(txtstart.Text)).getGeometry();
-            container.endnode = graph.getNodeById(Convert.ToInt64(txtend.Text)).getGeometry();
         }
 
+        /// <summary>
+        /// converts web-mercator to screen coordinates using curr upperleft
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="tilesize"></param>
+        /// <returns>converted point</returns>
         private Point realToScreen(PointD point, double tilesize)
         {
             double x = (point.X - upperleft.X) * 256 / tilesize;
@@ -114,6 +133,12 @@ namespace RoutingVisualizer
             return new Point((int)x, (int)y);
         }
 
+        /// <summary>
+        /// converts screen to web-mercator coordinates using curr upperleft
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="tilesize"></param>
+        /// <returns>converted point</returns>
         private PointD screenToReal(Point point, double tilesize)
         {
             double x = upperleft.X + point.X * tilesize / 256;
@@ -122,6 +147,11 @@ namespace RoutingVisualizer
         }
 
         private int i = 1;
+        /// <summary>
+        /// timer used to redraw maps if haschanged == true
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void timerDrawPbx_Tick(object sender, EventArgs e)
         {
             if (haschanged)
@@ -136,6 +166,9 @@ namespace RoutingVisualizer
             }
         }
 
+        /// <summary>
+        /// redraws all Maps
+        /// </summary>
         private void drawMap()
         {
             if (InvokeRequired)
@@ -151,6 +184,12 @@ namespace RoutingVisualizer
             pbxout.Refresh();
         }
 
+        /// <summary>
+        /// used to read xml file
+        /// </summary>
+        /// <param name="filename">location of xml file</param>
+        /// <param name="elementname">name of base element of xml file</param>
+        /// <returns>XElement containign xml data from file</returns>
         private XElement readXmlFile(string filename, string elementname)
         {
             string xmlfile = File.ReadAllText(filename);
@@ -158,11 +197,21 @@ namespace RoutingVisualizer
             return doc.Element(elementname);
         }
 
+        /// <summary>
+        /// writes str to TextBox
+        /// </summary>
+        /// <param name="str"></param>
         private void appendNewLine(string str)
         {
             txtout.AppendText(str + "\r\n");
         }
 
+        /// <summary>
+        /// runs shortest path algorithm,
+        /// if draw search is set visted edges are darwn
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnRunShortestPath_Click(object sender, EventArgs e)
         {
             container.path = null;

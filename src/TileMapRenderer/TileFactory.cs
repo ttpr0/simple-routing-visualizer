@@ -8,17 +8,31 @@ using System.Drawing.Imaging;
 
 namespace RoutingVisualizer.TileMapRenderer
 {
+    /// <summary>
+    /// Used to get and cache Map-Tiles from datasource
+    /// </summary>
     class TileFactory
     {
         private Dictionary<string, Tile> tilecache;
         private TileDataFactory datacache;
 
-        public TileFactory(TileDataFactory datacache)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="datafactory">datasource</param>
+        public TileFactory(TileDataFactory datafactory)
         {
             this.tilecache = new Dictionary<string, Tile>();
-            this.datacache = datacache;
+            this.datacache = datafactory;
         }
 
+        /// <summary>
+        /// returns Map-Tile either from cache or datasource
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <returns>Map-Tile</returns>
         public Tile getTile(int x, int y, int z)
         {
             string key = x.ToString() + "_" + y.ToString() + "_" + z.ToString();
@@ -34,6 +48,13 @@ namespace RoutingVisualizer.TileMapRenderer
             return null;
         }
 
+        /// <summary>
+        /// loads Tile from datasource
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <param name="key">key-string for obtaining data from datasource</param>
         private void loadTile(int x, int y, int z, string key)
         {
             if (z <= 14 && z >= 8)

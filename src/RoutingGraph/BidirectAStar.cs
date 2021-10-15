@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace RoutingVisualizer.NavigationGraph
 {
+    /// <summary>
+    /// basic bidirectional A* algorithm
+    /// </summary>
     class BidirectAStar : ShortestPathInterface
     {
         private SortedDictionary<double, GraphNode> visited_start;
@@ -30,6 +33,10 @@ namespace RoutingVisualizer.NavigationGraph
         private double currkey_start;
         private GraphNode currnode_end;
         private double currkey_end;
+        /// <summary>
+        /// performs one step of algorithm (one step from each direction)
+        /// </summary>
+        /// <returns>false if shortest path found</returns>
         public bool step()
         {
             currkey_start = visited_start.Keys.First();
@@ -110,6 +117,13 @@ namespace RoutingVisualizer.NavigationGraph
             return true;
         }
 
+        /// <summary>
+        /// function to avoid similar entries in dict
+        /// </summary>
+        /// <param name="newkey">key/pathlength of visited node</param>
+        /// <param name="newnode">visited node</param>
+        /// <param name="start">true if direction from start</param>
+        /// <returns>entry to dict, might differ from newkey param</returns>
         private double addToVisited(double newkey, GraphNode newnode, bool start)
         {
             try
@@ -130,6 +144,10 @@ namespace RoutingVisualizer.NavigationGraph
             }
         }
 
+        /// <summary>
+        /// use only after path finsing finished
+        /// </summary>
+        /// <returns>list of LineD representing shortest path</returns>
         public List<LineD> getShortestPath()
         {
             List<LineD> waylist = new List<LineD>();

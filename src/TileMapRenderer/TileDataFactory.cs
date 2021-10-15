@@ -12,26 +12,42 @@ using System.Drawing.Imaging;
 
 namespace RoutingVisualizer.TileMapRenderer
 {
+    /// <summary>
+    /// class to get data from datasource (database) using sqlite
+    /// </summary>
     class TileDataFactory
     {
         private Dictionary<string, TileData> datacache;
         object locker = new object();
         private SqliteConnection conn;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="origin">location of database</param>
         public TileDataFactory(string origin)
         {
             this.datacache = new Dictionary<string, TileData>();
-            //this.loadAllData(readXmlFile(origin));
             conn = new SqliteConnection("Data Source=data/tiles.db");
             conn.Open();
         }
 
+        /// <summary>
+        /// used for closing open database-connection
+        /// </summary>
         ~TileDataFactory()
         {
             conn.Close();
             datacache.Clear();
         }
 
+        /// <summary>
+        /// gives back Map-Tile as Bitmap (256*256) from db
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <returns>Bitmap representing Map-Tile</returns>
         public Bitmap getTileBitmap(int x, int y, int z)
         {
             lock (locker)
@@ -55,6 +71,8 @@ namespace RoutingVisualizer.TileMapRenderer
             }
         }
 
+
+        //need changes
         public TileData getTileData(int x, int y, int z)
         {
             if (z > 15)
@@ -79,6 +97,7 @@ namespace RoutingVisualizer.TileMapRenderer
             return tiledata;
         }
 
+        //need changes
         private List<Way> loadTileData(int x, int y, int z, string key)
         {
             List<Way> lines = new List<Way>();
@@ -140,6 +159,7 @@ namespace RoutingVisualizer.TileMapRenderer
             return lines;
         }
 
+        [Obsolete]
         private void loadAllData(XElement data)
         {
             foreach (XElement tile in data.Elements())
@@ -162,6 +182,7 @@ namespace RoutingVisualizer.TileMapRenderer
             }
         }
 
+        [Obsolete]
         private XElement readXmlFile(string filename)
         {
             string xmlfile = File.ReadAllText(filename);

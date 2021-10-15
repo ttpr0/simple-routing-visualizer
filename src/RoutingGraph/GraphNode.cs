@@ -6,14 +6,28 @@ using System.Threading.Tasks;
 
 namespace RoutingVisualizer.NavigationGraph
 {
+    /// <summary>
+    /// node of Graph
+    /// </summary>
     class GraphNode
     {
         private long id;
+        /// <summary>
+        /// adjacent GraphEdges
+        /// </summary>
         private List<GraphEdge> edges;
         private bool visited;
         public PointD point { get; }
+        /// <summary>
+        /// container for usefull attributes
+        /// </summary>
         public NodeData data;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="point">geomtric representiation (web-mercator)</param>
         public GraphNode(long id, PointD point)
         {
             this.id = id;
@@ -30,6 +44,11 @@ namespace RoutingVisualizer.NavigationGraph
             return this.id;
         }
 
+        /// <summary>
+        /// used to recreate path after search
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>Graphedge between this and other node</returns>
         public GraphEdge getEdge(GraphNode other)
         {
             foreach (GraphEdge edge in edges)

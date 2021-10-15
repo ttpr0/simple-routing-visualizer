@@ -7,6 +7,9 @@ using System.Drawing;
 
 namespace RoutingVisualizer.TileMapRenderer
 {
+    /// <summary>
+    /// container for vector-tile data
+    /// </summary>
     class TileData
     {
         private List<Way> ways;
@@ -14,6 +17,7 @@ namespace RoutingVisualizer.TileMapRenderer
         public int y { get; }
         public int z { get; }
 
+        //need changes
         public TileData(List<Way> ways, int x, int y, int z)
         {
             this.x = x;
@@ -22,6 +26,7 @@ namespace RoutingVisualizer.TileMapRenderer
             this.ways = ways;
         }
 
+        //need changes
         public List<Way> getData()
         {
             return ways;

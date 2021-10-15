@@ -6,15 +6,33 @@ using System.Threading.Tasks;
 
 namespace RoutingVisualizer.NavigationGraph
 {
+    /// <summary>
+    /// edge of Graph
+    /// </summary>
     class GraphEdge
     {
         private long id;
         private GraphNode node_a;
         private GraphNode node_b;
+        /// <summary>
+        /// geometric representation
+        /// </summary>
         public LineD line { get; }
         private bool visited;
+        /// <summary>
+        /// container for attributes
+        /// </summary>
         public EdgeData data;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="line"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="type">string representing type of street (osm-type), used to compute weight</param>
+        /// <param name="oneway">true if oneway from a to b</param>
         public GraphEdge(long id, LineD line, GraphNode a, GraphNode b, string type, bool oneway)
         {
             this.node_a = a;

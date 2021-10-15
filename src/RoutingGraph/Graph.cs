@@ -6,11 +6,19 @@ using System.Threading.Tasks;
 
 namespace RoutingVisualizer.NavigationGraph
 {
+    /// <summary>
+    /// graph class
+    /// </summary>
     class Graph
     {
         List<GraphEdge> edges;
         List<GraphNode> nodes;
 
+        /// <summary>
+        /// Constructor, connections between nodes and edges should be there allready
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <param name="ways"></param>
         public Graph(List<GraphNode> nodes, List<GraphEdge> ways)
         {
             this.nodes = nodes;
@@ -52,6 +60,9 @@ namespace RoutingVisualizer.NavigationGraph
             return null;
         }
 
+        /// <summary>
+        /// resets most attributes of nodes and edges to default
+        /// </summary>
         public void initGraph()
         {
             foreach (GraphNode node in nodes)

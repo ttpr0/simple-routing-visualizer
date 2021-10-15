@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace RoutingVisualizer.NavigationGraph
 {
+    /// <summary>
+    /// multithreaded version of bidirectional A*
+    /// </summary>
     class FastBidirectAStar : ShortestPathInterface
     {
         private SortedDictionary<double, GraphNode> visited_start;
@@ -31,6 +34,10 @@ namespace RoutingVisualizer.NavigationGraph
         }
 
         private bool finished;
+        /// <summary>
+        /// performs bidirectional A*
+        /// </summary>
+        /// <returns>false</returns>
         public bool step()
         {
             this.finished = false;
@@ -46,6 +53,9 @@ namespace RoutingVisualizer.NavigationGraph
             return false;
         }
 
+        /// <summary>
+        /// A* from startnode
+        /// </summary>
         private void fromStart()
         {
             GraphNode currnode;
@@ -98,6 +108,9 @@ namespace RoutingVisualizer.NavigationGraph
             }
         }
 
+        /// <summary>
+        /// A* from endnode
+        /// </summary>
         private void fromEnd()
         {
             GraphNode currnode;
@@ -150,6 +163,13 @@ namespace RoutingVisualizer.NavigationGraph
             }
         }
 
+        /// <summary>
+        /// function to avoid similar entries in dict,
+        /// adds newnode to start-dict
+        /// </summary>
+        /// <param name="newkey">key/pathlength of visited node</param>
+        /// <param name="newnode">visited node</param>
+        /// <returns>entry to dict, might differ from newkey param</returns>
         private double addToVisitedStart(double newkey, GraphNode newnode)
         {
             try
@@ -163,6 +183,13 @@ namespace RoutingVisualizer.NavigationGraph
             }
         }
 
+        /// <summary>
+        /// function to avoid similar entries in dict,
+        /// adds newnode to end-dict
+        /// </summary>
+        /// <param name="newkey">key/pathlength of visited node</param>
+        /// <param name="newnode">visited node</param>
+        /// <returns>entry to dict, might differ from newkey param</returns>
         private double addToVisitedEnd(double newkey, GraphNode newnode)
         {
             try
@@ -176,6 +203,10 @@ namespace RoutingVisualizer.NavigationGraph
             }
         }
 
+        /// <summary>
+        /// use only after path finsing finished
+        /// </summary>
+        /// <returns>list of LineD representing shortest path</returns>
         public List<LineD> getShortestPath()
         {
             List<LineD> waylist = new List<LineD>();

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace RoutingVisualizer.NavigationGraph
 {
+    /// <summary>
+    /// utility functions for Graph
+    /// </summary>
     static class GraphUtils
     {
         public static double getDistance(GraphNode first, GraphNode second)
