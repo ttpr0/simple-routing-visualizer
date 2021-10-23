@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace RoutingVisualizer
 {
-    interface MapInterface
+    interface IMap
     {
         public Bitmap createMap(PointD upperleft, int zoom);
     }

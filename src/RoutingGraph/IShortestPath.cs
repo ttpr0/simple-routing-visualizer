@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RoutingVisualizer.NavigationGraph
 {
-    interface ShortestPathInterface
+    interface IShortestPath
     {
         /// <summary>
         /// preforms one step of path-finding algorithm

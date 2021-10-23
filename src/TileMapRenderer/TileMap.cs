@@ -10,7 +10,7 @@ namespace RoutingVisualizer.TileMapRenderer
     /// <summary>
     /// Map that draws Map-Tiles
     /// </summary>
-    class TileMap : MapInterface
+    class TileMap : IMap
     {
         private TileFactory tilefactory;
         private Bitmap map;

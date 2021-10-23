@@ -9,7 +9,7 @@ namespace RoutingVisualizer.NavigationGraph
     /// <summary>
     /// basic bidirectional A* algorithm
     /// </summary>
-    class BidirectAStar : ShortestPathInterface
+    class BidirectAStar : IShortestPath
     {
         private SortedDictionary<double, GraphNode> visited_start;
         private SortedDictionary<double, GraphNode> visited_end;
@@ -159,8 +159,8 @@ namespace RoutingVisualizer.NavigationGraph
                 {
                     break;
                 }
-                curredge = currnode_start.data.prevEdge;
-                waylist.Add(curredge.getGeomentry());
+                curredge = (GraphEdge)currnode_start.data.prevEdge;
+                waylist.Add(curredge.getGeometry());
                 currnode_start = curredge.getOtherNode(currnode_start);
             }
             currnode_end = midnode;
@@ -170,8 +170,8 @@ namespace RoutingVisualizer.NavigationGraph
                 {
                     break;
                 }
-                curredge = currnode_end.data.prevEdge2;
-                waylist.Add(curredge.getGeomentry());
+                curredge = (GraphEdge)currnode_end.data.prevEdge2;
+                waylist.Add(curredge.getGeometry());
                 currnode_end = curredge.getOtherNode(currnode_end);
             }
             return waylist;

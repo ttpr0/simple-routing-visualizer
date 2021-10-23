@@ -10,7 +10,7 @@ namespace RoutingVisualizer
     /// <summary>
     /// Map used to draw objects from GeometryContainer
     /// </summary>
-    class UtilityMap : MapInterface
+    class UtilityMap : IMap
     {
         private Bitmap map;
         private Graphics g;

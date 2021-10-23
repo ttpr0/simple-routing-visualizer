@@ -13,7 +13,7 @@ namespace RoutingVisualizer
     /// only draws visited GraphEdge once and marks it drawn
     /// Map should not be moved while using GraphMap
     /// </summary>
-    class GraphMap : MapInterface
+    class GraphMap : IMap
     {
         private Bitmap map;
         private List<GraphEdge> edges;

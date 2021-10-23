@@ -6,16 +6,13 @@ using System.Threading.Tasks;
 
 namespace RoutingVisualizer.NavigationGraph
 {
-    /// <summary>
-    /// node of Graph
-    /// </summary>
-    class GraphNode : INode
+    class DBGraphNode : INode
     {
         private long id;
         /// <summary>
-        /// adjacent GraphEdges
+        /// IDs of adjacent GraphEdges
         /// </summary>
-        private List<GraphEdge> edges;
+        private List<long> edges;
         private bool visited;
         public PointD point { get; }
         /// <summary>
@@ -28,10 +25,10 @@ namespace RoutingVisualizer.NavigationGraph
         /// </summary>
         /// <param name="id"></param>
         /// <param name="point">geomtric representiation (web-mercator)</param>
-        public GraphNode(long id, PointD point)
+        public DBGraphNode(long id, PointD point)
         {
             this.id = id;
-            this.edges = new List<GraphEdge>();
+            this.edges = new List<long>();
             this.visited = false;
             this.point = point;
             this.data = new NodeData();
@@ -44,31 +41,12 @@ namespace RoutingVisualizer.NavigationGraph
             return this.id;
         }
 
-        /*
-        /// <summary>
-        /// used to recreate path after search
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns>Graphedge between this and other node</returns>
-        public GraphEdge getEdge(GraphNode other)
+        public void addGraphEdge(long edgeid)
         {
-            foreach (GraphEdge edge in edges)
-            {
-                if (edge.getOtherNode(this) == other)
-                {
-                    return edge;
-                }
-            }
-            return null;
-        }
-        */
-
-        public void addGraphEdge(GraphEdge way)
-        {
-            this.edges.Add(way);
+            this.edges.Add(edgeid);
         }
 
-        public List<GraphEdge> getEdges()
+        public List<long> getEdges()
         {
             return this.edges;
         }

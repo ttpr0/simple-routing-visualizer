@@ -9,7 +9,7 @@ namespace RoutingVisualizer.NavigationGraph
     /// <summary>
     /// basic implementation of Djkstra algorithm
     /// </summary>
-    class Djkstra : ShortestPathInterface
+    class Djkstra : IShortestPath
     {
         private SortedDictionary<double, GraphNode> visited;
         private GraphNode endnode;
@@ -34,7 +34,7 @@ namespace RoutingVisualizer.NavigationGraph
         /// <summary>
         /// performs one step of Djkstra algorithm
         /// </summary>
-        /// <returns>false of shortest path is found</returns>
+        /// <returns>false if shortest path is found</returns>
         public bool step()
         {
             currkey = visited.Keys.First();
@@ -108,8 +108,8 @@ namespace RoutingVisualizer.NavigationGraph
                 {
                     break;
                 }
-                curredge = currnode.data.prevEdge;
-                waylist.Add(curredge.getGeomentry());
+                curredge = (GraphEdge)currnode.data.prevEdge;
+                waylist.Add(curredge.getGeometry());
                 currnode = curredge.getOtherNode(currnode);
             }
             return waylist;

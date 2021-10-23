@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Threading;
 using RoutingVisualizer.NavigationGraph;
 using RoutingVisualizer.TileMapRenderer;
+using Microsoft.Data.Sqlite;
 
 namespace RoutingVisualizer
 {
@@ -59,7 +60,7 @@ namespace RoutingVisualizer
             txtend.Text = "270785972";
             cbxShortestPath.Text = "Djkstra";
             this.tilemap = new TileMap(1000, 600);
-            this.start();
+            this._start();
             container.startnode = graph.getNodeById(Convert.ToInt64(txtstart.Text)).getGeometry();
             container.endnode = graph.getNodeById(Convert.ToInt64(txtend.Text)).getGeometry();
             this.graphmap = new GraphMap(1000, 600, this.graph);
@@ -69,7 +70,7 @@ namespace RoutingVisualizer
         }
 
         /// <summary>
-        /// loads and initializes graph from xml file,
+        /// loads and initializes graph from xml file
         /// </summary>
         private void start()
         {
@@ -118,6 +119,82 @@ namespace RoutingVisualizer
                 }
             }
             graph = new Graph(nodes, edges);
+        }
+
+        /// <summary>
+        /// loads and initializes graph from db-graph
+        /// </summary>
+        private void _start()
+        {
+            SqliteConnection conn = new SqliteConnection("Data Source=data/graph.db");
+            conn.Open();
+            SqliteCommand cmd = conn.CreateCommand();
+            SortedDictionary<long, GraphNode> nodedict = new SortedDictionary<long, GraphNode>();
+            List<GraphNode> nodes = new List<GraphNode>();
+            cmd.CommandText = $"SELECT * FROM nodes";
+            var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                long id = (long)reader["id"];
+                double x = (double)reader["x"];
+                double y = (double)reader["y"];
+                GraphNode newnode = new GraphNode(id, new PointD(x, y));
+                nodes.Add(newnode);
+                nodedict.Add(id, newnode);
+                i++;
+                if ((i % 1000) == 0)
+                {
+                    appendNewLine("Fortschritt: " + i.ToString() + " / 105952");
+                }
+            }
+            reader.Close();
+            List<GraphEdge> edges = new List<GraphEdge>();
+            cmd.CommandText = $"SELECT * FROM edges";
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                string type = (string)reader["type"];
+                long id = (long)reader["id"];
+                long start = (long)reader["start"];
+                long end = (long)reader["end"];
+                bool oneway = toBool(reader["oneway"]);
+                double weight = (double)reader["weight"];
+                List<PointD> points = new List<PointD>();
+                string[] substrings = ((string)reader["geometry"]).Split("&&");
+                foreach (string s in substrings)
+                {
+                    if (s == "")
+                    {
+                        continue;
+                    }
+                    string[] values = s.Split(";");
+                    points.Add(new PointD(Convert.ToDouble(values[0]), Convert.ToDouble(values[1])));
+                }
+                GraphNode a = nodedict[start];
+                GraphNode b = nodedict[end];
+                GraphEdge newedge = new GraphEdge(id, new LineD(points.ToArray()), a, b, weight, type, oneway);
+                edges.Add(newedge);
+                a.addGraphEdge(newedge);
+                b.addGraphEdge(newedge);
+                i++;
+                if ((i % 1000) == 0)
+                {
+                    appendNewLine("Fortschritt: " + i.ToString() + " / 105952");
+                }
+            }
+            reader.Close();
+            conn.Close();
+            graph = new Graph(nodes, edges);
+        }
+
+        private bool toBool(object obj)
+        {
+            long i = Convert.ToInt64(obj);
+            if (i == 0)
+            {
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -244,7 +321,7 @@ namespace RoutingVisualizer
             }
             haschanged = true;
             //drawMap();
-            ShortestPathInterface algorithm;
+            IShortestPath algorithm;
             switch (cbxShortestPath.Text)
             {
                 case "Djkstra":
@@ -261,6 +338,9 @@ namespace RoutingVisualizer
                     break;
                 case "Fast-A*":
                     algorithm = new FastBidirectAStar(start, end);
+                    break;
+                case "DB-A*":
+                    algorithm = new DBAStar(start, end);
                     break;
                 default:
                     algorithm = new Djkstra(start, end);

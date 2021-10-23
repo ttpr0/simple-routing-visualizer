@@ -9,7 +9,7 @@ namespace RoutingVisualizer.NavigationGraph
     /// <summary>
     /// basic implementation of A* algorithm
     /// </summary>
-    class AStar : ShortestPathInterface
+    class AStar : IShortestPath
     {
         private SortedDictionary<double, GraphNode> visited;
         private GraphNode endnode;
@@ -110,8 +110,8 @@ namespace RoutingVisualizer.NavigationGraph
                 {
                     break;
                 }
-                curredge = currnode.data.prevEdge;
-                waylist.Add(curredge.getGeomentry());
+                curredge = (GraphEdge)currnode.data.prevEdge;
+                waylist.Add(curredge.getGeometry());
                 currnode = curredge.getOtherNode(currnode);
             }
             return waylist;
