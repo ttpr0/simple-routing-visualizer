@@ -36,11 +36,13 @@ namespace RoutingVisualizer
         private GraphMap graphmap;
         private UtilityMap utilitymap;
         private Graph graph;
+        private BasicGraph bgraph;
         private PointD upperleft = new PointD(1314905, 6716660);
         private int zoom = 12;
         private GeometryContainer container = new GeometryContainer();
         private Bitmap screen = new Bitmap(1000, 600);
         Graphics g;
+        private bool drawrouting = false;
 
         public NavForm()
         {
@@ -56,13 +58,13 @@ namespace RoutingVisualizer
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             g = Graphics.FromImage(screen);
-            txtstart.Text = "31802460";
-            txtend.Text = "270785972";
+            txtstart.Text = "1000";
+            txtend.Text = "2000";
             cbxShortestPath.Text = "Djkstra";
             this.tilemap = new TileMap(1000, 600);
             this._start();
-            container.startnode = graph.getNodeById(Convert.ToInt64(txtstart.Text)).getGeometry();
-            container.endnode = graph.getNodeById(Convert.ToInt64(txtend.Text)).getGeometry();
+            container.startnode = graph.getNodeById(Convert.ToInt32(txtstart.Text)).getGeometry();
+            container.endnode = graph.getNodeById(Convert.ToInt32(txtend.Text)).getGeometry();
             this.graphmap = new GraphMap(1000, 600, this.graph);
             this.utilitymap = new UtilityMap(1000, 600, this.container);
             haschanged = true;
@@ -80,7 +82,7 @@ namespace RoutingVisualizer
             List<GraphNode> nodes = new List<GraphNode>();
             foreach (XElement node in data.Elements())
             {
-                long id = Convert.ToInt64(node.Attribute("id").Value);
+                int id = Convert.ToInt32(node.Attribute("id").Value);
                 double x = Convert.ToDouble(node.Attribute("x").Value);
                 double y = Convert.ToDouble(node.Attribute("y").Value);
                 GraphNode newnode = new GraphNode(id, new PointD(x, y));
@@ -97,9 +99,9 @@ namespace RoutingVisualizer
             foreach (XElement way in data.Elements())
             {
                 string type = way.Attribute("type").Value;
-                long id = Convert.ToInt64(way.Attribute("id").Value);
-                long start = Convert.ToInt64(way.Attribute("start").Value);
-                long end = Convert.ToInt64(way.Attribute("end").Value);
+                int id = Convert.ToInt32(way.Attribute("id").Value);
+                int start = Convert.ToInt32(way.Attribute("start").Value);
+                int end = Convert.ToInt32(way.Attribute("end").Value);
                 bool oneway = Convert.ToBoolean(way.Attribute("oneway").Value);
                 List<PointD> points = new List<PointD>();
                 foreach (XElement node in way.Elements())
@@ -129,37 +131,41 @@ namespace RoutingVisualizer
             SqliteConnection conn = new SqliteConnection("Data Source=data/graph.db");
             conn.Open();
             SqliteCommand cmd = conn.CreateCommand();
-            SortedDictionary<long, GraphNode> nodedict = new SortedDictionary<long, GraphNode>();
-            List<GraphNode> nodes = new List<GraphNode>();
+            //List<GraphNode> nodedict = new SortedDictionary<long, GraphNode>();
+            GraphNode[] nodearr = new GraphNode[127765];
+            BasicNode[] bnodearr = new BasicNode[127765];
             cmd.CommandText = $"SELECT * FROM nodes";
             var reader = cmd.ExecuteReader();
+            int i = 0;
             while (reader.Read())
             {
-                long id = (long)reader["id"];
+                i++;
+                int id = Convert.ToInt32(reader["id"]);
                 double x = (double)reader["x"];
                 double y = (double)reader["y"];
                 GraphNode newnode = new GraphNode(id, new PointD(x, y));
-                nodes.Add(newnode);
-                nodedict.Add(id, newnode);
-                i++;
-                if ((i % 1000) == 0)
-                {
-                    appendNewLine("Fortschritt: " + i.ToString() + " / 105952");
-                }
+                BasicNode bnewnode = new BasicNode(id, new PointD(x,y));
+                nodearr[id] = newnode;
+                bnodearr[id] = bnewnode;
+                //nodedict.Add(id, newnode);
             }
             reader.Close();
-            List<GraphEdge> edges = new List<GraphEdge>();
+            GraphEdge[] edgearr = new GraphEdge[152295];
+            BasicEdge[] bedgearr = new BasicEdge[152295];
             cmd.CommandText = $"SELECT * FROM edges";
             reader = cmd.ExecuteReader();
+            int j = 0;
             while (reader.Read())
             {
+                j++;
                 string type = (string)reader["type"];
-                long id = (long)reader["id"];
-                long start = (long)reader["start"];
-                long end = (long)reader["end"];
+                int id = Convert.ToInt32(reader["id"]);
+                int start = Convert.ToInt32(reader["start"]);
+                int end = Convert.ToInt32(reader["end"]);
                 bool oneway = toBool(reader["oneway"]);
                 double weight = (double)reader["weight"];
                 List<PointD> points = new List<PointD>();
+                
                 string[] substrings = ((string)reader["geometry"]).Split("&&");
                 foreach (string s in substrings)
                 {
@@ -170,21 +176,29 @@ namespace RoutingVisualizer
                     string[] values = s.Split(";");
                     points.Add(new PointD(Convert.ToDouble(values[0]), Convert.ToDouble(values[1])));
                 }
-                GraphNode a = nodedict[start];
-                GraphNode b = nodedict[end];
+                
+                //GraphNode a = nodedict[start];
+                //GraphNode b = nodedict[end];
+                GraphNode a = nodearr[start];
+                GraphNode b = nodearr[end];
+                BasicNode ba = bnodearr[start];
+                BasicNode bb = bnodearr[end];
                 GraphEdge newedge = new GraphEdge(id, new LineD(points.ToArray()), a, b, weight, type, oneway);
-                edges.Add(newedge);
+                BasicEdge bnewedge = new BasicEdge(id, start, end, weight, type, oneway);
+                edgearr[id] = newedge;
+                bedgearr[id] = bnewedge;
                 a.addGraphEdge(newedge);
                 b.addGraphEdge(newedge);
-                i++;
-                if ((i % 1000) == 0)
-                {
-                    appendNewLine("Fortschritt: " + i.ToString() + " / 105952");
-                }
+                ba.addEdge(bnewedge.getID());
+                bb.addEdge(bnewedge.getID());
             }
             reader.Close();
             conn.Close();
+            appendNewLine("Nodes: " + i.ToString() + " , Edges: " + j.ToString());
+            List<GraphNode> nodes = nodearr.ToList<GraphNode>();
+            List<GraphEdge> edges = edgearr.ToList<GraphEdge>();
             graph = new Graph(nodes, edges);
+            bgraph = new BasicGraph(bnodearr, bedgearr);
         }
 
         private bool toBool(object obj)
@@ -223,7 +237,6 @@ namespace RoutingVisualizer
             return new PointD(x, y);
         }
 
-        private int i = 1;
         /// <summary>
         /// timer used to redraw maps if haschanged == true
         /// </summary>
@@ -233,13 +246,8 @@ namespace RoutingVisualizer
         {
             if (haschanged)
             {
+                haschanged = false;
                 drawMap();
-                i++;
-                if (i % 5 == 0)
-                {
-                    haschanged = false;
-                    i = 1;
-                }
             }
         }
 
@@ -256,7 +264,10 @@ namespace RoutingVisualizer
             g.Clear(Color.White);
             g.DrawImage(tilemap.createMap(upperleft, zoom), 0, 0);
             g.DrawImage(utilitymap.createMap(upperleft, zoom), 0, 0);
-            g.DrawImage(graphmap.createMap(upperleft, zoom), 0, 0);
+            if (this.drawrouting)
+            {
+                g.DrawImage(graphmap.createMap(upperleft, zoom), 0, 0);
+            }
             pbxout.Image = screen;
             pbxout.Refresh();
         }
@@ -293,14 +304,15 @@ namespace RoutingVisualizer
         {
             container.path = null;
             graph.initGraph();
-            long startid;
-            long endid;
+            bgraph.initGraph();
+            int startid;
+            int endid;
             GraphNode start;
             GraphNode end;
             try
             {
-                startid = Convert.ToInt64(txtstart.Text);
-                endid = Convert.ToInt64(txtend.Text);
+                startid = Convert.ToInt32(txtstart.Text);
+                endid = Convert.ToInt32(txtend.Text);
             }
             catch (Exception)
             {
@@ -342,6 +354,9 @@ namespace RoutingVisualizer
                 case "DB-A*":
                     algorithm = new DBAStar(start, end);
                     break;
+                case "Basic-A*":
+                    algorithm = new BasicAStar(bgraph, start.getID(), end.getID()); 
+                    break;
                 default:
                     algorithm = new Djkstra(start, end);
                     break;
@@ -349,6 +364,10 @@ namespace RoutingVisualizer
             Stopwatch sw = new Stopwatch();
             sw.Start();
             bool draw = chbxDraw.Checked;
+            if (draw)
+            {
+                this.drawrouting = true;
+            }
             int j = 500;
             int i = 0;
             while (algorithm.step())
@@ -364,6 +383,7 @@ namespace RoutingVisualizer
                 }
             }
             sw.Stop();
+            this.drawrouting = false;
             appendNewLine(sw.ElapsedMilliseconds.ToString());
             appendNewLine("finished");
             container.path = algorithm.getShortestPath();

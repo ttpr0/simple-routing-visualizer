@@ -8,7 +8,9 @@ namespace RoutingVisualizer.NavigationGraph
 {
     interface INode
     {
-
+        int getID();
+        void setVisited(bool visited);
+        bool isVisited();
     }
 
     struct NodeData

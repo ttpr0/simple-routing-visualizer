@@ -8,7 +8,17 @@ namespace RoutingVisualizer.NavigationGraph
 {
     interface IEdge
     {
-        LineD getGeometry();
+        public int getID();
+
+        public string getType();
+
+        public LineD getGeometry();
+
+        public double getWeight();
+
+        public void setVisited(bool visited);
+
+        public bool isVisited();
     }
 
     struct EdgeData

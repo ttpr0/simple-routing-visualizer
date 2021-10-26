@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using RoutingVisualizer.NavigationGraph;
+using Microsoft.Data.Sqlite;
 
 namespace RoutingVisualizer
 {
@@ -19,6 +20,9 @@ namespace RoutingVisualizer
         private List<GraphEdge> edges;
         private Graphics g;
 
+        private SqliteConnection conn;
+        private SqliteCommand cmd;
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -30,6 +34,10 @@ namespace RoutingVisualizer
             this.map = new Bitmap(width, height);
             this.edges = graph.getGraphEdges();
             this.g = Graphics.FromImage(this.map);
+
+            this.conn = new SqliteConnection("Data Source=data/graph.db");
+            conn.Open();
+            this.cmd = conn.CreateCommand();
         }
 
         private Pen visitedpen = new Pen(Color.MediumVioletRed, 2);

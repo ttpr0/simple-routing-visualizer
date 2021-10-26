@@ -3,39 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 
 namespace RoutingVisualizer.NavigationGraph
 {
-    /// <summary>
-    /// not finished jet
-    /// </summary>
-    [Obsolete]
-    class DBBidirectAStar : IShortestPath
+    class BasicAStar : IShortestPath
     {
-        private DBGraph graph;
+        private SortedDictionary<double, int> visited_start;
+        private SortedDictionary<double, int> visited_end;
+        private BasicNode startnode;
+        private BasicNode endnode;
+        private int startid;
+        private int endid;
+        private int midid;
+        private BasicGraph graph;
 
-        private SortedDictionary<double, DBGraphNode> visited_start;
-        private SortedDictionary<double, DBGraphNode> visited_end;
-        private DBGraphNode startnode;
-        private DBGraphNode endnode;
-        private DBGraphNode midnode;
-
-        public DBBidirectAStar(GraphNode start, GraphNode end)
+        public BasicAStar(BasicGraph graph, int start, int end)
         {
-            this.graph = new DBGraph("data/graph.db");
-            this.startnode = this.graph.getGraphNodeByID(start.getID());
-            this.endnode = this.graph.getGraphNodeByID(end.getID());
-            this.visited_start = new SortedDictionary<double, DBGraphNode>();
-            this.visited_start.Add(0, startnode);
-            this.visited_end = new SortedDictionary<double, DBGraphNode>();
-            this.visited_end.Add(0, endnode);
+            this.graph = graph;
+            this.startid = start;
+            this.endid = end;
+            this.startnode = this.graph.getNode(startid);
+            this.endnode = this.graph.getNode(endid);
+            this.visited_start = new SortedDictionary<double, int>();
+            this.visited_start.Add(0, startid);
+            this.visited_end = new SortedDictionary<double, int>();
+            this.visited_end.Add(0, endid);
             startnode.data.distance = GraphUtils.getDistance(startnode, endnode);
             startnode.data.distance2 = 0;
             startnode.data.pathlength = 0;
             endnode.data.distance = 0;
             endnode.data.distance2 = GraphUtils.getDistance(endnode, startnode);
             endnode.data.pathlength2 = 0;
-            endnode.setVisited(true);
         }
 
         private bool finished;
@@ -63,19 +62,19 @@ namespace RoutingVisualizer.NavigationGraph
         /// </summary>
         private void fromStart()
         {
-            DBGraphNode currnode;
+            BasicNode currnode;
             double currkey;
             while (!this.finished)
             {
                 currkey = visited_start.Keys.First();
-                currnode = visited_start[currkey];
+                currnode = this.graph.getNode(visited_start[currkey]);
                 if (currnode.isVisited())
                 {
-                    this.midnode = currnode;
+                    this.midid = currnode.getID();
                     this.finished = true;
                     return;
                 }
-                foreach (DBGraphEdge edge in this.graph.getAdjacentEdges(currnode))
+                foreach (BasicEdge edge in this.graph.getAdjacentEdges(currnode))
                 {
                     if (edge.isVisited())
                     {
@@ -83,7 +82,7 @@ namespace RoutingVisualizer.NavigationGraph
                     }
                     if (edge.data.oneway)
                     {
-                        if (edge.getNodeB() == currnode)
+                        if (edge.getNodeB() == currnode.getID())
                         {
                             continue;
                         }
@@ -93,7 +92,7 @@ namespace RoutingVisualizer.NavigationGraph
                         continue;
                     }
                     edge.setVisited(true);
-                    DBGraphNode othernode = edge.getOtherNode(currnode);
+                    BasicNode othernode = this.graph.getNode(edge.getOtherNode(currnode.getID()));
                     othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
                     othernode.data.distance2 = GraphUtils.getDistance(othernode, startnode);
                     double newlength = currnode.data.pathlength - currnode.data.distance + edge.getWeight() + othernode.data.distance;
@@ -118,19 +117,19 @@ namespace RoutingVisualizer.NavigationGraph
         /// </summary>
         private void fromEnd()
         {
-            DBGraphNode currnode;
+            BasicNode currnode;
             double currkey;
             while (!this.finished)
             {
                 currkey = visited_end.Keys.First();
-                currnode = visited_end[currkey];
+                currnode = this.graph.getNode(visited_end[currkey]);
                 if (currnode.isVisited())
                 {
-                    this.midnode = currnode;
+                    this.midid = currnode.getID();
                     this.finished = true;
                     return;
                 }
-                foreach (DBGraphEdge edge in this.graph.getAdjacentEdges(currnode))
+                foreach (BasicEdge edge in this.graph.getAdjacentEdges(currnode))
                 {
                     if (edge.isVisited())
                     {
@@ -138,7 +137,7 @@ namespace RoutingVisualizer.NavigationGraph
                     }
                     if (edge.data.oneway)
                     {
-                        if (edge.getNodeA() == currnode)
+                        if (edge.getNodeA() == currnode.getID())
                         {
                             continue;
                         }
@@ -148,7 +147,7 @@ namespace RoutingVisualizer.NavigationGraph
                         continue;
                     }
                     edge.setVisited(true);
-                    DBGraphNode othernode = edge.getOtherNode(currnode);
+                    BasicNode othernode = this.graph.getNode(edge.getOtherNode(currnode.getID()));
                     othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
                     othernode.data.distance2 = GraphUtils.getDistance(othernode, startnode);
                     double newlength = currnode.data.pathlength2 - currnode.data.distance2 + edge.getWeight() + othernode.data.distance2;
@@ -175,11 +174,11 @@ namespace RoutingVisualizer.NavigationGraph
         /// <param name="newkey">key/pathlength of visited node</param>
         /// <param name="newnode">visited node</param>
         /// <returns>entry to dict, might differ from newkey param</returns>
-        private double addToVisitedStart(double newkey, DBGraphNode newnode)
+        private double addToVisitedStart(double newkey, BasicNode newnode)
         {
             try
             {
-                visited_start.Add(newkey, newnode);
+                visited_start.Add(newkey, newnode.getID());
                 return newkey;
             }
             catch (Exception)
@@ -195,11 +194,11 @@ namespace RoutingVisualizer.NavigationGraph
         /// <param name="newkey">key/pathlength of visited node</param>
         /// <param name="newnode">visited node</param>
         /// <returns>entry to dict, might differ from newkey param</returns>
-        private double addToVisitedEnd(double newkey, DBGraphNode newnode)
+        private double addToVisitedEnd(double newkey, BasicNode newnode)
         {
             try
             {
-                visited_end.Add(newkey, newnode);
+                visited_end.Add(newkey, newnode.getID());
                 return newkey;
             }
             catch (Exception)
@@ -214,29 +213,63 @@ namespace RoutingVisualizer.NavigationGraph
         /// <returns>list of LineD representing shortest path</returns>
         public List<LineD> getShortestPath()
         {
+            SqliteConnection conn = new SqliteConnection("Data Source=data/graph.db");
+            conn.Open();
+            SqliteCommand cmd = conn.CreateCommand();
+
             List<LineD> waylist = new List<LineD>();
-            DBGraphEdge curredge;
-            DBGraphNode currnode_start = midnode;
+            BasicNode currnode = this.graph.getNode(midid);
+            BasicEdge curredge;
             while (true)
             {
-                if (currnode_start == startnode)
+                if (currnode == startnode)
                 {
                     break;
                 }
-                curredge = (DBGraphEdge)currnode_start.data.prevEdge;
-                waylist.Add(curredge.getGeometry());
-                currnode_start = curredge.getOtherNode(currnode_start);
+                curredge = (BasicEdge)currnode.data.prevEdge;
+                cmd.CommandText = $"SELECT * FROM edges WHERE id={curredge.getID()};";
+                var reader = cmd.ExecuteReader();
+                reader.Read();
+                string[] substrings = ((string)reader["geometry"]).Split("&&");
+                List<PointD> points = new List<PointD>();
+                foreach (string s in substrings)
+                {
+                    if (s == "")
+                    {
+                        continue;
+                    }
+                    string[] values = s.Split(";");
+                    points.Add(new PointD(Convert.ToDouble(values[0]), Convert.ToDouble(values[1])));
+                }
+                reader.Close();
+                waylist.Add(new LineD(points.ToArray()));
+                currnode = this.graph.getNode(curredge.getOtherNode(currnode.getID()));
             }
-            DBGraphNode currnode_end = midnode;
+            currnode = this.graph.getNode(midid);
             while (true)
             {
-                if (currnode_end == endnode)
+                if (currnode == endnode)
                 {
                     break;
                 }
-                curredge = (DBGraphEdge)currnode_end.data.prevEdge2;
-                waylist.Add(curredge.getGeometry());
-                currnode_end = curredge.getOtherNode(currnode_end);
+                curredge = (BasicEdge)currnode.data.prevEdge2;
+                cmd.CommandText = $"SELECT * FROM edges WHERE id={curredge.getID()};";
+                var reader = cmd.ExecuteReader();
+                reader.Read();
+                string[] substrings = ((string)reader["geometry"]).Split("&&");
+                List<PointD> points = new List<PointD>();
+                foreach (string s in substrings)
+                {
+                    if (s == "")
+                    {
+                        continue;
+                    }
+                    string[] values = s.Split(";");
+                    points.Add(new PointD(Convert.ToDouble(values[0]), Convert.ToDouble(values[1])));
+                }
+                reader.Close();
+                waylist.Add(new LineD(points.ToArray()));
+                currnode = this.graph.getNode(curredge.getOtherNode(currnode.getID()));
             }
             return waylist;
         }

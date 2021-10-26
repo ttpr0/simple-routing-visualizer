@@ -11,7 +11,7 @@ namespace RoutingVisualizer.NavigationGraph
     /// </summary>
     class GraphEdge : IEdge
     {
-        private long id;
+        private int id;
         private GraphNode node_a;
         private GraphNode node_b;
         /// <summary>
@@ -33,7 +33,7 @@ namespace RoutingVisualizer.NavigationGraph
         /// <param name="b"></param>
         /// <param name="type">string representing type of street (osm-type), used to compute weight</param>
         /// <param name="oneway">true if oneway from a to b</param>
-        public GraphEdge(long id, LineD line, GraphNode a, GraphNode b, string type, bool oneway)
+        public GraphEdge(int id, LineD line, GraphNode a, GraphNode b, string type, bool oneway)
         {
             this.node_a = a;
             this.node_b = b;
@@ -69,7 +69,7 @@ namespace RoutingVisualizer.NavigationGraph
             }
         }
 
-        public GraphEdge(long id, LineD line, GraphNode a, GraphNode b, double weight, string type, bool oneway)
+        public GraphEdge(int id, LineD line, GraphNode a, GraphNode b, double weight, string type, bool oneway)
         {
             this.node_a = a;
             this.node_b = b;
@@ -89,7 +89,7 @@ namespace RoutingVisualizer.NavigationGraph
             }
         }
 
-        public long getID()
+        public int getID()
         {
             return this.id;
         }

@@ -27,7 +27,7 @@ namespace RoutingVisualizer.NavigationGraph
             node_dict.Clear();
         }
 
-        public DBGraphNode getGraphNodeByID(long id)
+        public DBGraphNode getGraphNodeByID(int id)
         {
             DBGraphNode a;
             if (node_dict.ContainsKey(id))
@@ -44,7 +44,7 @@ namespace RoutingVisualizer.NavigationGraph
         public List<DBGraphEdge> getAdjacentEdges(DBGraphNode node)
         {
             List<DBGraphEdge> edges = new List<DBGraphEdge>();
-            foreach (long id in node.getEdges())
+            foreach (int id in node.getEdges())
             {
                 if (loadGraphEdge(id) == null)
                 {
@@ -55,7 +55,7 @@ namespace RoutingVisualizer.NavigationGraph
             return edges;
         }
 
-        private DBGraphNode loadGraphNode(long id)
+        private DBGraphNode loadGraphNode(int id)
         {
             this.cmd.CommandText = $"SELECT * FROM nodes WHERE id={id};";
             var reader = cmd.ExecuteReader();
@@ -78,7 +78,7 @@ namespace RoutingVisualizer.NavigationGraph
             return node;
         }
 
-        private DBGraphEdge loadGraphEdge(long id)
+        private DBGraphEdge loadGraphEdge(int id)
         {
             this.cmd.CommandText = $"SELECT * FROM edges WHERE id={id};";
             var reader = cmd.ExecuteReader();
@@ -86,8 +86,8 @@ namespace RoutingVisualizer.NavigationGraph
             double weight = (double)reader["weight"];
             string type = (string)reader["type"];
             bool oneway = toBool(reader["oneway"]);
-            long start = (long)reader["start"];
-            long end = (long)reader["end"];
+            int start = (int)reader["start"];
+            int end = (int)reader["end"];
             reader.Close();
             DBGraphNode a = getGraphNodeByID(start);
             DBGraphNode b = getGraphNodeByID(end);

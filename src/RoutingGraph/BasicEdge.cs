@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
 
 namespace RoutingVisualizer.NavigationGraph
 {
-    class DBGraphEdge : IEdge
+    class BasicEdge : IEdge
     {
         private int id;
-        private DBGraphNode node_a;
-        private DBGraphNode node_b;
+        private int node_a;
+        private int node_b;
         private bool visited;
         /// <summary>
         /// container for attributes
@@ -26,7 +25,7 @@ namespace RoutingVisualizer.NavigationGraph
         /// <param name="b"></param>
         /// <param name="type">string representing type of street (osm-type), used to compute weight</param>
         /// <param name="oneway">true if oneway from a to b</param>
-        public DBGraphEdge(int id, DBGraphNode a, DBGraphNode b, double weight, string type, bool oneway)
+        public BasicEdge(int id, int a, int b, double weight, string type, bool oneway)
         {
             this.node_a = a;
             this.node_b = b;
@@ -55,27 +54,27 @@ namespace RoutingVisualizer.NavigationGraph
             return this.id;
         }
 
-        public DBGraphNode getNodeA()
+        public int getNodeA()
         {
             return this.node_a;
         }
 
-        public DBGraphNode getNodeB()
+        public int getNodeB()
         {
             return this.node_b;
         }
 
-        public DBGraphNode getOtherNode(DBGraphNode node)
+        public int getOtherNode(int nodeid)
         {
-            if (node.getID() == node_a.getID())
+            if (nodeid == node_a)
             {
                 return node_b;
             }
-            if (node.getID() == node_b.getID())
+            if (nodeid == node_b)
             {
                 return node_a;
             }
-            return null;
+            return 0;
         }
 
         public string getType()
@@ -104,3 +103,4 @@ namespace RoutingVisualizer.NavigationGraph
         }
     }
 }
+

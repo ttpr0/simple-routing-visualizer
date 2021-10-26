@@ -36,7 +36,7 @@ namespace RoutingVisualizer.NavigationGraph
             return this.edges;
         }
 
-        public GraphNode getNodeById(long id)
+        public GraphNode getNodeById(int id)
         {
             foreach (GraphNode node in nodes)
             {
@@ -48,7 +48,7 @@ namespace RoutingVisualizer.NavigationGraph
             return null;
         }
 
-        public GraphEdge getEdgeById(long id)
+        public GraphEdge getEdgeById(int id)
         {
             foreach (GraphEdge edge in edges)
             {

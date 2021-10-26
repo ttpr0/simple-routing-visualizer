@@ -11,7 +11,7 @@ namespace RoutingVisualizer.NavigationGraph
     /// </summary>
     class GraphNode : INode
     {
-        private long id;
+        private int id;
         /// <summary>
         /// adjacent GraphEdges
         /// </summary>
@@ -28,7 +28,7 @@ namespace RoutingVisualizer.NavigationGraph
         /// </summary>
         /// <param name="id"></param>
         /// <param name="point">geomtric representiation (web-mercator)</param>
-        public GraphNode(long id, PointD point)
+        public GraphNode(int id, PointD point)
         {
             this.id = id;
             this.edges = new List<GraphEdge>();
@@ -39,7 +39,7 @@ namespace RoutingVisualizer.NavigationGraph
             this.data.pathlength2 = 10000000.00;
         }
 
-        public long getID()
+        public int getID()
         {
             return this.id;
         }

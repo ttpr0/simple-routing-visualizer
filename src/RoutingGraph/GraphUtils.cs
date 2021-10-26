@@ -19,5 +19,9 @@ namespace RoutingVisualizer.NavigationGraph
         {
             return Math.Sqrt(Math.Pow(first.point.X - second.point.X, 2) + Math.Pow(first.point.Y - second.point.Y, 2));
         }
+        public static double getDistance(BasicNode first, BasicNode second)
+        {
+            return Math.Sqrt(Math.Pow(first.point.X - second.point.X, 2) + Math.Pow(first.point.Y - second.point.Y, 2));
+        }
     }
 }

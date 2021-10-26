@@ -8,7 +8,7 @@ namespace RoutingVisualizer.NavigationGraph
 {
     class DBGraphNode : INode
     {
-        private long id;
+        private int id;
         /// <summary>
         /// IDs of adjacent GraphEdges
         /// </summary>
@@ -25,7 +25,7 @@ namespace RoutingVisualizer.NavigationGraph
         /// </summary>
         /// <param name="id"></param>
         /// <param name="point">geomtric representiation (web-mercator)</param>
-        public DBGraphNode(long id, PointD point)
+        public DBGraphNode(int id, PointD point)
         {
             this.id = id;
             this.edges = new List<long>();
@@ -36,7 +36,7 @@ namespace RoutingVisualizer.NavigationGraph
             this.data.pathlength2 = 10000000.00;
         }
 
-        public long getID()
+        public int getID()
         {
             return this.id;
         }

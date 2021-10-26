@@ -143,7 +143,8 @@ namespace RoutingVisualizer
             "Bidirect-Djkstra",
             "Bidirect-A*",
             "Fast-A*",
-            "DB-A*"});
+            "DB-A*",
+            "Basic-A*"});
             this.cbxShortestPath.Location = new System.Drawing.Point(545, 625);
             this.cbxShortestPath.Name = "cbxShortestPath";
             this.cbxShortestPath.Size = new System.Drawing.Size(121, 23);
