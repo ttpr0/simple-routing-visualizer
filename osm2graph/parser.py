@@ -121,10 +121,10 @@ def create_graph(osmways:List[OsmWay], osmnodes:Dict[int, OsmNode], nodes:Dict[i
 
 def create_edge(id:int, start:Node, end:Node, geometry:List[OsmNode], oneway:bool, _type:str, templimit:str) -> Edge:
     weight = calc_weight(haversine_length(geometry), templimit, _type)
-    return Edge(id, start.id, end.id, oneway, weight, _type, geometry)
+    return Edge(id, start.id, end.id, oneway, weight, _type, geometry.copy())
 
 def calc_weight(length:float, templimit:str, streettype:str) -> float:
-    """
+    """ approximates weight based on streettype and (if valid input given) speed limit
     """
     if  templimit == "None":
         if (streettype == 'motorway' or streettype == 'trunk'):
@@ -195,7 +195,7 @@ def create_graph_db(graph:Graph):
     for edge in graph.edges:
         geometry = ""
         for node in edge.geometry:
-            coords = transform_mercator(edge.lon, edge.lat)
+            coords = transform_mercator(node.lon, node.lat)
             geometry += str(coords[0]) + ";" + str(coords[1]) + "&&"
         if edge.oneway:
             oneway = 1
