@@ -9,6 +9,7 @@ namespace RoutingVisualizer.NavigationGraph
     /// <summary>
     /// node of Graph
     /// </summary>
+    [Obsolete]
     class GraphNode : INode
     {
         private int id;

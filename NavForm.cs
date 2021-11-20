@@ -35,8 +35,8 @@ namespace RoutingVisualizer
         private TileMap tilemap;
         private GraphMap graphmap;
         private UtilityMap utilitymap;
-        private Graph graph;
-        private BasicGraph bgraph;
+        private Graph _graph;
+        private BasicGraph graph;
         private PointD upperleft = new PointD(1314905, 6716660);
         private int zoom = 12;
         private GeometryContainer container = new GeometryContainer();
@@ -58,13 +58,13 @@ namespace RoutingVisualizer
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             g = Graphics.FromImage(screen);
-            txtstart.Text = "1000";
-            txtend.Text = "2000";
+            txtstart.Text = "100";
+            txtend.Text = "20000";
             cbxShortestPath.Text = "Djkstra";
             this.tilemap = new TileMap(1000, 600);
-            this._start();
-            container.startnode = graph.getNodeById(Convert.ToInt32(txtstart.Text)).getGeometry();
-            container.endnode = graph.getNodeById(Convert.ToInt32(txtend.Text)).getGeometry();
+            this.start();
+            container.startnode = graph.getNode(Convert.ToInt32(txtstart.Text)).getGeometry();
+            container.endnode = graph.getNode(Convert.ToInt32(txtend.Text)).getGeometry();
             this.graphmap = new GraphMap(1000, 600, this.graph);
             this.utilitymap = new UtilityMap(1000, 600, this.container);
             haschanged = true;
@@ -76,64 +76,79 @@ namespace RoutingVisualizer
         /// </summary>
         private void start()
         {
+            SqliteConnection conn = new SqliteConnection("Data Source=data/graph.db");
+            conn.Open();
+            SqliteCommand cmd = conn.CreateCommand();
+            //List<GraphNode> nodedict = new SortedDictionary<long, GraphNode>();
+            BasicNode[] nodearr = new BasicNode[514680];
+            cmd.CommandText = $"SELECT * FROM nodes";
+            var reader = cmd.ExecuteReader();
             int i = 0;
-            XElement data = readXmlFile("data/graphnodes.xml", "nodes");
-            SortedDictionary<long, GraphNode> nodedict = new SortedDictionary<long, GraphNode>();
-            List<GraphNode> nodes = new List<GraphNode>();
-            foreach (XElement node in data.Elements())
+            while (reader.Read())
             {
-                int id = Convert.ToInt32(node.Attribute("id").Value);
-                double x = Convert.ToDouble(node.Attribute("x").Value);
-                double y = Convert.ToDouble(node.Attribute("y").Value);
-                GraphNode newnode = new GraphNode(id, new PointD(x, y));
-                nodes.Add(newnode);
-                nodedict.Add(id, newnode);
                 i++;
-                if ((i % 1000) == 0)
+                int id = Convert.ToInt32(reader["id"]);
+                double x = (double)reader["x"];
+                double y = (double)reader["y"];
+                List<int> edges = new List<int>();
+                string[] substrings = ((string)reader["edges"]).Split("&&");
+                foreach (string s in substrings)
                 {
-                    appendNewLine("Fortschritt: " + i.ToString() + " / 105952");
+                    if (s == "")
+                    {
+                        continue;
+                    }
+                    edges.Add(Convert.ToInt32(s));
                 }
+                BasicNode newnode = new BasicNode(id, new PointD(x, y), edges);
+                nodearr[id] = newnode;
             }
-            data = readXmlFile("data/graphways.xml", "ways");
-            List<GraphEdge> edges = new List<GraphEdge>();
-            foreach (XElement way in data.Elements())
+            reader.Close();
+            BasicEdge[] edgearr = new BasicEdge[648813];
+            cmd.CommandText = $"SELECT * FROM edges";
+            reader = cmd.ExecuteReader();
+            int j = 0;
+            while (reader.Read())
             {
-                string type = way.Attribute("type").Value;
-                int id = Convert.ToInt32(way.Attribute("id").Value);
-                int start = Convert.ToInt32(way.Attribute("start").Value);
-                int end = Convert.ToInt32(way.Attribute("end").Value);
-                bool oneway = Convert.ToBoolean(way.Attribute("oneway").Value);
+                j++;
+                string type = (string)reader["type"];
+                int id = Convert.ToInt32(reader["id"]);
+                int start = Convert.ToInt32(reader["start"]);
+                int end = Convert.ToInt32(reader["end"]);
+                bool oneway = toBool(reader["oneway"]);
+                double weight = (double)reader["weight"];
                 List<PointD> points = new List<PointD>();
-                foreach (XElement node in way.Elements())
+                string[] substrings = ((string)reader["geometry"]).Split("&&");
+                foreach (string s in substrings)
                 {
-                    points.Add(new PointD(Double.Parse(node.Attribute("x").Value), Double.Parse(node.Attribute("y").Value)));
+                    if (s == "")
+                    {
+                        continue;
+                    }
+                    string[] values = s.Split(";");
+                    points.Add(new PointD(Convert.ToDouble(values[0]), Convert.ToDouble(values[1])));
                 }
-                GraphNode a = nodedict[start];
-                GraphNode b = nodedict[end];
-                GraphEdge newedge = new GraphEdge(id, new LineD(points.ToArray()), a, b, type, oneway);
-                edges.Add(newedge);
-                a.addGraphEdge(newedge);
-                b.addGraphEdge(newedge);
-                i++;
-                if ((i % 1000) == 0)
-                {
-                    appendNewLine("Fortschritt: " + i.ToString() + " / 105952");
-                }
+                BasicEdge newedge = new BasicEdge(id, new LineD(points.ToArray()), start, end, weight, type, oneway);
+                edgearr[id] = newedge;
             }
-            graph = new Graph(nodes, edges);
+            reader.Close();
+            conn.Close();
+            appendNewLine("Nodes: " + i.ToString() + " , Edges: " + j.ToString());
+            graph = new BasicGraph(nodearr, edgearr);
         }
 
         /// <summary>
         /// loads and initializes graph from db-graph
         /// </summary>
+        [Obsolete]
         private void _start()
         {
             SqliteConnection conn = new SqliteConnection("Data Source=data/graph.db");
             conn.Open();
             SqliteCommand cmd = conn.CreateCommand();
             //List<GraphNode> nodedict = new SortedDictionary<long, GraphNode>();
-            GraphNode[] nodearr = new GraphNode[127765];
-            BasicNode[] bnodearr = new BasicNode[127765];
+            GraphNode[] nodearr = new GraphNode[514680];
+            BasicNode[] bnodearr = new BasicNode[514680];
             cmd.CommandText = $"SELECT * FROM nodes";
             var reader = cmd.ExecuteReader();
             int i = 0;
@@ -150,8 +165,8 @@ namespace RoutingVisualizer
                 //nodedict.Add(id, newnode);
             }
             reader.Close();
-            GraphEdge[] edgearr = new GraphEdge[152295];
-            BasicEdge[] bedgearr = new BasicEdge[152295];
+            GraphEdge[] edgearr = new GraphEdge[648813];
+            BasicEdge[] bedgearr = new BasicEdge[648813];
             cmd.CommandText = $"SELECT * FROM edges";
             reader = cmd.ExecuteReader();
             int j = 0;
@@ -184,7 +199,7 @@ namespace RoutingVisualizer
                 BasicNode ba = bnodearr[start];
                 BasicNode bb = bnodearr[end];
                 GraphEdge newedge = new GraphEdge(id, new LineD(points.ToArray()), a, b, weight, type, oneway);
-                BasicEdge bnewedge = new BasicEdge(id, start, end, weight, type, oneway);
+                BasicEdge bnewedge = new BasicEdge(id, new LineD(points.ToArray()), start, end, weight, type, oneway);
                 edgearr[id] = newedge;
                 bedgearr[id] = bnewedge;
                 a.addGraphEdge(newedge);
@@ -197,8 +212,8 @@ namespace RoutingVisualizer
             appendNewLine("Nodes: " + i.ToString() + " , Edges: " + j.ToString());
             List<GraphNode> nodes = nodearr.ToList<GraphNode>();
             List<GraphEdge> edges = edgearr.ToList<GraphEdge>();
-            graph = new Graph(nodes, edges);
-            bgraph = new BasicGraph(bnodearr, bedgearr);
+            _graph = new Graph(nodes, edges);
+            graph = new BasicGraph(bnodearr, bedgearr);
         }
 
         private bool toBool(object obj)
@@ -304,32 +319,28 @@ namespace RoutingVisualizer
         {
             container.path = null;
             graph.initGraph();
-            bgraph.initGraph();
-            int startid;
-            int endid;
-            GraphNode start;
-            GraphNode end;
+            graph.initGraph();
+            int start;
+            int end;
             try
             {
-                startid = Convert.ToInt32(txtstart.Text);
-                endid = Convert.ToInt32(txtend.Text);
+                start = Convert.ToInt32(txtstart.Text);
+                end = Convert.ToInt32(txtend.Text);
             }
             catch (Exception)
             {
                 appendNewLine("pls insert valid ID");
                 return;
             }
-            if (graph.getNodeById(startid) == null || graph.getNodeById(endid) == null)
+            if (graph.getNode(start) == null || graph.getNode(end) == null)
             {
                 appendNewLine("pls insert valid Node-ID");
                 return;
             }
             else
             {
-                start = graph.getNodeById(startid);
-                end = graph.getNodeById(endid);
-                container.startnode = start.getGeometry();
-                container.endnode = end.getGeometry();
+                container.startnode = graph.getNode(start).getGeometry();
+                container.endnode = graph.getNode(end).getGeometry();
             }
             haschanged = true;
             //drawMap();
@@ -337,28 +348,28 @@ namespace RoutingVisualizer
             switch (cbxShortestPath.Text)
             {
                 case "Djkstra":
-                    algorithm = new Djkstra(start, end);
+                    algorithm = new Djkstra(this.graph, start, end);
                     break;
                 case "A*":
-                    algorithm = new AStar(start, end);
+                    algorithm = new AStar(this.graph, start, end);
                     break;
                 case "Bidirect-Djkstra":
-                    algorithm = new BidirectDjkstra(start, end);
+                    algorithm = new BidirectDjkstra(this.graph, start, end);
                     break;
                 case "Bidirect-A*":
-                    algorithm = new BidirectAStar(start, end);
+                    algorithm = new BidirectAStar(this.graph, start, end);
                     break;
                 case "Fast-A*":
-                    algorithm = new FastBidirectAStar(start, end);
+                    algorithm = new Djkstra(this.graph, start, end);
                     break;
                 case "DB-A*":
                     algorithm = new DBAStar(start, end);
                     break;
                 case "Basic-A*":
-                    algorithm = new BasicAStar(bgraph, start.getID(), end.getID()); 
+                    algorithm = new BasicAStar(this.graph, start, end); 
                     break;
                 default:
-                    algorithm = new Djkstra(start, end);
+                    algorithm = new Djkstra(this.graph, start, end);
                     break;
             }
             Stopwatch sw = new Stopwatch();
@@ -454,7 +465,7 @@ namespace RoutingVisualizer
             double distance = -1;
             long id = 0;
             double newdistance;
-            foreach (GraphNode node in graph.getGraphNodes())
+            foreach (BasicNode node in graph.getNodes())
             {
                 PointD point = node.getGeometry();
                 newdistance = Math.Sqrt(Math.Pow(clickpoint.X - point.X, 2) + Math.Pow(clickpoint.Y - point.Y, 2));
@@ -481,7 +492,7 @@ namespace RoutingVisualizer
             double distance = -1;
             long id = 0;
             double newdistance;
-            foreach (GraphNode node in graph.getGraphNodes())
+            foreach (BasicNode node in graph.getNodes())
             {
                 PointD point = node.getGeometry();
                 newdistance = Math.Sqrt(Math.Pow(clickpoint.X - point.X, 2) + Math.Pow(clickpoint.Y - point.Y, 2));

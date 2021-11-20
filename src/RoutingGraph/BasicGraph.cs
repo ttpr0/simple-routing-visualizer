@@ -19,12 +19,36 @@ namespace RoutingVisualizer.NavigationGraph
 
         public BasicNode getNode(int id)
         {
-            return nodes[id];
+            try
+            {
+                return nodes[id];
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public BasicEdge getEdge(int id)
         {
-            return edges[id];
+            try
+            {
+                return edges[id];
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public BasicNode[] getNodes()
+        {
+            return this.nodes;
+        }
+
+        public BasicEdge[] getEdges()
+        {
+            return this.edges;
         }
 
         public List<BasicEdge> getAdjacentEdges(BasicNode node)

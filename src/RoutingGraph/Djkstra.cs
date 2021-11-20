@@ -11,25 +11,27 @@ namespace RoutingVisualizer.NavigationGraph
     /// </summary>
     class Djkstra : IShortestPath
     {
-        private SortedDictionary<double, GraphNode> visited;
-        private GraphNode endnode;
-        private GraphNode startnode;
+        private SortedDictionary<double, BasicNode> visited;
+        private BasicNode endnode;
+        private BasicNode startnode;
+        private BasicGraph graph;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="start">startnode</param>
         /// <param name="end">endnode</param>
-        public Djkstra(GraphNode start, GraphNode end)
+        public Djkstra(BasicGraph graph, int start, int end)
         {
-            this.endnode = end;
-            this.startnode = start;
-            this.visited = new SortedDictionary<double, GraphNode>();
-            this.visited.Add(0, this.startnode);
+            this.graph = graph;
+            this.endnode = this.graph.getNode(end);
+            this.startnode = this.graph.getNode(start);
+            this.visited = new SortedDictionary<double, BasicNode>();
+            this.visited.Add(0, startnode);
             this.startnode.data.pathlength = 0;
         }
 
-        private GraphNode currnode;
+        private BasicNode currnode;
         private double currkey;
         /// <summary>
         /// performs one step of Djkstra algorithm
@@ -43,29 +45,29 @@ namespace RoutingVisualizer.NavigationGraph
             {
                 return false;
             }
-            foreach (GraphEdge way in currnode.getEdges())
+            foreach (BasicEdge edge in this.graph.getAdjacentEdges(currnode))
             {
-                if (way.isVisited())
+                if (edge.isVisited())
                 {
                     continue;
                 }
-                if (way.data.oneway)
+                if (edge.data.oneway)
                 {
-                    if (way.getNodeB().getID() == currnode.getID())
+                    if (edge.getNodeB() == currnode.getID())
                     {
                         continue;
                     }
                 }
-                way.setVisited(true);
-                double newlength = currkey + way.data.weight;
-                GraphNode othernode = way.getOtherNode(currnode);
+                edge.setVisited(true);
+                double newlength = currkey + edge.data.weight;
+                BasicNode othernode = this.graph.getNode(edge.getOtherNode(currnode.getID()));
                 if (othernode.data.pathlength > newlength)
                 {
                     if (othernode.data.pathlength < 1000000)
                     {
                         visited.Remove(othernode.data.pathlength);
                     }
-                    othernode.data.prevEdge = way;
+                    othernode.data.prevEdge = edge;
                     newlength = addToVisited(newlength, othernode);
                     othernode.data.pathlength = newlength;
                 }
@@ -80,7 +82,7 @@ namespace RoutingVisualizer.NavigationGraph
         /// <param name="newkey">key/pathlength of visited node</param>
         /// <param name="newnode">visited node</param>
         /// <returns>entry to dict, might differ from newkey param</returns>
-        private double addToVisited(double newkey, GraphNode newnode)
+        private double addToVisited(double newkey, BasicNode newnode)
         {
             try
             {
@@ -101,16 +103,16 @@ namespace RoutingVisualizer.NavigationGraph
         {
             List<LineD> waylist = new List<LineD>();
             currnode = endnode;
-            GraphEdge curredge;
+            BasicEdge curredge;
             while (true)
             {
                 if (currnode == startnode)
                 {
                     break;
                 }
-                curredge = (GraphEdge)currnode.data.prevEdge;
+                curredge = (BasicEdge)currnode.data.prevEdge;
                 waylist.Add(curredge.getGeometry());
-                currnode = curredge.getOtherNode(currnode);
+                currnode = this.graph.getNode(curredge.getOtherNode(currnode.getID()));
             }
             return waylist;
         }

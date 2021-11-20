@@ -11,27 +11,29 @@ namespace RoutingVisualizer.NavigationGraph
     /// </summary>
     class BidirectDjkstra : IShortestPath
     {
-        private SortedDictionary<double, GraphNode> visited_start;
-        private SortedDictionary<double, GraphNode> visited_end;
-        private GraphNode midnode;
-        private GraphNode startnode;
-        private GraphNode endnode;
+        private SortedDictionary<double, BasicNode> visited_start;
+        private SortedDictionary<double, BasicNode> visited_end;
+        private BasicNode midnode;
+        private BasicNode startnode;
+        private BasicNode endnode;
+        private BasicGraph graph;
 
-        public BidirectDjkstra(GraphNode start, GraphNode end)
+        public BidirectDjkstra(BasicGraph graph, int start, int end)
         {
-            this.startnode = start;
-            this.endnode = end;
-            this.visited_start = new SortedDictionary<double, GraphNode>();
+            this.graph = graph;
+            this.startnode = graph.getNode(start);
+            this.endnode = graph.getNode(end);
+            this.visited_start = new SortedDictionary<double, BasicNode>();
             this.visited_start.Add(0, startnode);
-            this.visited_end = new SortedDictionary<double, GraphNode>();
+            this.visited_end = new SortedDictionary<double, BasicNode>();
             this.visited_end.Add(0, endnode);
             this.startnode.data.pathlength = 0;
             this.endnode.data.pathlength2 = 0;
         }
 
-        private GraphNode currnode_start;
+        private BasicNode currnode_start;
         private double currkey_start;
-        private GraphNode currnode_end;
+        private BasicNode currnode_end;
         private double currkey_end;
         /// <summary>
         /// performs one step of algorithm (one step from each direction)
@@ -46,29 +48,29 @@ namespace RoutingVisualizer.NavigationGraph
                 this.midnode = currnode_start;
                 return false;
             }
-            foreach (GraphEdge way in currnode_start.getEdges())
+            foreach (BasicEdge edge in this.graph.getAdjacentEdges(currnode_start))
             {
-                if (way.isVisited())
+                if (edge.isVisited())
                 {
                     continue;
                 }
-                if (way.data.oneway)
+                if (edge.data.oneway)
                 {
-                    if (way.getNodeB().getID() == currnode_start.getID())
+                    if (edge.getNodeB() == currnode_start.getID())
                     {
                         continue;
                     }
                 }
-                way.setVisited(true);
-                double newlength = currkey_start + way.getWeight();
-                GraphNode othernode = way.getOtherNode(currnode_start);
+                edge.setVisited(true);
+                double newlength = currkey_start + edge.getWeight();
+                BasicNode othernode = this.graph.getNode(edge.getOtherNode(currnode_start.getID()));
                 if (othernode.data.pathlength > newlength)
                 {
                     if (othernode.data.pathlength != 1000000)
                     {
                         visited_start.Remove(othernode.data.pathlength);
                     }
-                    othernode.data.prevEdge = way;
+                    othernode.data.prevEdge = edge;
                     newlength = addToVisited(newlength, othernode, true);
                     othernode.data.pathlength = newlength;
                 }
@@ -83,29 +85,29 @@ namespace RoutingVisualizer.NavigationGraph
                 this.midnode = currnode_end;
                 return false;
             }
-            foreach (GraphEdge way in currnode_end.getEdges())
+            foreach (BasicEdge edge in this.graph.getAdjacentEdges(currnode_end))
             {
-                if (way.isVisited())
+                if (edge.isVisited())
                 {
                     continue;
                 }
-                if (way.data.oneway)
+                if (edge.data.oneway)
                 {
-                    if (way.getNodeA().getID() == currnode_end.getID())
+                    if (edge.getNodeA() == currnode_end.getID())
                     {
                         continue;
                     }
                 }
-                way.setVisited(true);
-                double newlength = currkey_end + way.getWeight();
-                GraphNode othernode = way.getOtherNode(currnode_end);
+                edge.setVisited(true);
+                double newlength = currkey_end + edge.getWeight();
+                BasicNode othernode = this.graph.getNode(edge.getOtherNode(currnode_end.getID()));
                 if (othernode.data.pathlength2 > newlength)
                 {
                     if (othernode.data.pathlength2 != 1000000)
                     {
                         visited_end.Remove(othernode.data.pathlength2);
                     }
-                    othernode.data.prevEdge2 = way;
+                    othernode.data.prevEdge2 = edge;
                     newlength = addToVisited(newlength, othernode, false);
                     othernode.data.pathlength2 = newlength;
                 }
@@ -122,7 +124,7 @@ namespace RoutingVisualizer.NavigationGraph
         /// <param name="newnode">visited node</param>
         /// <param name="start">true if direction from start</param>
         /// <returns>entry to dict, might differ from newkey param</returns>
-        private double addToVisited(double newkey, GraphNode newnode, bool start)
+        private double addToVisited(double newkey, BasicNode newnode, bool start)
         {
             try
             {
@@ -149,7 +151,7 @@ namespace RoutingVisualizer.NavigationGraph
         public List<LineD> getShortestPath()
         {
             List<LineD> waylist = new List<LineD>();
-            GraphEdge curredge;
+            BasicEdge curredge;
             currnode_start = midnode;
             while (true)
             {
@@ -157,9 +159,9 @@ namespace RoutingVisualizer.NavigationGraph
                 {
                     break;
                 }
-                curredge = (GraphEdge)currnode_start.data.prevEdge;
+                curredge = (BasicEdge)currnode_start.data.prevEdge;
                 waylist.Add(curredge.getGeometry());
-                currnode_start = curredge.getOtherNode(currnode_start);
+                currnode_start = this.graph.getNode(curredge.getOtherNode(currnode_start.getID()));
             }
             currnode_end = midnode;
             while (true)
@@ -168,9 +170,9 @@ namespace RoutingVisualizer.NavigationGraph
                 {
                     break;
                 }
-                curredge = (GraphEdge)currnode_end.data.prevEdge2;
+                curredge = (BasicEdge)currnode_end.data.prevEdge2;
                 waylist.Add(curredge.getGeometry());
-                currnode_end = curredge.getOtherNode(currnode_end);
+                currnode_end = this.graph.getNode(curredge.getOtherNode(currnode_end.getID()));
             }
             return waylist;
         }

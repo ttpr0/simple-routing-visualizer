@@ -12,6 +12,7 @@ namespace RoutingVisualizer.NavigationGraph
         private int node_a;
         private int node_b;
         private bool visited;
+        public LineD line { get; }
         /// <summary>
         /// container for attributes
         /// </summary>
@@ -25,11 +26,12 @@ namespace RoutingVisualizer.NavigationGraph
         /// <param name="b"></param>
         /// <param name="type">string representing type of street (osm-type), used to compute weight</param>
         /// <param name="oneway">true if oneway from a to b</param>
-        public BasicEdge(int id, int a, int b, double weight, string type, bool oneway)
+        public BasicEdge(int id, LineD line, int a, int b, double weight, string type, bool oneway)
         {
             this.node_a = a;
             this.node_b = b;
             this.id = id;
+            this.line = line;
             this.data.type = type;
             this.data.weight = weight;
             this.visited = false;
@@ -84,7 +86,7 @@ namespace RoutingVisualizer.NavigationGraph
 
         public LineD getGeometry()
         {
-            return new LineD();
+            return this.line;
         }
 
         public double getWeight()

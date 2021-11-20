@@ -17,7 +17,7 @@ namespace RoutingVisualizer
     class GraphMap : IMap
     {
         private Bitmap map;
-        private List<GraphEdge> edges;
+        private BasicEdge[] edges;
         private Graphics g;
 
         private SqliteConnection conn;
@@ -29,10 +29,10 @@ namespace RoutingVisualizer
         /// <param name="width">width of Map</param>
         /// <param name="height">height of Map</param>
         /// <param name="graph">list of GraphEdges to be drawn</param>
-        public GraphMap(int width, int height, Graph graph)
+        public GraphMap(int width, int height, BasicGraph graph)
         {
             this.map = new Bitmap(width, height);
-            this.edges = graph.getGraphEdges();
+            this.edges = graph.getEdges();
             this.g = Graphics.FromImage(this.map);
 
             this.conn = new SqliteConnection("Data Source=data/graph.db");
@@ -53,7 +53,7 @@ namespace RoutingVisualizer
         {
             double tilesize = 40075016.69 / Math.Pow(2, zoom);
             this.upperleft = upperleft;
-            foreach (GraphEdge edge in edges)
+            foreach (BasicEdge edge in edges)
             {
                 if (edge.isVisited() && !edge.data.drawn)
                 {

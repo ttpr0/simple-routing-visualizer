@@ -9,6 +9,7 @@ namespace RoutingVisualizer.NavigationGraph
     /// <summary>
     /// graph class
     /// </summary>
+    [Obsolete]
     class Graph
     {
         List<GraphEdge> edges;

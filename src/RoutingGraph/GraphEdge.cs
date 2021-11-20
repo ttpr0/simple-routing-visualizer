@@ -9,6 +9,7 @@ namespace RoutingVisualizer.NavigationGraph
     /// <summary>
     /// edge of Graph
     /// </summary>
+    [Obsolete]
     class GraphEdge : IEdge
     {
         private int id;

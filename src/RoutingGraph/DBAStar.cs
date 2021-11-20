@@ -21,11 +21,11 @@ namespace RoutingVisualizer.NavigationGraph
         /// </summary>
         /// <param name="start">startnode</param>
         /// <param name="end">endnode</param>
-        public DBAStar(GraphNode start, GraphNode end)
+        public DBAStar(int start, int end)
         {
             this.graph = new DBGraph("data/graph.db");
-            this.startnode = this.graph.getGraphNodeByID(start.getID());
-            this.endnode = this.graph.getGraphNodeByID(end.getID());
+            this.startnode = this.graph.getGraphNodeByID(start);
+            this.endnode = this.graph.getGraphNodeByID(end);
             this.visited = new SortedDictionary<double, DBGraphNode>();
             this.visited.Add(0, startnode);
             startnode.data.pathlength = 0;

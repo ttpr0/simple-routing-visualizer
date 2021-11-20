@@ -24,6 +24,16 @@ namespace RoutingVisualizer.NavigationGraph
             this.data.pathlength = 10000000.00;
             this.data.pathlength2 = 10000000.00;
         }
+        public BasicNode(int id, PointD point, List<int> edges)
+        {
+            this.id = id;
+            this.point = point;
+            this.visited = false;
+            this.edges = edges;
+            this.data = new NodeData();
+            this.data.pathlength = 10000000.00;
+            this.data.pathlength2 = 10000000.00;
+        }
 
         public int getID()
         {
@@ -48,6 +58,11 @@ namespace RoutingVisualizer.NavigationGraph
         public List<int> getEdges()
         {
             return this.edges;
+        }
+
+        public PointD getGeometry()
+        {
+            return this.point;
         }
     }
 }
