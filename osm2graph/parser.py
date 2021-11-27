@@ -2,6 +2,7 @@ import sqlite3 as sql
 from typing import List, Dict
 import osmium as osm
 import math
+import argparse
 
 class Edge():
     def __init__(self, id:int, start:int, end:int, oneway:bool, weight:float, _type:str, geometry:list):
@@ -33,18 +34,21 @@ class Node():
         self.lat = lat
         self.edges = []
 
-osmways:List[OsmWay] = []
-noderefs:Dict[int, int] = dict()
-osmnodes:Dict[int, OsmNode] = dict()
-nodes:Dict[int, Node] = dict()
-
 class WayHandler(osm.SimpleHandler):
-    def __init__(self):
+    def __init__(self, osmways, noderefs, graphtype):
         super(WayHandler, self).__init__()
         self.i = 0
-
+        self.osmways = osmways
+        self.noderefs = noderefs
+        if graphtype == "car":
+            self.types = ["motorway","motorway_link","trunk","trunk_link",
+            "primary","primary_link","secondary","secondary_link","tertiary","tertiary_link",
+            "residential","living_street","service","track"]
     def way(self, w):
         if "highway" not in w.tags:
+            return
+        _type = w.tags.get("highway")
+        if _type not in self.types:
             return
         self.i += 1
         if self.i % 1000 == 0:
@@ -57,32 +61,35 @@ class WayHandler(osm.SimpleHandler):
         _type = w.tags.get("highway")
         templimit = w.tags.get("maxspeed")
         way = OsmWay(oneway, _type, templimit, nds)
-        osmways.append(way)
+        self.osmways.append(way)
         for n in range(0,len(nds)):
             nd = nds[n]
-            if nd not in noderefs:
-                noderefs[nd] = 0
+            if nd not in self.noderefs:
+                self.noderefs[nd] = 0
             if n == 0 or n == len(nds)-1:
-                noderefs[nd] += 1
+                self.noderefs[nd] += 1
 
 class NodeHandler(osm.SimpleHandler):
-    def __init__(self):
+    def __init__(self, noderefs, osmnodes, nodes):
         super(NodeHandler, self).__init__()
         self.i = 0
         self.c = 0
+        self.noderefs = noderefs
+        self.osmnodes = osmnodes
+        self.nodes = nodes
     def node(self, n):
-        if n.id in noderefs:
+        if n.id in self.noderefs:
             id = n.id
             lon = n.location.lon
             lat = n.location.lat
-            if  noderefs[n.id] == 0:
+            if  self.noderefs[n.id] == 0:
                 node = OsmNode(lon, lat, False)
-                osmnodes[id] = node
+                self.osmnodes[id] = node
             else:
                 node = OsmNode(lon, lat, True)
-                osmnodes[id] = node
+                self.osmnodes[id] = node
                 node = Node(self.c, lon, lat)
-                nodes[id] = node
+                self.nodes[id] = node
                 self.c += 1
             self.i += 1
             if self.i % 1000 == 0:
@@ -93,7 +100,18 @@ class Graph():
         self.nodes = nodes
         self.edges = edges
         self.i = 0
-        
+
+def extract_graph(file:str, type:str) -> Graph:
+    osmways:List[OsmWay] = []
+    noderefs:Dict[int, int] = dict()
+    osmnodes:Dict[int, OsmNode] = dict()
+    nodes:Dict[int, Node] = dict()
+    h = WayHandler(osmways, noderefs, type)
+    h.apply_file(file)
+    h = NodeHandler(noderefs, osmnodes, nodes)
+    h.apply_file(file)
+    return create_graph(osmways, osmnodes, nodes)
+
 def create_graph(osmways:List[OsmWay], osmnodes:Dict[int, OsmNode], nodes:Dict[int, Node]) -> Graph:
     c = 0
     edges = []
@@ -179,8 +197,8 @@ def transform_mercator(lon:float, lat:float) -> tuple:
     y = a*math.log(math.tan(math.pi/4 + lat*math.pi/360))
     return (x,y)
 
-def create_graph_db(graph:Graph):
-    conn = sql.connect("graph.db")
+def create_graph_db(graph:Graph, output:str):
+    conn = sql.connect(output)
     c = conn.cursor()
     c.execute("DROP TABLE IF EXISTS edges")
     c.execute("""CREATE TABLE edges(
@@ -218,14 +236,40 @@ def create_graph_db(graph:Graph):
     conn.commit()
     conn.close()
 
-h = WayHandler()
-h.apply_file(".\data\sachsen-anhalt.o5m")
+def main(args):
+    args.type = "car"
+    graph = extract_graph(".\data\sachsen-anhalt.o5m", args.type)
+    if args.output is None:
+        args.output = "graph.db"
+    create_graph_db(graph, args.output)
 
-h = NodeHandler()
-h.apply_file(".\data\sachsen-anhalt.o5m")
+parser = argparse.ArgumentParser(description="define output graph")
 
-graph = create_graph(osmways, osmnodes, nodes)
-create_graph_db(graph)
+parser.add_argument(
+    '-i'
+    '--input',
+    type=str,
+    help="specify path to input file"
+)
+
+parser.add_argument(
+    '-o',
+    '--output',
+    type=str,
+    help="specify name of output, default same as input"
+)
+
+parser.add_argument(
+    '-t',
+    '--type',
+    type=str,
+    help="specify type of graph (car, bicycle, pedestrian), default car"
+)
+
+args = parser.parse_args()
+
+main(args)
+
 
 """
 for i in range(0, 10):
