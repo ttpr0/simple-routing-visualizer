@@ -69,8 +69,8 @@ namespace RoutingVisualizer.NavigationGraph
             foreach (GraphNode node in nodes)
             {
                 node.setVisited(false);
-                node.data.pathlength = 1000000;
-                node.data.pathlength2 = 1000000;
+                node.data.pathlength = 1000000000;
+                node.data.pathlength2 = 1000000000;
             }
             foreach (GraphEdge edge in edges)
             {

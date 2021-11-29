@@ -80,7 +80,7 @@ namespace RoutingVisualizer
             conn.Open();
             SqliteCommand cmd = conn.CreateCommand();
             //List<GraphNode> nodedict = new SortedDictionary<long, GraphNode>();
-            BasicNode[] nodearr = new BasicNode[514680];
+            BasicNode[] nodearr = new BasicNode[383830];
             cmd.CommandText = $"SELECT * FROM nodes";
             var reader = cmd.ExecuteReader();
             int i = 0;
@@ -104,7 +104,7 @@ namespace RoutingVisualizer
                 nodearr[id] = newnode;
             }
             reader.Close();
-            BasicEdge[] edgearr = new BasicEdge[648813];
+            BasicEdge[] edgearr = new BasicEdge[455407];
             cmd.CommandText = $"SELECT * FROM edges";
             reader = cmd.ExecuteReader();
             int j = 0;
@@ -147,8 +147,8 @@ namespace RoutingVisualizer
             conn.Open();
             SqliteCommand cmd = conn.CreateCommand();
             //List<GraphNode> nodedict = new SortedDictionary<long, GraphNode>();
-            GraphNode[] nodearr = new GraphNode[514680];
-            BasicNode[] bnodearr = new BasicNode[514680];
+            GraphNode[] nodearr = new GraphNode[383830];
+            BasicNode[] bnodearr = new BasicNode[383830];
             cmd.CommandText = $"SELECT * FROM nodes";
             var reader = cmd.ExecuteReader();
             int i = 0;
@@ -165,8 +165,8 @@ namespace RoutingVisualizer
                 //nodedict.Add(id, newnode);
             }
             reader.Close();
-            GraphEdge[] edgearr = new GraphEdge[648813];
-            BasicEdge[] bedgearr = new BasicEdge[648813];
+            GraphEdge[] edgearr = new GraphEdge[455407];
+            BasicEdge[] bedgearr = new BasicEdge[455407];
             cmd.CommandText = $"SELECT * FROM edges";
             reader = cmd.ExecuteReader();
             int j = 0;
@@ -360,6 +360,7 @@ namespace RoutingVisualizer
                     algorithm = new BidirectAStar(this.graph, start, end);
                     break;
                 case "Fast-A*":
+                    //algorithm = new FastBidirectAStar(_graph.getNodeById(start), _graph.getNodeById(end));
                     algorithm = new Djkstra(this.graph, start, end);
                     break;
                 case "DB-A*":
