@@ -12,8 +12,11 @@ using System.IO;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
-using RoutingVisualizer.NavigationGraph;
-using RoutingVisualizer.TileMapRenderer;
+using Simple.GeoData;
+using Simple.Routing.Graph;
+using Simple.Routing.ShortestPath;
+using Simple.Maps;
+using Simple.Maps.TileMap; 
 using Microsoft.Data.Sqlite;
 
 namespace RoutingVisualizer
@@ -524,38 +527,6 @@ namespace RoutingVisualizer
                 ctmpbx.Show(pbxout, e.Location);
             }
             haschanged = true;
-        }
-    }
-
-    struct Way
-    {
-        public LineD line;
-        public string type;
-        public Way(PointD[] points, string type)
-        {
-            this.line = new LineD(points);
-            this.type = type;
-        }
-    }
-
-    struct LineD
-    {
-        public PointD[] points { get; }
-        public LineD(PointD[] points)
-        {
-            this.points = points;
-        }
-    }
-
-    struct PointD
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
-
-        public PointD(double x, double y)
-        {
-            this.X = x;
-            this.Y = y;
         }
     }
 }
