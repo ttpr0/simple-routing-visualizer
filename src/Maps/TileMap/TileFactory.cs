@@ -17,7 +17,7 @@ namespace Simple.Maps.TileMap
     {
         private Dictionary<string, Tile> tilecache;
         private TileDataFactory datacache;
-
+        public Action changed;
         /// <summary>
         /// Constructor
         /// </summary>
@@ -62,7 +62,7 @@ namespace Simple.Maps.TileMap
             if (z <= 14 && z >= 8)
             {
                 Bitmap map = datacache.getTileBitmap(x, y, z);
-                NavForm.changed();
+                this.changed();
                 if (map == null)
                 {
                     return;
@@ -70,7 +70,7 @@ namespace Simple.Maps.TileMap
                 try
                 {
                     tilecache.Add(key, new Tile(x, y, z, map));
-                    NavForm.changed();
+                    this.changed();
                 }
                 catch (Exception)
                 {
@@ -85,7 +85,7 @@ namespace Simple.Maps.TileMap
             try
             {
                 tilecache.Add(key, new Tile(x, y, z, tiledata));
-                NavForm.changed();
+                this.changed();
             }
             catch (Exception)
             {

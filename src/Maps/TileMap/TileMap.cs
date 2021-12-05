@@ -34,6 +34,11 @@ namespace Simple.Maps.TileMap
             this.tilefactory = new TileFactory(new TileDataFactory(origin));
         }
 
+        public TileFactory getFactory()
+        {
+            return this.tilefactory;
+        }
+
         /// <summary>
         /// creates Map from Map-Tiles
         /// </summary>

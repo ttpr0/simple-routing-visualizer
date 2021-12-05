@@ -26,11 +26,11 @@ namespace RoutingVisualizer
     /// </summary>
     public partial class NavForm : Form
     {
-        private static bool haschanged;
+        private bool haschanged;
         /// <summary>
         /// used to trigger map to be redrawn
         /// </summary>
-        public static void changed()
+        private void changed()
         {
             haschanged = true;
         }
@@ -65,6 +65,7 @@ namespace RoutingVisualizer
             txtend.Text = "20000";
             cbxShortestPath.Text = "Djkstra";
             this.tilemap = new TileMap(1000, 600);
+            this.tilemap.getFactory().changed += this.changed;
             this.start();
             container.startnode = graph.getNode(Convert.ToInt32(txtstart.Text)).getGeometry();
             container.endnode = graph.getNode(Convert.ToInt32(txtend.Text)).getGeometry();
