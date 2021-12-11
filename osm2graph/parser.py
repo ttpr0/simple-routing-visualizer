@@ -3,6 +3,8 @@ from typing import List, Dict
 import osmium as osm
 import math
 import argparse
+import os
+import struct
 
 class Edge():
     def __init__(self, id:int, start:int, end:int, oneway:bool, weight:float, _type:str, geometry:list):
@@ -236,12 +238,53 @@ def create_graph_db(graph:Graph, output:str):
     conn.commit()
     conn.close()
 
+def create_graph_file(graph:Graph, output:str):
+    print("test")
+    file = open(output, 'wb')
+    nodecount = len(graph.nodes)
+    file.write(struct.pack("i", nodecount))
+    for node in graph.nodes:
+        coords = transform_mercator(node.lon, node.lat)
+        file.write(struct.pack("d", coords[0]))
+        file.write(struct.pack("d", coords[1]))
+        edgecount = len(node.edges)
+        file.write(struct.pack("i", edgecount))
+        for edge in node.edges:
+            file.write(struct.pack("i", edge))
+    edgecount = len(graph.edges)
+    file.write(struct.pack("i", edgecount))
+    for edge in graph.edges:
+        file.write(struct.pack("i", edge.start))
+        file.write(struct.pack("i", edge.end))
+        file.write(struct.pack("d", edge.weight))
+        file.write(struct.pack("?", edge.oneway))
+        nodecount = len(edge.geometry)
+        file.write(struct.pack("i", nodecount))
+        for node in edge.geometry:
+            coords = transform_mercator(node.lon, node.lat)
+            file.write(struct.pack("d", coords[0]))
+            file.write(struct.pack("d", coords[1]))
+    file.close()
+
 def main(args):
-    args.type = "car"
-    graph = extract_graph(".\data\sachsen-anhalt.o5m", args.type)
+    if args.type is None:
+        args.type = "car"
+    if args.type not in ["car"]:
+        print("pls specify a valid type (default car)")
+        return
+    args.input = ".\data\sachsen-anhalt.o5m"
+    if not os.path.isfile(args.input):
+        print("pls specify a valid input")
+        return
+    inputname = os.path.basename(args.input).split(".")[0]
+    inputfiletype = os.path.basename(args.input).split(".")[1]
+    if inputfiletype not in ["osm", "o5m", "pbf"]:
+        print("the given input is in the wrong format")
+        return
+    graph = extract_graph(args.input, args.type)
     if args.output is None:
-        args.output = "graph.db"
-    create_graph_db(graph, args.output)
+        args.output = inputname + ".graph"
+    create_graph_file(graph, args.output)
 
 parser = argparse.ArgumentParser(description="define output graph")
 
@@ -249,14 +292,14 @@ parser.add_argument(
     '-i'
     '--input',
     type=str,
-    help="specify path to input file"
+    help="specify path to input file (.osm/.o5m/.pbf)"
 )
 
 parser.add_argument(
     '-o',
     '--output',
     type=str,
-    help="specify name of output, default same as input"
+    help="specify path to output file (.graph/.db)"
 )
 
 parser.add_argument(
