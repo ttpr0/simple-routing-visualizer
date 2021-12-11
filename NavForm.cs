@@ -38,7 +38,6 @@ namespace RoutingVisualizer
         private TileMap tilemap;
         private GraphMap graphmap;
         private UtilityMap utilitymap;
-        private Graph _graph;
         private BasicGraph graph;
         private PointD upperleft = new PointD(1314905, 6716660);
         private int zoom = 12;
@@ -76,9 +75,10 @@ namespace RoutingVisualizer
         }
 
         /// <summary>
-        /// loads and initializes graph from xml file
+        /// loads and initializes graph from db-graph
         /// </summary>
-        private void start()
+        [Obsolete]
+        private void _start()
         {
             SqliteConnection conn = new SqliteConnection("Data Source=data/graph.db");
             conn.Open();
@@ -142,82 +142,51 @@ namespace RoutingVisualizer
         }
 
         /// <summary>
-        /// loads and initializes graph from db-graph
+        /// loads and initializes graph from graph file
         /// </summary>
-        [Obsolete]
-        private void _start()
+        private void start()
         {
-            SqliteConnection conn = new SqliteConnection("Data Source=data/graph.db");
-            conn.Open();
-            SqliteCommand cmd = conn.CreateCommand();
-            //List<GraphNode> nodedict = new SortedDictionary<long, GraphNode>();
-            GraphNode[] nodearr = new GraphNode[383830];
-            BasicNode[] bnodearr = new BasicNode[383830];
-            cmd.CommandText = $"SELECT * FROM nodes";
-            var reader = cmd.ExecuteReader();
-            int i = 0;
-            while (reader.Read())
+            Byte[] data = File.ReadAllBytes("data/sachsen-anhalt.graph");
+            MemoryStream ms = new MemoryStream(data);
+            BinaryReader br = new BinaryReader(ms);
+            int nodecount = br.ReadInt32();
+            BasicNode[] nodearr = new BasicNode[nodecount];
+            for (int i = 0; i < nodecount; i++)
             {
-                i++;
-                int id = Convert.ToInt32(reader["id"]);
-                double x = (double)reader["x"];
-                double y = (double)reader["y"];
-                GraphNode newnode = new GraphNode(id, new PointD(x, y));
-                BasicNode bnewnode = new BasicNode(id, new PointD(x,y));
-                nodearr[id] = newnode;
-                bnodearr[id] = bnewnode;
-                //nodedict.Add(id, newnode);
-            }
-            reader.Close();
-            GraphEdge[] edgearr = new GraphEdge[455407];
-            BasicEdge[] bedgearr = new BasicEdge[455407];
-            cmd.CommandText = $"SELECT * FROM edges";
-            reader = cmd.ExecuteReader();
-            int j = 0;
-            while (reader.Read())
-            {
-                j++;
-                string type = (string)reader["type"];
-                int id = Convert.ToInt32(reader["id"]);
-                int start = Convert.ToInt32(reader["start"]);
-                int end = Convert.ToInt32(reader["end"]);
-                bool oneway = toBool(reader["oneway"]);
-                double weight = (double)reader["weight"];
-                List<PointD> points = new List<PointD>();
-                
-                string[] substrings = ((string)reader["geometry"]).Split("&&");
-                foreach (string s in substrings)
+                int id = i;
+                double x = br.ReadDouble();
+                double y = br.ReadDouble(); 
+                List<int> edges = new List<int>();
+                int c = br.ReadInt32();
+                for (int j = 0; j < c; j++)
                 {
-                    if (s == "")
-                    {
-                        continue;
-                    }
-                    string[] values = s.Split(";");
-                    points.Add(new PointD(Convert.ToDouble(values[0]), Convert.ToDouble(values[1])));
+                    edges.Add(br.ReadInt32());
                 }
-                
-                //GraphNode a = nodedict[start];
-                //GraphNode b = nodedict[end];
-                GraphNode a = nodearr[start];
-                GraphNode b = nodearr[end];
-                BasicNode ba = bnodearr[start];
-                BasicNode bb = bnodearr[end];
-                GraphEdge newedge = new GraphEdge(id, new LineD(points.ToArray()), a, b, weight, type, oneway);
-                BasicEdge bnewedge = new BasicEdge(id, new LineD(points.ToArray()), start, end, weight, type, oneway);
-                edgearr[id] = newedge;
-                bedgearr[id] = bnewedge;
-                a.addGraphEdge(newedge);
-                b.addGraphEdge(newedge);
-                ba.addEdge(bnewedge.getID());
-                bb.addEdge(bnewedge.getID());
+                BasicNode newnode = new BasicNode(id, new PointD(x, y), edges);
+                nodearr[id] = newnode;
             }
-            reader.Close();
-            conn.Close();
-            appendNewLine("Nodes: " + i.ToString() + " , Edges: " + j.ToString());
-            List<GraphNode> nodes = nodearr.ToList<GraphNode>();
-            List<GraphEdge> edges = edgearr.ToList<GraphEdge>();
-            _graph = new Graph(nodes, edges);
-            graph = new BasicGraph(bnodearr, bedgearr);
+            int edgecount = br.ReadInt32();
+            BasicEdge[] edgearr = new BasicEdge[edgecount];
+            for (int i = 0; i < edgecount; i++)
+            {
+                int id = i;
+                int start = br.ReadInt32();
+                int end = br.ReadInt32();
+                double weight = br.ReadDouble();
+                bool oneway = br.ReadBoolean();
+                string type = "residential";
+                List<PointD> points = new List<PointD>();
+                int c = br.ReadInt32();
+                for (int j = 0; j < c; j++)
+                {
+                    double x = br.ReadDouble();
+                    double y = br.ReadDouble();
+                    points.Add(new PointD(x, y));
+                }
+                BasicEdge newedge = new BasicEdge(id, new LineD(points.ToArray()), start, end, weight, type, oneway);
+                edgearr[id] = newedge;
+            }
+            graph = new BasicGraph(nodearr, edgearr);
         }
 
         private bool toBool(object obj)
@@ -289,19 +258,6 @@ namespace RoutingVisualizer
             }
             pbxout.Image = screen;
             pbxout.Refresh();
-        }
-
-        /// <summary>
-        /// used to read xml file
-        /// </summary>
-        /// <param name="filename">location of xml file</param>
-        /// <param name="elementname">name of base element of xml file</param>
-        /// <returns>XElement containign xml data from file</returns>
-        private XElement readXmlFile(string filename, string elementname)
-        {
-            string xmlfile = File.ReadAllText(filename);
-            XDocument doc = XDocument.Parse(xmlfile);
-            return doc.Element(elementname);
         }
 
         /// <summary>

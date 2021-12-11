@@ -28,6 +28,9 @@
     <None Update="data\graphways.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="data\sachsen-anhalt.graph">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="data\tiles.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
