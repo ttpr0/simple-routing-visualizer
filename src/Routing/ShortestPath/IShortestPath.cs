@@ -10,10 +10,18 @@ namespace Simple.Routing.ShortestPath
     interface IShortestPath
     {
         /// <summary>
-        /// preforms one step of path-finding algorithm
+        /// calculates shortest path
         /// </summary>
+        /// <returns>true if successfull</returns>
+        public bool calcShortestPath();
+
+        /// <summary>
+        /// performs a number of steps, visited edges are stored in list
+        /// </summary>
+        /// <param name="count">number of steps to be perfomed</param>
+        /// <param name="visitededges">visited edges are added to this list</param>
         /// <returns>false if finished</returns>
-        public bool step();
+        public bool steps(int count, List<LineD> visitededges);
 
         /// <summary>
         /// should only be used after path-finding completed

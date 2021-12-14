@@ -73,7 +73,6 @@ namespace Simple.Routing.Graph
             foreach (BasicEdge edge in edges)
             {
                 edge.setVisited(false);
-                edge.data.drawn = false;
             }
         }
     }

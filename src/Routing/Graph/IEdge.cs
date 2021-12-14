@@ -24,7 +24,6 @@ namespace Simple.Routing.Graph
 
     struct EdgeData
     {
-        public bool drawn;
         public bool oneway;
         public double weight;
         public string type;

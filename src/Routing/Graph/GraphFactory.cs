@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Simple.GeoData;
 using System.IO;
 using Microsoft.Data.Sqlite;
+using System.Diagnostics;
 
 namespace Simple.Routing.Graph
 {

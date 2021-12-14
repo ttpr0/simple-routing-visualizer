@@ -69,7 +69,7 @@ namespace RoutingVisualizer
             this.graph = f.loadGraphFromFile("data/sachsen-anhalt.graph");
             container.startnode = graph.getNode(Convert.ToInt32(txtstart.Text)).getGeometry();
             container.endnode = graph.getNode(Convert.ToInt32(txtend.Text)).getGeometry();
-            this.graphmap = new GraphMap(1000, 600, this.graph);
+            this.graphmap = new GraphMap(1000, 600);
             this.utilitymap = new UtilityMap(1000, 600, this.container);
             haschanged = true;
             //drawMap();
@@ -200,10 +200,12 @@ namespace RoutingVisualizer
                     algorithm = new Djkstra(this.graph, start, end);
                     break;
                 case "DB-A*":
-                    algorithm = new DBAStar(start, end);
+                    //algorithm = new DBAStar(start, end);
+                    algorithm = new Djkstra(this.graph, start, end);
                     break;
                 case "Basic-A*":
-                    algorithm = new BasicAStar(this.graph, start, end); 
+                    //algorithm = new BasicAStar(this.graph, start, end);
+                    algorithm = new Djkstra(this.graph, start, end);
                     break;
                 default:
                     algorithm = new Djkstra(this.graph, start, end);
@@ -217,17 +219,14 @@ namespace RoutingVisualizer
                 this.drawrouting = true;
             }
             int j = 500;
-            int i = 0;
-            while (algorithm.step())
+            List<LineD> lines = new List<LineD>();
+            while (algorithm.steps(j, lines))
             {
                 if (draw)
                 {
-                    i++;
-                    if ((i % j) == 0)
-                    { 
-                        drawMap();
-                        j += 500;
-                    }
+                    this.graphmap.addLines(lines);
+                    drawMap();
+                    lines.Clear();
                 }
             }
             sw.Stop();

@@ -11,7 +11,7 @@ namespace Simple.Routing.ShortestPath
     /// <summary>
     /// multithreaded version of bidirectional A*
     /// </summary>
-    class FastBidirectAStar : IShortestPath
+    class FastBidirectAStar
     {
         private SortedDictionary<double, GraphNode> visited_start;
         private SortedDictionary<double, GraphNode> visited_end;

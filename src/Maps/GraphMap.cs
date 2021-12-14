@@ -18,11 +18,8 @@ namespace Simple.Maps
     class GraphMap : IMap
     {
         private Bitmap map;
-        private BasicEdge[] edges;
         private Graphics g;
-
-        private SqliteConnection conn;
-        private SqliteCommand cmd;
+        private List<LineD> lines;
 
         /// <summary>
         /// Constructor
@@ -30,15 +27,10 @@ namespace Simple.Maps
         /// <param name="width">width of Map</param>
         /// <param name="height">height of Map</param>
         /// <param name="graph">list of GraphEdges to be drawn</param>
-        public GraphMap(int width, int height, BasicGraph graph)
+        public GraphMap(int width, int height)
         {
             this.map = new Bitmap(width, height);
-            this.edges = graph.getEdges();
             this.g = Graphics.FromImage(this.map);
-
-            this.conn = new SqliteConnection("Data Source=data/graph.db");
-            conn.Open();
-            this.cmd = conn.CreateCommand();
         }
 
         private Pen visitedpen = new Pen(Color.MediumVioletRed, 2);
@@ -54,18 +46,14 @@ namespace Simple.Maps
         {
             double tilesize = 40075016.69 / Math.Pow(2, zoom);
             this.upperleft = upperleft;
-            foreach (BasicEdge edge in edges)
+            foreach (LineD line in this.lines)
             {
-                if (edge.isVisited() && !edge.data.drawn)
+                Point[] points = new Point[line.points.Length];
+                for (int j = 0; j < line.points.Length; j++)
                 {
-                    Point[] points = new Point[edge.line.points.Length];
-                    for (int j = 0; j < edge.line.points.Length; j++)
-                    {
-                        points[j] = realToScreen(edge.line.points[j], tilesize);
-                    }
-                    g.DrawLines(visitedpen, points);
-                    edge.data.drawn = true;
+                    points[j] = realToScreen(line.points[j], tilesize);
                 }
+                g.DrawLines(visitedpen, points);
             }
             return this.map;
         }
@@ -84,6 +72,11 @@ namespace Simple.Maps
             double x = (point.X - upperleft.X) * 256 / tilesize;
             double y = -(point.Y - upperleft.Y) * 256 / tilesize;
             return new Point((int)x, (int)y);
+        }
+
+        public void addLines(List<LineD> lines)
+        {
+            this.lines = lines;
         }
     }
 }
