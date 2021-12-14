@@ -156,9 +156,10 @@ namespace Simple.Routing.ShortestPath
         /// use only after path finsing finished
         /// </summary>
         /// <returns>list of LineD representing shortest path</returns>
-        public List<LineD> getShortestPath()
+        public Path getShortestPath()
         {
-            List<LineD> waylist = new List<LineD>();
+            List<LineD> geometry = new List<LineD>();
+            List<int> edges = new List<int>();
             currnode = endnode;
             BasicEdge curredge;
             while (true)
@@ -168,10 +169,10 @@ namespace Simple.Routing.ShortestPath
                     break;
                 }
                 curredge = (BasicEdge)currnode.data.prevEdge;
-                waylist.Add(curredge.getGeometry());
+                geometry.Add(curredge.getGeometry());
                 currnode = this.graph.getNode(curredge.getOtherNode(currnode.getID()));
             }
-            return waylist;
+            return new Path(edges, geometry);
         }
     }
 }

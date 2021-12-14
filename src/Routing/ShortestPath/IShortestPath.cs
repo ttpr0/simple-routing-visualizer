@@ -27,6 +27,6 @@ namespace Simple.Routing.ShortestPath
         /// should only be used after path-finding completed
         /// </summary>
         /// <returns>list of lines representing shortest path</returns>
-        public List<LineD> getShortestPath();
+        public Path getShortestPath();
     }
 }

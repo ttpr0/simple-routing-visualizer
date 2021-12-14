@@ -47,7 +47,7 @@ namespace Simple.Maps
             this.upperleft = upperleft;
             if (container.path != null)
             {
-                foreach (LineD line in container.path)
+                foreach (LineD line in container.path.getGeometry())
                 {
                     Point[] points = new Point[line.points.Length];
                     for (int j = 0; j < line.points.Length; j++)
