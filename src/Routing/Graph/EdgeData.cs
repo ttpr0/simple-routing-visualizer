@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace Simple.Routing.Graph
 {
-    interface INode
+    struct EdgeData
     {
-        int getID();
-        void setVisited(bool visited);
-        bool isVisited();
+        public bool oneway;
+        public double weight;
+        public string type;
+        public bool important;
     }
 }

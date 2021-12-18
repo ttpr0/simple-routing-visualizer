@@ -21,12 +21,4 @@ namespace Simple.Routing.Graph
 
         public bool isVisited();
     }
-
-    struct EdgeData
-    {
-        public bool oneway;
-        public double weight;
-        public string type;
-        public bool important;
-    }
 }
