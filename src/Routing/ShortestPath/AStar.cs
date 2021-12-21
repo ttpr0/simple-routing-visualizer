@@ -40,43 +40,96 @@ namespace Simple.Routing.ShortestPath
         /// sets visited GraphEdges to visited
         /// </summary>
         /// <returns>false if shortest path is found</returns>
-        public bool step()
+        public bool calcShortestPath()
         {
-            currkey = visited.Keys.First();
-            currnode = visited[currkey];
-            if (currnode == endnode)
+            while (true)
             {
-                return false;
-            }
-            foreach (BasicEdge edge in this.graph.getAdjacentEdges(currnode))
-            {
-                if (edge.isVisited())
+                try
                 {
-                    continue;
+                    currkey = visited.Keys.First();
+                    currnode = visited[currkey];
                 }
-                if (edge.data.oneway)
+                catch (Exception)
                 {
-                    if (edge.getNodeB() == currnode.getID())
+                    return false;
+                }
+                if (currnode == endnode)
+                {
+                    return true;
+                }
+                foreach (BasicEdge edge in this.graph.getAdjacentEdges(currnode))
+                {
+                    if (edge.isVisited())
                     {
                         continue;
                     }
-                }
-                edge.setVisited(true);
-                BasicNode othernode = this.graph.getNode(edge.getOtherNode(currnode.getID()));
-                othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
-                double newlength = currnode.data.pathlength - currnode.data.distance + edge.getWeight() + othernode.data.distance;
-                if (othernode.data.pathlength > newlength)
-                {
-                    if (othernode.data.pathlength < 1000000)
+                    if (edge.data.oneway)
                     {
-                        visited.Remove(othernode.data.pathlength);
+                        if (edge.getNodeB() == currnode.getID())
+                        {
+                            continue;
+                        }
                     }
-                    othernode.data.prevEdge = edge;
-                    newlength = addToVisited(newlength, othernode);
-                    othernode.data.pathlength = newlength;
+                    edge.setVisited(true);
+                    BasicNode othernode = this.graph.getNode(edge.getOtherNode(currnode.getID()));
+                    othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
+                    double newlength = currnode.data.pathlength - currnode.data.distance + edge.getWeight() + othernode.data.distance;
+                    if (othernode.data.pathlength > newlength)
+                    {
+                        if (othernode.data.pathlength < 1000000000)
+                        {
+                            visited.Remove(othernode.data.pathlength);
+                        }
+                        othernode.data.prevEdge = edge;
+                        newlength = addToVisited(newlength, othernode);
+                        othernode.data.pathlength = newlength;
+                    }
                 }
+                visited.Remove(currkey);
             }
-            visited.Remove(currkey);
+        }
+
+        public bool steps(int count, List<LineD> visitededges)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                currkey = visited.Keys.First();
+                currnode = visited[currkey];
+                if (currnode == endnode)
+                {
+                    return false;
+                }
+                foreach (BasicEdge edge in this.graph.getAdjacentEdges(currnode))
+                {
+                    if (edge.isVisited())
+                    {
+                        continue;
+                    }
+                    if (edge.data.oneway)
+                    {
+                        if (edge.getNodeB() == currnode.getID())
+                        {
+                            continue;
+                        }
+                    }
+                    edge.setVisited(true);
+                    visitededges.Add(edge.getGeometry());
+                    BasicNode othernode = this.graph.getNode(edge.getOtherNode(currnode.getID()));
+                    othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
+                    double newlength = currnode.data.pathlength - currnode.data.distance + edge.getWeight() + othernode.data.distance;
+                    if (othernode.data.pathlength > newlength)
+                    {
+                        if (othernode.data.pathlength < 1000000000)
+                        {
+                            visited.Remove(othernode.data.pathlength);
+                        }
+                        othernode.data.prevEdge = edge;
+                        newlength = addToVisited(newlength, othernode);
+                        othernode.data.pathlength = newlength;
+                    }
+                }
+                visited.Remove(currkey);
+            }
             return true;
         }
 
@@ -103,9 +156,10 @@ namespace Simple.Routing.ShortestPath
         /// use only after path finsing finished
         /// </summary>
         /// <returns>list of LineD representing shortest path</returns>
-        public List<LineD> getShortestPath()
+        public Path getShortestPath()
         {
-            List<LineD> waylist = new List<LineD>();
+            List<LineD> geometry = new List<LineD>();
+            List<int> edges = new List<int>();
             currnode = endnode;
             BasicEdge curredge;
             while (true)
@@ -115,10 +169,10 @@ namespace Simple.Routing.ShortestPath
                     break;
                 }
                 curredge = (BasicEdge)currnode.data.prevEdge;
-                waylist.Add(curredge.getGeometry());
+                geometry.Add(curredge.getGeometry());
                 currnode = this.graph.getNode(curredge.getOtherNode(currnode.getID()));
             }
-            return waylist;
+            return new Path(edges, geometry);
         }
     }
 }

@@ -10,7 +10,7 @@ using Simple.GeoData;
 
 namespace Simple.Routing.ShortestPath
 {
-    class DBAStar : IShortestPath
+    class DBAStar
     {
         private DBGraph graph;
 

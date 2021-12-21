@@ -11,7 +11,7 @@ namespace Simple.Routing.Graph
     {
         private int id;
         private bool visited;
-        private List<int> edges;
+        private int[] edges;
         public PointD point { get; }
         public NodeData data;
 
@@ -20,12 +20,12 @@ namespace Simple.Routing.Graph
             this.id = id;
             this.point = point;
             this.visited = false;
-            this.edges = new List<int>();
+            this.edges = new int[] { };
             this.data = new NodeData();
             this.data.pathlength = 10000000.00;
             this.data.pathlength2 = 10000000.00;
         }
-        public BasicNode(int id, PointD point, List<int> edges)
+        public BasicNode(int id, PointD point, int[] edges)
         {
             this.id = id;
             this.point = point;
@@ -53,10 +53,10 @@ namespace Simple.Routing.Graph
 
         public void addEdge(int edgeid)
         {
-            this.edges.Add(edgeid);
+            this.edges.Append<int>(edgeid);
         }
 
-        public List<int> getEdges()
+        public int[] getEdges()
         {
             return this.edges;
         }

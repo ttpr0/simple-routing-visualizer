@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Simple.GeoData;
+using Simple.Routing.ShortestPath;
 
 namespace Simple.Maps
 {
@@ -14,6 +15,6 @@ namespace Simple.Maps
     {
         public PointD startnode;
         public PointD endnode;
-        public List<LineD> path;
+        public Path path;
     }
 }

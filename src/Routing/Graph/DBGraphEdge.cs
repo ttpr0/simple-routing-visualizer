@@ -36,7 +36,6 @@ namespace Simple.Routing.Graph
             this.data.weight = weight;
             this.visited = false;
             this.data.oneway = oneway;
-            this.data.drawn = false;
             if (type == "motorway" || type == "trunk" || type == "motorway_link" || type == "trunk_link")
             {
                 this.data.important = true;

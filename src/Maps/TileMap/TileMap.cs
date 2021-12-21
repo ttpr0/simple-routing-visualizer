@@ -49,10 +49,10 @@ namespace Simple.Maps.TileMap
         {
             g.Clear(Color.Transparent);
             double tilesize = 40075016.69 / Math.Pow(2, z);
-            int x0 = (int)(upperleft.X / tilesize);
-            int y0 = (int)(upperleft.Y / tilesize);
-            int x1 = (int)((upperleft.X + this.width * tilesize / 256) / tilesize);
-            int y1 = (int)((upperleft.Y - this.height * tilesize / 256) / tilesize);
+            int x0 = (int)(upperleft.lon / tilesize);
+            int y0 = (int)(upperleft.lat / tilesize);
+            int x1 = (int)((upperleft.lon + this.width * tilesize / 256) / tilesize);
+            int y1 = (int)((upperleft.lat - this.height * tilesize / 256) / tilesize);
             for (int i = x0; i <= x1; i++)
             {
                 for (int j = y1; j <= y0; j++)
@@ -62,7 +62,7 @@ namespace Simple.Maps.TileMap
                     {
                         continue;
                     }
-                    g.DrawImage(tile.maptile, (int)((tile.upperleft.X - upperleft.X) * 256 / tilesize), (int)((upperleft.Y - tile.upperleft.Y) * 256 / tilesize));
+                    g.DrawImage(tile.maptile, (int)((tile.upperleft.lon - upperleft.lon) * 256 / tilesize), (int)((upperleft.lat - tile.upperleft.lat) * 256 / tilesize));
                 }
             }
             return this.map;

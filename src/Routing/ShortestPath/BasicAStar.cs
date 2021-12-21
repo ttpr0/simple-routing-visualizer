@@ -9,7 +9,7 @@ using Simple.GeoData;
 
 namespace Simple.Routing.ShortestPath
 {
-    class BasicAStar : IShortestPath
+    class BasicAStar
     {
         private SortedDictionary<double, int> visited_start;
         private SortedDictionary<double, int> visited_end;

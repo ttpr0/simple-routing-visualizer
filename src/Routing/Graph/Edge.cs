@@ -10,12 +10,11 @@ namespace Simple.Routing.Graph
     /// <summary>
     /// edge of Graph
     /// </summary>
-    [Obsolete]
-    class GraphEdge : IEdge
+    class Edge : IEdge
     {
         private int id;
-        private GraphNode node_a;
-        private GraphNode node_b;
+        private Node node_a;
+        private Node node_b;
         /// <summary>
         /// geometric representation
         /// </summary>
@@ -35,7 +34,7 @@ namespace Simple.Routing.Graph
         /// <param name="b"></param>
         /// <param name="type">string representing type of street (osm-type), used to compute weight</param>
         /// <param name="oneway">true if oneway from a to b</param>
-        public GraphEdge(int id, LineD line, GraphNode a, GraphNode b, string type, bool oneway)
+        public Edge(int id, LineD line, Node a, Node b, string type, bool oneway)
         {
             this.node_a = a;
             this.node_b = b;
@@ -47,7 +46,7 @@ namespace Simple.Routing.Graph
             this.data.oneway = oneway;
             for (int i = 0; i < this.line.points.Length -1; i++)
             {
-                this.data.weight += Math.Sqrt(Math.Pow(this.line.points[i + 1].X - this.line.points[i].X, 2) + Math.Pow(this.line.points[i + 1].Y - this.line.points[i].Y, 2));
+                this.data.weight += Math.Sqrt(Math.Pow(this.line.points[i + 1].lon - this.line.points[i].lon, 2) + Math.Pow(this.line.points[i + 1].lat - this.line.points[i].lat, 2));
             }
             if (type == "motorway" || type == "trunk" || type == "motorway_link" || type == "trunk_link")
             {
@@ -71,7 +70,7 @@ namespace Simple.Routing.Graph
             }
         }
 
-        public GraphEdge(int id, LineD line, GraphNode a, GraphNode b, double weight, string type, bool oneway)
+        public Edge(int id, LineD line, Node a, Node b, double weight, string type, bool oneway)
         {
             this.node_a = a;
             this.node_b = b;
@@ -81,7 +80,11 @@ namespace Simple.Routing.Graph
             this.data.weight = weight;
             this.visited = false;
             this.data.oneway = oneway;
-            if (type == "motorway" || type == "trunk" || type == "motorway_link" || type == "trunk_link" || type == "tertiary" || type == "secondary" || type == "primary" || type == "tertiary_link" || type == "secondary_link" || type == "primary_link")
+            if (type == "motorway" || type == "trunk" || type == "motorway_link" || type == "trunk_link")
+            {
+                this.data.important = true;
+            }
+            else if (type == "tertiary" || type == "secondary" || type == "primary" || type == "tertiary_link" || type == "secondary_link" || type == "primary_link")
             {
                 this.data.important = true;
             }
@@ -96,27 +99,27 @@ namespace Simple.Routing.Graph
             return this.id;
         }
 
-        public GraphNode getNodeA()
+        public Node getNodeA()
         {
             return this.node_a;
         }
 
-        public void setNodeA(GraphNode start)
+        public void setNodeA(Node start)
         {
             this.node_a = start;
         }
 
-        public GraphNode getNodeB()
+        public Node getNodeB()
         {
             return this.node_b;
         }
 
-        public void setNodeB(GraphNode end)
+        public void setNodeB(Node end)
         {
             this.node_b = end;
         }
 
-        public GraphNode getOtherNode(GraphNode node)
+        public Node getOtherNode(Node node)
         {
             if (node.getID() == node_a.getID())
             {
