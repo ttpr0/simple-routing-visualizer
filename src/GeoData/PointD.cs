@@ -8,13 +8,13 @@ namespace Simple.GeoData
 {
     struct PointD
     {
-        public double X { get; set; }
-        public double Y { get; set; }
+        public double lon { get; set; }
+        public double lat { get; set; }
 
         public PointD(double x, double y)
         {
-            this.X = x;
-            this.Y = y;
+            this.lon = x;
+            this.lat = y;
         }
     }
 }

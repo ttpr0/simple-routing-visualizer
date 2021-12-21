@@ -10,14 +10,13 @@ namespace Simple.Routing.Graph
     /// <summary>
     /// node of Graph
     /// </summary>
-    [Obsolete]
-    class GraphNode : INode
+    class Node : INode
     {
         private int id;
         /// <summary>
         /// adjacent GraphEdges
         /// </summary>
-        private List<GraphEdge> edges;
+        private List<Edge> edges;
         private bool visited;
         public PointD point { get; }
         /// <summary>
@@ -30,10 +29,10 @@ namespace Simple.Routing.Graph
         /// </summary>
         /// <param name="id"></param>
         /// <param name="point">geomtric representiation (web-mercator)</param>
-        public GraphNode(int id, PointD point)
+        public Node(int id, PointD point)
         {
             this.id = id;
-            this.edges = new List<GraphEdge>();
+            this.edges = new List<Edge>();
             this.visited = false;
             this.point = point;
             this.data = new NodeData();
@@ -65,12 +64,12 @@ namespace Simple.Routing.Graph
         }
         */
 
-        public void addGraphEdge(GraphEdge way)
+        public void addEdge(Edge way)
         {
             this.edges.Add(way);
         }
 
-        public List<GraphEdge> getEdges()
+        public List<Edge> getEdges()
         {
             return this.edges;
         }

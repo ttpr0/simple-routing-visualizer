@@ -100,8 +100,8 @@ namespace Simple.Maps.TileMap
             Point[] points = new Point[line.points.Length];
             for (int i = 0; i < line.points.Length; i++)
             {
-                double x = (line.points[i].X - upperleft.X) * size / tilesize;
-                double y = -(line.points[i].Y - upperleft.Y) * size / tilesize;
+                double x = (line.points[i].lon - upperleft.lon) * size / tilesize;
+                double y = -(line.points[i].lat - upperleft.lat) * size / tilesize;
                 points[i] = new Point((int)x, (int)y);
             }
             return points;

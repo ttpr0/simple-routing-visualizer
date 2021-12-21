@@ -7,6 +7,7 @@ using Simple.GeoData;
 using System.IO;
 using Microsoft.Data.Sqlite;
 using System.Diagnostics;
+using RoutingVisualizer;
 
 namespace Simple.Routing.Graph
 {
@@ -29,11 +30,11 @@ namespace Simple.Routing.Graph
                 int id = i;
                 double x = br.ReadDouble();
                 double y = br.ReadDouble();
-                List<int> edges = new List<int>();
                 int c = br.ReadInt32();
+                int[] edges = new int[c];
                 for (int j = 0; j < c; j++)
                 {
-                    edges.Add(br.ReadInt32());
+                    edges[j] = br.ReadInt32();
                 }
                 BasicNode newnode = new BasicNode(id, new PointD(x, y), edges);
                 nodearr[id] = newnode;
@@ -54,6 +55,68 @@ namespace Simple.Routing.Graph
                 {
                     double x = br.ReadDouble();
                     double y = br.ReadDouble();
+                    points.Add(new PointD(x, y));
+                }
+                BasicEdge newedge = new BasicEdge(id, new LineD(points.ToArray()), start, end, weight, type, oneway);
+                edgearr[id] = newedge;
+            }
+            return new BasicGraph(nodearr, edgearr);
+        }
+
+        public BasicGraph loadGraphFromFile2(string url)
+        {
+            FileInfo f = new FileInfo(url);
+            if (!f.Exists || f.Name.Split(".")[1] != "graph")
+            {
+                throw new FileNotFoundException("specified path doesnt meet requirements");
+            }
+            int index = 0;
+            Byte[] data = File.ReadAllBytes(url);
+            int nodecount = BitConverter.ToInt32(data, index);
+            index += 4;
+            BasicNode[] nodearr = new BasicNode[nodecount];
+            for (int i = 0; i < nodecount; i++)
+            {
+                int id = i;
+                double x = BitConverter.ToDouble(data, index);
+                index += 8;
+                double y = BitConverter.ToDouble(data, index);
+                index += 8;
+                int c = BitConverter.ToInt32(data, index);
+                index += 4;
+                int[] edges = new int[c];
+                for (int j = 0; j < c; j++)
+                {
+                    edges[j] = BitConverter.ToInt32(data, index);
+                    index += 4;
+                }
+                BasicNode newnode = new BasicNode(id, new PointD(x, y), edges);
+                nodearr[id] = newnode;
+            }
+            int edgecount = BitConverter.ToInt32(data, index);
+            index += 4;
+            BasicEdge[] edgearr = new BasicEdge[edgecount];
+            for (int i = 0; i < edgecount; i++)
+            {
+                int id = i;
+                int start = BitConverter.ToInt32(data, index);
+                index += 4;
+                int end = BitConverter.ToInt32(data, index);
+                index += 4;
+                double weight = BitConverter.ToDouble(data, index);
+                index += 8;
+                bool oneway = BitConverter.ToBoolean(data, index);
+                index += 1;
+                string type = "residential";
+                List<PointD> points = new List<PointD>();
+                int c = BitConverter.ToInt32(data, index);
+                index += 4;
+                for (int j = 0; j < c; j++)
+                {
+                    double x = BitConverter.ToDouble(data, index);
+                    index += 8;
+                    double y = BitConverter.ToDouble(data, index);
+                    index += 8;
                     points.Add(new PointD(x, y));
                 }
                 BasicEdge newedge = new BasicEdge(id, new LineD(points.ToArray()), start, end, weight, type, oneway);
@@ -94,7 +157,7 @@ namespace Simple.Routing.Graph
                     }
                     edges.Add(Convert.ToInt32(s));
                 }
-                BasicNode newnode = new BasicNode(id, new PointD(x, y), edges);
+                BasicNode newnode = new BasicNode(id, new PointD(x, y), edges.ToArray());
                 nodearr[id] = newnode;
             }
             reader.Close();
@@ -138,6 +201,57 @@ namespace Simple.Routing.Graph
                 return false;
             }
             return true;
+        }
+
+        public Graph loadFromFile(string url)
+        {
+            FileInfo f = new FileInfo(url);
+            if (!f.Exists || f.Name.Split(".")[1] != "graph")
+            {
+                throw new FileNotFoundException("specified path doesnt meet requirements");
+            }
+            Byte[] data = File.ReadAllBytes(url);
+            MemoryStream ms = new MemoryStream(data);
+            BinaryReader br = new BinaryReader(ms);
+            int nodecount = br.ReadInt32();
+            Node[] nodearr = new Node[nodecount];
+            for (int i = 0; i < nodecount; i++)
+            {
+                int id = i;
+                double x = br.ReadDouble();
+                double y = br.ReadDouble();
+                int c = br.ReadInt32();
+                for (int j = 0; j < c; j++)
+                {
+                    br.ReadInt32();
+                }
+                Node newnode = new Node(id, new PointD(x, y));
+                nodearr[id] = newnode;
+            }
+            int edgecount = br.ReadInt32();
+            Edge[] edgearr = new Edge[edgecount];
+            for (int i = 0; i < edgecount; i++)
+            {
+                int id = i;
+                Node start = nodearr[br.ReadInt32()];
+                Node end = nodearr[br.ReadInt32()];
+                double weight = br.ReadDouble();
+                bool oneway = br.ReadBoolean();
+                string type = "residential";
+                List<PointD> points = new List<PointD>();
+                int c = br.ReadInt32();
+                for (int j = 0; j < c; j++)
+                {
+                    double x = br.ReadDouble();
+                    double y = br.ReadDouble();
+                    points.Add(new PointD(x, y));
+                }
+                Edge newedge = new Edge(id, new LineD(points.ToArray()), start, end, weight, type, oneway);
+                start.addEdge(newedge);
+                end.addEdge(newedge);
+                edgearr[id] = newedge;
+            }
+            return new Graph(nodearr, edgearr);
         }
     }
 }

@@ -69,8 +69,8 @@ namespace Simple.Maps
 
         private Point realToScreen(PointD point, double tilesize)
         {
-            double x = (point.X - upperleft.X) * 256 / tilesize;
-            double y = -(point.Y - upperleft.Y) * 256 / tilesize;
+            double x = (point.lon - upperleft.lon) * 256 / tilesize;
+            double y = -(point.lat - upperleft.lat) * 256 / tilesize;
             return new Point((int)x, (int)y);
         }
 

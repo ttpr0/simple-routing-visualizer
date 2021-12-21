@@ -12,17 +12,17 @@ namespace Simple.Routing.Graph
     /// </summary>
     static class GraphUtils
     {
-        public static double getDistance(GraphNode first, GraphNode second)
+        public static double getDistance(Node first, Node second)
         {
-            return Math.Sqrt(Math.Pow(first.point.X - second.point.X, 2) + Math.Pow(first.point.Y - second.point.Y, 2));
+            return Math.Sqrt(Math.Pow(first.point.lon - second.point.lon, 2) + Math.Pow(first.point.lat - second.point.lat, 2));
         }
         public static double getDistance(DBGraphNode first, DBGraphNode second)
         {
-            return Math.Sqrt(Math.Pow(first.point.X - second.point.X, 2) + Math.Pow(first.point.Y - second.point.Y, 2));
+            return Math.Sqrt(Math.Pow(first.point.lon - second.point.lon, 2) + Math.Pow(first.point.lat - second.point.lat, 2));
         }
         public static double getDistance(BasicNode first, BasicNode second)
         {
-            return Math.Sqrt(Math.Pow(first.point.X - second.point.X, 2) + Math.Pow(first.point.Y - second.point.Y, 2));
+            return Math.Sqrt(Math.Pow(first.point.lon - second.point.lon, 2) + Math.Pow(first.point.lat - second.point.lat, 2));
         }
     }
 }

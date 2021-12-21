@@ -10,37 +10,36 @@ namespace Simple.Routing.Graph
     /// <summary>
     /// graph class
     /// </summary>
-    [Obsolete]
     class Graph
     {
-        List<GraphEdge> edges;
-        List<GraphNode> nodes;
+        Edge[] edges;
+        Node[] nodes;
 
         /// <summary>
         /// Constructor, connections between nodes and edges should be there allready
         /// </summary>
         /// <param name="nodes"></param>
         /// <param name="ways"></param>
-        public Graph(List<GraphNode> nodes, List<GraphEdge> ways)
+        public Graph(Node[] nodes, Edge[] ways)
         {
             this.nodes = nodes;
             this.edges = ways;
             initGraph();
         }
 
-        public List<GraphNode> getGraphNodes()
+        public Node[] getGraphNodes()
         {
             return this.nodes;
         }
 
-        public List<GraphEdge> getGraphEdges()
+        public Edge[] getGraphEdges()
         {
             return this.edges;
         }
 
-        public GraphNode getNodeById(int id)
+        public Node getNodeById(int id)
         {
-            foreach (GraphNode node in nodes)
+            foreach (Node node in nodes)
             {
                 if (node.getID() == id)
                 {
@@ -50,9 +49,9 @@ namespace Simple.Routing.Graph
             return null;
         }
 
-        public GraphEdge getEdgeById(int id)
+        public Edge getEdgeById(int id)
         {
-            foreach (GraphEdge edge in edges)
+            foreach (Edge edge in edges)
             {
                 if (edge.getID() == id)
                 {
@@ -67,13 +66,13 @@ namespace Simple.Routing.Graph
         /// </summary>
         public void initGraph()
         {
-            foreach (GraphNode node in nodes)
+            foreach (Node node in nodes)
             {
                 node.setVisited(false);
                 node.data.pathlength = 1000000000;
                 node.data.pathlength2 = 1000000000;
             }
-            foreach (GraphEdge edge in edges)
+            foreach (Edge edge in edges)
             {
                 edge.setVisited(false);
             }

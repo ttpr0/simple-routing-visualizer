@@ -39,6 +39,7 @@ namespace RoutingVisualizer
         private GraphMap graphmap;
         private UtilityMap utilitymap;
         private BasicGraph graph;
+        private Graph _graph;
         private PointD upperleft = new PointD(1314905, 6716660);
         private int zoom = 12;
         private GeometryContainer container = new GeometryContainer();
@@ -66,7 +67,11 @@ namespace RoutingVisualizer
             this.tilemap = new TileMap(1000, 600);
             this.tilemap.getFactory().changed += this.changed;
             GraphFactory f = new GraphFactory();
-            this.graph = f.loadGraphFromFile("data/sachsen-anhalt.graph");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            this.graph = f.loadGraphFromFile("data/germany-latest.graph");
+            sw.Stop();
+            appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
             container.startnode = graph.getNode(Convert.ToInt32(txtstart.Text)).getGeometry();
             container.endnode = graph.getNode(Convert.ToInt32(txtend.Text)).getGeometry();
             this.graphmap = new GraphMap(1000, 600);
@@ -83,8 +88,8 @@ namespace RoutingVisualizer
         /// <returns>converted point</returns>
         private Point realToScreen(PointD point, double tilesize)
         {
-            double x = (point.X - upperleft.X) * 256 / tilesize;
-            double y = -(point.Y - upperleft.Y) * 256 / tilesize;
+            double x = (point.lon - upperleft.lon) * 256 / tilesize;
+            double y = -(point.lat - upperleft.lat) * 256 / tilesize;
             return new Point((int)x, (int)y);
         }
 
@@ -96,8 +101,8 @@ namespace RoutingVisualizer
         /// <returns>converted point</returns>
         private PointD screenToReal(Point point, double tilesize)
         {
-            double x = upperleft.X + point.X * tilesize / 256;
-            double y = upperleft.Y - point.Y * tilesize / 256;
+            double x = upperleft.lon + point.X * tilesize / 256;
+            double y = upperleft.lat - point.Y * tilesize / 256;
             return new PointD(x, y);
         }
 
@@ -155,7 +160,6 @@ namespace RoutingVisualizer
         {
             container.path = null;
             graph.initGraph();
-            graph.initGraph();
             int start;
             int end;
             try
@@ -196,7 +200,7 @@ namespace RoutingVisualizer
                     algorithm = new BidirectAStar(this.graph, start, end);
                     break;
                 case "Fast-A*":
-                    //algorithm = new FastBidirectAStar(_graph.getNodeById(start), _graph.getNodeById(end));
+                    //algorithm = new FastBidirectAStar(this._graph.getNodeById(start), this._graph.getNodeById(end));
                     algorithm = new Djkstra(this.graph, start, end);
                     break;
                 case "DB-A*":
@@ -267,16 +271,16 @@ namespace RoutingVisualizer
             }
 
             double tilesize = 40075016.69 / Math.Pow(2, zoom);
-            upperleft.X = ul.X + (mousex - e.X) * tilesize / 256;
-            upperleft.Y = ul.Y + (e.Y - mousey) * tilesize / 256;
+            upperleft.lon = ul.lon + (mousex - e.X) * tilesize / 256;
+            upperleft.lat = ul.lat + (e.Y - mousey) * tilesize / 256;
 
             haschanged = true;
         }
         private void pbxout_MouseWheel(object sender, MouseEventArgs e)
         {
             double tilesize = 40075016.69 / Math.Pow(2, zoom);
-            double realX = upperleft.X + (e.X * tilesize / 256);
-            double realY = upperleft.Y - (e.Y * tilesize / 256);
+            double realX = upperleft.lon + (e.X * tilesize / 256);
+            double realY = upperleft.lat - (e.Y * tilesize / 256);
             if (zoom <= 14 && zoom >= 8)
             {
                 zoom += (int)(e.Delta / 120);
@@ -290,8 +294,8 @@ namespace RoutingVisualizer
                 }
             }
             tilesize = 40075016.69 / Math.Pow(2, zoom);
-            upperleft.X = realX - (e.X * tilesize / 256);
-            upperleft.Y = realY + (e.Y * tilesize / 256);
+            upperleft.lon = realX - (e.X * tilesize / 256);
+            upperleft.lat = realY + (e.Y * tilesize / 256);
             haschanged = true;
             //drawMap();
         }
@@ -304,7 +308,7 @@ namespace RoutingVisualizer
             foreach (BasicNode node in graph.getNodes())
             {
                 PointD point = node.getGeometry();
-                newdistance = Math.Sqrt(Math.Pow(clickpoint.X - point.X, 2) + Math.Pow(clickpoint.Y - point.Y, 2));
+                newdistance = Math.Sqrt(Math.Pow(clickpoint.lon - point.lon, 2) + Math.Pow(clickpoint.lat - point.lat, 2));
                 if (distance == -1)
                 {
                     container.startnode = point;
@@ -331,7 +335,7 @@ namespace RoutingVisualizer
             foreach (BasicNode node in graph.getNodes())
             {
                 PointD point = node.getGeometry();
-                newdistance = Math.Sqrt(Math.Pow(clickpoint.X - point.X, 2) + Math.Pow(clickpoint.Y - point.Y, 2));
+                newdistance = Math.Sqrt(Math.Pow(clickpoint.lon - point.lon, 2) + Math.Pow(clickpoint.lat - point.lat, 2));
                 if (distance == -1)
                 {
                     container.endnode = point;

@@ -11,21 +11,21 @@ namespace Simple.Routing.ShortestPath
     /// <summary>
     /// multithreaded version of bidirectional A*
     /// </summary>
-    class FastBidirectAStar
+    class FastBidirectAStar : IShortestPath
     {
-        private SortedDictionary<double, GraphNode> visited_start;
-        private SortedDictionary<double, GraphNode> visited_end;
-        private GraphNode startnode;
-        private GraphNode endnode;
-        private GraphNode midnode;
+        private SortedDictionary<double, Node> visited_start;
+        private SortedDictionary<double, Node> visited_end;
+        private Node startnode;
+        private Node endnode;
+        private Node midnode;
 
-        public FastBidirectAStar(GraphNode start, GraphNode end)
+        public FastBidirectAStar(Node start, Node end)
         {
             this.startnode = start;
             this.endnode = end;
-            this.visited_start = new SortedDictionary<double, GraphNode>();
+            this.visited_start = new SortedDictionary<double, Node>();
             this.visited_start.Add(0, startnode);
-            this.visited_end = new SortedDictionary<double, GraphNode>();
+            this.visited_end = new SortedDictionary<double, Node>();
             this.visited_end.Add(0, endnode);
             startnode.data.distance = GraphUtils.getDistance(startnode, endnode);
             startnode.data.distance2 = 0;
@@ -40,7 +40,7 @@ namespace Simple.Routing.ShortestPath
         /// performs bidirectional A*
         /// </summary>
         /// <returns>false</returns>
-        public bool step()
+        public bool calcShortestPath()
         {
             this.finished = false;
             var task1 = Task.Run(() =>
@@ -52,7 +52,7 @@ namespace Simple.Routing.ShortestPath
                 this.fromEnd();
             });
             Task.WaitAll(task1, task2);
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Simple.Routing.ShortestPath
         /// </summary>
         private void fromStart()
         {
-            GraphNode currnode;
+            Node currnode;
             double currkey;
             while (!this.finished)
             {
@@ -72,7 +72,7 @@ namespace Simple.Routing.ShortestPath
                     this.finished = true;
                     return;
                 }
-                foreach (GraphEdge way in currnode.getEdges())
+                foreach (Edge way in currnode.getEdges())
                 {
                     if (way.isVisited())
                     {
@@ -85,18 +85,14 @@ namespace Simple.Routing.ShortestPath
                             continue;
                         }
                     }
-                    if (currnode.data.distance2 > 1000 && !way.data.important)
-                    {
-                        continue;
-                    }
                     way.setVisited(true);
-                    GraphNode othernode = way.getOtherNode(currnode);
+                    Node othernode = way.getOtherNode(currnode);
                     othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
                     othernode.data.distance2 = GraphUtils.getDistance(othernode, startnode);
                     double newlength = currnode.data.pathlength - currnode.data.distance + way.getWeight() + othernode.data.distance;
                     if (othernode.data.pathlength > newlength)
                     {
-                        if (othernode.data.pathlength < 1000000)
+                        if (othernode.data.pathlength < 1000000000)
                         {
                             visited_start.Remove(othernode.data.pathlength);
                         }
@@ -115,7 +111,7 @@ namespace Simple.Routing.ShortestPath
         /// </summary>
         private void fromEnd()
         {
-            GraphNode currnode;
+            Node currnode;
             double currkey;
             while (!this.finished)
             {
@@ -127,35 +123,31 @@ namespace Simple.Routing.ShortestPath
                     this.finished = true;
                     return;
                 }
-                foreach (GraphEdge way in currnode.getEdges())
+                foreach (Edge edge in currnode.getEdges())
                 {
-                    if (way.isVisited())
+                    if (edge.isVisited())
                     {
                         continue;
                     }
-                    if (way.data.oneway)
+                    if (edge.data.oneway)
                     {
-                        if (way.getNodeA() == currnode)
+                        if (edge.getNodeA() == currnode)
                         {
                             continue;
                         }
                     }
-                    if (currnode.data.distance > 1000 && !way.data.important)
-                    {
-                        continue;
-                    }
-                    way.setVisited(true);
-                    GraphNode othernode = way.getOtherNode(currnode);
+                    edge.setVisited(true);
+                    Node othernode = edge.getOtherNode(currnode);
                     othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
                     othernode.data.distance2 = GraphUtils.getDistance(othernode, startnode);
-                    double newlength = currnode.data.pathlength2 - currnode.data.distance2 + way.getWeight() + othernode.data.distance2;
+                    double newlength = currnode.data.pathlength2 - currnode.data.distance2 + edge.getWeight() + othernode.data.distance2;
                     if (othernode.data.pathlength2 > newlength)
                     {
-                        if (othernode.data.pathlength2 < 1000000)
+                        if (othernode.data.pathlength2 < 1000000000)
                         {
                             visited_end.Remove(othernode.data.pathlength2);
                         }
-                        othernode.data.prevEdge2 = way;
+                        othernode.data.prevEdge2 = edge;
                         newlength = addToVisitedEnd(newlength, othernode);
                         othernode.data.pathlength2 = newlength;
                     }
@@ -172,7 +164,7 @@ namespace Simple.Routing.ShortestPath
         /// <param name="newkey">key/pathlength of visited node</param>
         /// <param name="newnode">visited node</param>
         /// <returns>entry to dict, might differ from newkey param</returns>
-        private double addToVisitedStart(double newkey, GraphNode newnode)
+        private double addToVisitedStart(double newkey, Node newnode)
         {
             try
             {
@@ -192,7 +184,7 @@ namespace Simple.Routing.ShortestPath
         /// <param name="newkey">key/pathlength of visited node</param>
         /// <param name="newnode">visited node</param>
         /// <returns>entry to dict, might differ from newkey param</returns>
-        private double addToVisitedEnd(double newkey, GraphNode newnode)
+        private double addToVisitedEnd(double newkey, Node newnode)
         {
             try
             {
@@ -205,37 +197,42 @@ namespace Simple.Routing.ShortestPath
             }
         }
 
+        public bool steps(int count, List<LineD> visitededges)
+        {
+            return true;
+        }
+
         /// <summary>
         /// use only after path finsing finished
         /// </summary>
         /// <returns>list of LineD representing shortest path</returns>
-        public List<LineD> getShortestPath()
+        public Path getShortestPath()
         {
             List<LineD> waylist = new List<LineD>();
-            GraphEdge curredge;
-            GraphNode currnode_start = midnode;
+            Edge curredge;
+            Node currnode_start = midnode;
             while (true)
             {
                 if (currnode_start == startnode)
                 {
                     break;
                 }
-                curredge = (GraphEdge)currnode_start.data.prevEdge;
+                curredge = (Edge)currnode_start.data.prevEdge;
                 waylist.Add(curredge.getGeometry());
                 currnode_start = curredge.getOtherNode(currnode_start);
             }
-            GraphNode currnode_end = midnode;
+            Node currnode_end = midnode;
             while (true)
             {
                 if (currnode_end == endnode)
                 {
                     break;
                 }
-                curredge = (GraphEdge)currnode_end.data.prevEdge2;
+                curredge = (Edge)currnode_end.data.prevEdge2;
                 waylist.Add(curredge.getGeometry());
                 currnode_end = curredge.getOtherNode(currnode_end);
             }
-            return waylist;
+            return new Path(new List<int>(), waylist);
         }
     }
 }
