@@ -182,13 +182,13 @@ def haversine_length(geometry:list, r:float=6365000) -> float:
     """
     length = 0
     for i in range (0, len(geometry)-1):
-        lat1 = geometry[i].lat
-        lat2 = geometry[i+1].lat
-        lon1 = geometry[i].lon
-        lon2 = geometry[i+1].lon
+        lat1 = geometry[i].lat * math.pi / 180
+        lat2 = geometry[i+1].lat * math.pi / 180
+        lon1 = geometry[i].lon * math.pi / 180
+        lon2 = geometry[i+1].lon * math.pi / 180
         a = math.sin((lat2-lat1)/2)**2
-        b = (1 - math.sin((lat2-lat1)/2)**2 - math.sin((lat2+lat1)/2)**2) * math.sin((lon2-lon1)/2)**2
-        length += 2*r*math.sqrt(a+b)
+        b = math.sin((lon2-lon1)/2)**2
+        length += 2*r*math.asin(math.sqrt(a+math.cos(lat1)*math.cos(lat2)*b))
     return length
 
 def transform_mercator(lon:float, lat:float) -> tuple:
