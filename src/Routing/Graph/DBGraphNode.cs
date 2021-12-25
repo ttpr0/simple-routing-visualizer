@@ -7,6 +7,7 @@ using Simple.GeoData;
 
 namespace Simple.Routing.Graph
 {
+    [Obsolete]
     class DBGraphNode : INode
     {
         private int id;

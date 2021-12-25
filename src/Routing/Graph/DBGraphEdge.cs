@@ -8,6 +8,7 @@ using Simple.GeoData;
 
 namespace Simple.Routing.Graph
 {
+    [Obsolete]
     class DBGraphEdge : IEdge
     {
         private int id;

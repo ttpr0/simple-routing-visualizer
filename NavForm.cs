@@ -69,7 +69,7 @@ namespace RoutingVisualizer
             GraphFactory f = new GraphFactory();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            this.graph = f.loadGraphFromFile("data/germany-latest.graph");
+            this.graph = f.loadGraphFromFile2("data/niedersachsen.graph");
             sw.Stop();
             appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
             container.startnode = graph.getNode(Convert.ToInt32(txtstart.Text)).getGeometry();

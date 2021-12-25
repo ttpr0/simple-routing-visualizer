@@ -8,6 +8,7 @@ using Simple.GeoData;
 
 namespace Simple.Routing.Graph
 {
+    [Obsolete]
     class DBGraph
     {
         private SortedDictionary<long, DBGraphNode> node_dict;

@@ -11,8 +11,17 @@ using RoutingVisualizer;
 
 namespace Simple.Routing.Graph
 {
+    /// <summary>
+    /// static class, creates and returns different graph-objects
+    /// </summary>
     class GraphFactory
     {
+        /// <summary>
+        /// instantiates BasicGraph from .graph file
+        /// </summary>
+        /// <param name="url">path to .graph file</param>
+        /// <returns>BasicGraph object</returns>
+        /// <exception cref="FileNotFoundException">thrown if file doesnt exist</exception>
         public BasicGraph loadGraphFromFile(string url)
         {
             FileInfo f = new FileInfo(url);
@@ -63,6 +72,12 @@ namespace Simple.Routing.Graph
             return new BasicGraph(nodearr, edgearr);
         }
 
+        /// <summary>
+        /// instantiates BasicGraph from .graph file (used only for development purposes)
+        /// </summary>
+        /// <param name="url">path to .graph file</param>
+        /// <returns>BasicGraph object</returns>
+        /// <exception cref="FileNotFoundException">thrown if file doesnt exist</exception>
         public BasicGraph loadGraphFromFile2(string url)
         {
             FileInfo f = new FileInfo(url);
@@ -125,6 +140,7 @@ namespace Simple.Routing.Graph
             return new BasicGraph(nodearr, edgearr);
         }
 
+        [Obsolete]
         public BasicGraph loadGraphFromDB(string url)
         {
             FileInfo f = new FileInfo(url);
@@ -203,6 +219,12 @@ namespace Simple.Routing.Graph
             return true;
         }
 
+        /// <summary>
+        /// instanciates Graph from .graph file
+        /// </summary>
+        /// <param name="url">path to file</param>
+        /// <returns>Graph object</returns>
+        /// <exception cref="FileNotFoundException">thrown if file doesnt exist</exception>
         public Graph loadFromFile(string url)
         {
             FileInfo f = new FileInfo(url);
