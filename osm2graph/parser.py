@@ -1,47 +1,51 @@
 import sqlite3 as sql
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import osmium as osm
 import math
 import argparse
 import os
 import struct
+import numpy as np
+import sys
 
 class Edge():
-    def __init__(self, id:int, start:int, end:int, oneway:bool, weight:float, _type:str, geometry:list):
-        self.id = id
-        self.start = start
-        self.end = end
-        self.oneway = oneway
-        self.weight = weight
-        self.type = _type
-        self.geometry = geometry
-
-class OsmWay():
-    def __init__(self, oneway:bool, _type:str, templimit:str, noderefs:list):
-        self.oneway = oneway
-        self.type = _type
-        self.templimit = templimit
-        self.noderefs = noderefs
-
-class OsmNode():
-    def __init__(self, lon:float, lat:float, imp:bool):
-        self.lon = lon
-        self.lat = lat
-        self.imp = imp
+    __slots__ = "osmid", "nodes", "tags", "index", "weight"
+    def __init__(self, id:int, nodes:list, tags:dict):
+        self.osmid = id
+        self.index = 0
+        self.nodes = nodes
+        self.tags = tags
+        self.weight = 0
 
 class Node():
-    def __init__(self, id:int, lon:float, lat:float):
-        self.id = id
+    __slots__ = "index", "lon", "lat", "edges", "tags", "weight"
+    def __init__(self, id:int,lon:float, lat:float, tags:dict):
+        self.osmid = id
+        self.index = None
         self.lon = lon
         self.lat = lat
         self.edges = []
+        self.tags = tags
+        self.weight = None
+
+class EdgeNode():
+    __slots__ = "lon", "lat", "tags"
+    def __init__(self, lon:float, lat:float, tags:dict):
+        self.lon = lon
+        self.lat = lat
+        self.tags = tags
+
+class Graph():
+    def __init__(self, nodes:List[Node], edges:List[Edge]):
+        self.nodes = nodes
+        self.edges = edges
 
 class WayHandler(osm.SimpleHandler):
-    def __init__(self, osmways, noderefs, graphtype):
+    def __init__(self, edgeslist:List[Edge], nodesdict:Dict[int,Node], graphtype):
         super(WayHandler, self).__init__()
         self.i = 0
-        self.osmways = osmways
-        self.noderefs = noderefs
+        self.edges = edgeslist
+        self.nodesdict = nodesdict
         if graphtype == "car":
             self.types = ["motorway","motorway_link","trunk","trunk_link",
             "primary","primary_link","secondary","secondary_link","tertiary","tertiary_link",
@@ -49,99 +53,96 @@ class WayHandler(osm.SimpleHandler):
     def way(self, w):
         if "highway" not in w.tags:
             return
-        _type = w.tags.get("highway")
-        if _type not in self.types:
+        if w.tags.get("highway") not in self.types:
             return
         self.i += 1
         if self.i % 1000 == 0:
             print(str(self.i))
-        if w.tags.get("oneway") == "yes":
-            oneway = True
-        else:
-            oneway = False
-        nds = [node.ref for node in w.nodes]
-        _type = w.tags.get("highway")
-        templimit = w.tags.get("maxspeed")
-        way = OsmWay(oneway, _type, templimit, nds)
-        self.osmways.append(way)
-        for n in range(0,len(nds)):
-            nd = nds[n]
-            if nd not in self.noderefs:
-                self.noderefs[nd] = 0
-            if n == 0 or n == len(nds)-1:
-                self.noderefs[nd] += 1
+        nodes = []
+        l = len(w.nodes)
+        for i in range(0,l):
+            ndref = w.nodes[i].ref
+            nodes.append(ndref)
+            c = self.nodesdict.get(ndref)
+            if (i == 0 or i == l-1):
+                self.nodesdict[ndref] = 1
+            elif c == None:
+                self.nodesdict[ndref] = 0
+        tags = {}
+        for key, value in w.tags:
+            tags[key] = value
+        self.edges.append(Edge(w.id, nodes, tags))
 
 class NodeHandler(osm.SimpleHandler):
-    def __init__(self, noderefs, osmnodes, nodes):
+    def __init__(self, nodesdict:Dict[int,Node]):
         super(NodeHandler, self).__init__()
         self.i = 0
-        self.c = 0
-        self.noderefs = noderefs
-        self.osmnodes = osmnodes
-        self.nodes = nodes
+        self.nodesdict = nodesdict
     def node(self, n):
-        if n.id in self.noderefs:
-            id = n.id
-            lon = n.location.lon
-            lat = n.location.lat
-            if  self.noderefs[n.id] == 0:
-                node = OsmNode(lon, lat, False)
-                self.osmnodes[id] = node
-            else:
-                node = OsmNode(lon, lat, True)
-                self.osmnodes[id] = node
-                node = Node(self.c, lon, lat)
-                self.nodes[id] = node
-                self.c += 1
-            self.i += 1
-            if self.i % 1000 == 0:
-                print(str(self.i))
-            
-class Graph():
-    def __init__(self, nodes:List[Node], edges:List[Edge]):
-        self.nodes = nodes
-        self.edges = edges
-        self.i = 0
+        count = self.nodesdict.get(n.id)
+        if count == None:
+            return
+        tags = {}
+        if count == 0:
+            node = EdgeNode(n.location.lon, n.location.lat, tags)
+        else:
+            node = Node(n.id, n.location.lon, n.location.lat, tags)
+        self.nodesdict[n.id] = node
+        self.i += 1
+        if self.i % 10000 == 0:
+            print(str(self.i))
 
-def extract_graph(file:str, type:str) -> Graph:
-    osmways:List[OsmWay] = []
-    noderefs:Dict[int, int] = dict()
-    osmnodes:Dict[int, OsmNode] = dict()
-    nodes:Dict[int, Node] = dict()
-    h = WayHandler(osmways, noderefs, type)
+def parse_osm(file:str, type:str) -> Tuple[List[Edge],Dict[int,Node]]:
+    edgeslist:List[Edge] = []
+    nodesdict:Dict[int, Node] = dict()
+    h = WayHandler(edgeslist, nodesdict, type)
     h.apply_file(file)
-    h = NodeHandler(noderefs, osmnodes, nodes)
+    h = NodeHandler(nodesdict)
     h.apply_file(file)
-    return create_graph(osmways, osmnodes, nodes)
+    for edge in edgeslist:
+        nodes = []
+        for ndref in edge.nodes:
+            nodes.append(nodesdict[ndref])
+        edge.nodes = nodes
+    split_edges(edgeslist)
+    nodesdict = {key:value for key,value in nodesdict.items() if isinstance(value, Node)}
+    i = 0
+    for node in nodesdict.values():
+        node.index = i
+        i += 1
+    i = 0
+    for edge in edgeslist:
+        edge.index = i
+        i += 1  
+    return edgeslist, nodesdict
 
-def create_graph(osmways:List[OsmWay], osmnodes:Dict[int, OsmNode], nodes:Dict[int, Node]) -> Graph:
-    c = 0
-    edges = []
-    for way in osmways:
-        new = True
-        geometry = []
-        for n in range(1,len(way.noderefs)):
-            if new:
-                nd = way.noderefs[n-1]
-                startnode = nodes[nd]
-                geometry.append(osmnodes[nd])
-                new = False
-            nd = way.noderefs[n]
-            node = osmnodes[nd]
-            geometry.append(node)
-            if node.imp:
-                endnode = nodes[nd]
-                edges.append(create_edge(c, startnode, endnode, geometry, way.oneway, way.type, way.templimit))
-                startnode.edges.append(c)
-                endnode.edges.append(c)
-                c += 1
-                new = True
-                geometry.clear()
-    return Graph(list(nodes.values()), edges)
+def split_edges(edgelist:List[Edge]):
+    for j in range(0, len(edgelist)):
+        edge = edgelist[j]
+        start = 0
+        end = len(edge.nodes) - 1
+        splitted = False
+        for i in range(1, end+1):
+            if isinstance(edge.nodes[i], Node):
+                if i < end or (i == end and splitted):
+                    splitted = True
+                    newedge = Edge(edge.osmid, edge.nodes[start:i+1], edge.tags)
+                    newedge.nodes[0].edges.append(newedge)
+                    newedge.nodes[len(newedge.nodes)-1].edges.append(newedge)
+                    edgelist.append(newedge)
+                    start = i
+        if splitted:
+            edgelist.pop(j)
+            del edge
+        else:
+            edge.nodes[0].edges.append(edge)
+            edge.nodes[len(edge.nodes)-1].edges.append(edge)
 
-def create_edge(id:int, start:Node, end:Node, geometry:List[OsmNode], oneway:bool, _type:str, templimit:str) -> Edge:
-    weight = calc_weight(haversine_length(geometry), templimit, _type)
-    return Edge(id, start.id, end.id, oneway, weight, _type, geometry.copy())
+def create_graph(file:str, type:str) -> Graph:
+    edgeslist, nodesdict = parse_osm(file, type)
+    for edge in edgeslist:
+        edge.weight = calc_weight(haversine_length(edge.nodes), edge.tags.get('maxspeed'), edge.tags.get('highway'))
+    return Graph(list(nodesdict.values()), edgeslist)
 
 def calc_weight(length:float, templimit:str, streettype:str) -> float:
     """ approximates weight based on streettype and (if valid input given) speed limit
@@ -199,68 +200,42 @@ def transform_mercator(lon:float, lat:float) -> tuple:
     y = a*math.log(math.tan(math.pi/4 + lat*math.pi/360))
     return (x,y)
 
-def create_graph_db(graph:Graph, output:str):
-    conn = sql.connect(output)
-    c = conn.cursor()
-    c.execute("DROP TABLE IF EXISTS edges")
-    c.execute("""CREATE TABLE edges(
-        id INTEGER PRIMARY KEY,
-        start INTEGER,
-        end INTEGER,
-        weight REAL,
-        oneway BOOLEAN,
-        type TEXT,
-        geometry TEXT
-    )""")
-    for edge in graph.edges:
-        geometry = ""
-        for node in edge.geometry:
-            coords = transform_mercator(node.lon, node.lat)
-            geometry += str(coords[0]) + ";" + str(coords[1]) + "&&"
-        if edge.oneway:
-            oneway = 1
-        else:
-            oneway = 0
-        c.execute(f"INSERT INTO edges VALUES ({edge.id}, {edge.start}, {edge.end}, {edge.weight}, {oneway}, '{edge.type}', '{geometry}');")
-    c.execute("DROP TABLE IF EXISTS nodes")
-    c.execute("""CREATE TABLE nodes(
-        id INTEGER PRIMARY KEY,
-        x REAL,
-        y REAL,
-        edges TEXT
-    )""")
-    for node in graph.nodes:
-        coords = transform_mercator(node.lon, node.lat)
-        edges = ""
-        for edge in node.edges:
-            edges += str(edge) + "&&"
-        c.execute(f"INSERT INTO nodes VALUES ({node.id}, {coords[0]}, {coords[1]}, '{edges}');")
-    conn.commit()
-    conn.close()
+def is_oneway(edge:Edge):
+    if edge.tags.get('oneway') == "yes":
+        return True
+    if edge.tags.get('oneway') == "no":
+        return False
+    if edge.tags.get('highway') in ["motorway","trunk"]:
+        return True
+    if edge.tags.get('junction') == "roundabout":
+        return True
+    return False
 
 def create_graph_file(graph:Graph, output:str):
     print("test")
     file = open(output, 'wb')
     nodecount = len(graph.nodes)
     file.write(struct.pack("i", nodecount))
-    for node in graph.nodes:
+    for i in range(0, nodecount):
+        node = graph.nodes[i]
         coords = transform_mercator(node.lon, node.lat)
         file.write(struct.pack("d", coords[0]))
         file.write(struct.pack("d", coords[1]))
         edgecount = len(node.edges)
         file.write(struct.pack("i", edgecount))
         for edge in node.edges:
-            file.write(struct.pack("i", edge))
+            file.write(struct.pack("i", edge.index))
     edgecount = len(graph.edges)
     file.write(struct.pack("i", edgecount))
-    for edge in graph.edges:
-        file.write(struct.pack("i", edge.start))
-        file.write(struct.pack("i", edge.end))
+    for i in range(0, edgecount):
+        edge = graph.edges[i]
+        file.write(struct.pack("i", edge.nodes[0].index))
+        file.write(struct.pack("i", edge.nodes[len(edge.nodes)-1].index))
         file.write(struct.pack("d", edge.weight))
-        file.write(struct.pack("?", edge.oneway))
-        nodecount = len(edge.geometry)
+        file.write(struct.pack("?", is_oneway(edge)))
+        nodecount = len(edge.nodes)
         file.write(struct.pack("i", nodecount))
-        for node in edge.geometry:
+        for node in edge.nodes:
             coords = transform_mercator(node.lon, node.lat)
             file.write(struct.pack("d", coords[0]))
             file.write(struct.pack("d", coords[1]))
@@ -272,7 +247,7 @@ def main(args):
     if args.type not in ["car"]:
         print("pls specify a valid type (default car)")
         return
-    args.input = ".\data\sachsen-anhalt.o5m"
+    args.input = ".\data\default.pbf"
     if not os.path.isfile(args.input):
         print("pls specify a valid input")
         return
@@ -281,7 +256,7 @@ def main(args):
     if inputfiletype not in ["osm", "o5m", "pbf"]:
         print("the given input is in the wrong format")
         return
-    graph = extract_graph(args.input, args.type)
+    graph = create_graph(args.input, args.type)
     if args.output is None:
         args.output = inputname + ".graph"
     create_graph_file(graph, args.output)
