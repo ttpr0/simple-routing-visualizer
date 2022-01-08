@@ -22,7 +22,7 @@ namespace Simple.Routing.Graph
         /// <param name="url">path to .graph file</param>
         /// <returns>BasicGraph object</returns>
         /// <exception cref="FileNotFoundException">thrown if file doesnt exist</exception>
-        public BasicGraph loadGraphFromFile(string url)
+        public BasicGraph loadBasicGraph(string url)
         {
             FileInfo f = new FileInfo(url);
             if (!f.Exists || f.Name.Split(".")[1] != "graph")
@@ -78,7 +78,7 @@ namespace Simple.Routing.Graph
         /// <param name="url">path to .graph file</param>
         /// <returns>BasicGraph object</returns>
         /// <exception cref="FileNotFoundException">thrown if file doesnt exist</exception>
-        public BasicGraph loadGraphFromFile2(string url)
+        public BasicGraph loadBasicGraph2(string url)
         {
             FileInfo f = new FileInfo(url);
             if (!f.Exists || f.Name.Split(".")[1] != "graph")
@@ -141,7 +141,7 @@ namespace Simple.Routing.Graph
         }
 
         [Obsolete]
-        public BasicGraph loadGraphFromDB(string url)
+        public BasicGraph loadBasicGraphfromDB(string url)
         {
             FileInfo f = new FileInfo(url);
             string ftype = f.Name.Split(".")[1];
@@ -225,7 +225,7 @@ namespace Simple.Routing.Graph
         /// <param name="url">path to file</param>
         /// <returns>Graph object</returns>
         /// <exception cref="FileNotFoundException">thrown if file doesnt exist</exception>
-        public Graph loadFromFile(string url)
+        public Graph loadGraph(string url)
         {
             FileInfo f = new FileInfo(url);
             if (!f.Exists || f.Name.Split(".")[1] != "graph")
@@ -236,7 +236,7 @@ namespace Simple.Routing.Graph
             MemoryStream ms = new MemoryStream(data);
             BinaryReader br = new BinaryReader(ms);
             int nodecount = br.ReadInt32();
-            Node[] nodearr = new Node[nodecount];
+            GraphNode[] nodearr = new GraphNode[nodecount];
             for (int i = 0; i < nodecount; i++)
             {
                 int id = i;
@@ -247,16 +247,16 @@ namespace Simple.Routing.Graph
                 {
                     br.ReadInt32();
                 }
-                Node newnode = new Node(id, new PointD(x, y));
+                GraphNode newnode = new GraphNode(id, new PointD(x, y));
                 nodearr[id] = newnode;
             }
             int edgecount = br.ReadInt32();
-            Edge[] edgearr = new Edge[edgecount];
+            GraphEdge[] edgearr = new GraphEdge[edgecount];
             for (int i = 0; i < edgecount; i++)
             {
                 int id = i;
-                Node start = nodearr[br.ReadInt32()];
-                Node end = nodearr[br.ReadInt32()];
+                GraphNode start = nodearr[br.ReadInt32()];
+                GraphNode end = nodearr[br.ReadInt32()];
                 double weight = br.ReadDouble();
                 bool oneway = br.ReadBoolean();
                 string type = "residential";
@@ -268,12 +268,66 @@ namespace Simple.Routing.Graph
                     double y = br.ReadDouble();
                     points.Add(new PointD(x, y));
                 }
-                Edge newedge = new Edge(id, new LineD(points.ToArray()), start, end, weight, type, oneway);
+                GraphEdge newedge = new GraphEdge(id, new LineD(points.ToArray()), start, end, weight, type, oneway);
                 start.addEdge(newedge);
                 end.addEdge(newedge);
                 edgearr[id] = newedge;
             }
             return new Graph(nodearr, edgearr);
+        }
+
+        public BaseGraph loadBaseGraph(string url)
+        {
+            FileInfo f = new FileInfo(url);
+            if (!f.Exists || f.Name.Split(".")[1] != "graph")
+            {
+                throw new FileNotFoundException("specified path doesnt meet requirements");
+            }
+            Byte[] data = File.ReadAllBytes(url);
+            MemoryStream ms = new MemoryStream(data);
+            BinaryReader br = new BinaryReader(ms);
+            int nodecount = br.ReadInt32();
+            Node[] nodearr = new Node[nodecount];
+            PointD[] pointarr = new PointD[nodecount];
+            for (int i = 0; i < nodecount; i++)
+            {
+                int id = i;
+                double x = br.ReadDouble();
+                double y = br.ReadDouble();
+                int c = br.ReadInt32();
+                int[] edges = new int[c];
+                for (int j = 0; j < c; j++)
+                {
+                    edges[j] = br.ReadInt32();
+                }
+                nodearr[id] = new Node(id, 1, edges); 
+                pointarr[id] = new PointD(x, y);
+            }
+            int edgecount = br.ReadInt32();
+            Edge[] edgearr = new Edge[edgecount];
+            LineD[] linearr = new LineD[edgecount];
+            int[] weightarr = new int[edgecount];
+            for (int i = 0; i < edgecount; i++)
+            {
+                int id = i;
+                int start = br.ReadInt32();
+                int end = br.ReadInt32();
+                int weight = (int)br.ReadDouble();
+                bool oneway = br.ReadBoolean();
+                byte type = 1;
+                List<PointD> points = new List<PointD>();
+                int c = br.ReadInt32();
+                for (int j = 0; j < c; j++)
+                {
+                    double x = br.ReadDouble();
+                    double y = br.ReadDouble();
+                    points.Add(new PointD(x, y));
+                } 
+                edgearr[id] = new Edge(id, start, end, oneway, type);
+                linearr[id] = new LineD(points.ToArray());
+                weightarr[id] = weight;
+            }
+            return new BaseGraph(edgearr, nodearr, new Geometry(pointarr, linearr), new Weighting(weightarr, new int[0,0,0]));
         }
     }
 }

@@ -3,90 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.GeoData;
 
 namespace Simple.Routing.Graph
 {
-    /// <summary>
-    /// node of Graph
-    /// </summary>
-    class Node : INode
+    struct Node
     {
-        private int id;
-        /// <summary>
-        /// adjacent GraphEdges
-        /// </summary>
-        private List<Edge> edges;
-        private bool visited;
-        public PointD point { get; }
-        /// <summary>
-        /// container for usefull attributes
-        /// </summary>
-        public NodeData data;
+        public int id;
+        public int[] edges;
+        public byte type;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="point">geomtric representiation (web-mercator)</param>
-        public Node(int id, PointD point)
+        public Node(int id, byte type, int[] edges)
         {
             this.id = id;
-            this.edges = new List<Edge>();
-            this.visited = false;
-            this.point = point;
-            this.data = new NodeData();
-            this.data.pathlength = 10000000.00;
-            this.data.pathlength2 = 10000000.00;
-        }
-
-        public int getID()
-        {
-            return this.id;
-        }
-
-        /*
-        /// <summary>
-        /// used to recreate path after search
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns>Graphedge between this and other node</returns>
-        public GraphEdge getEdge(GraphNode other)
-        {
-            foreach (GraphEdge edge in edges)
-            {
-                if (edge.getOtherNode(this) == other)
-                {
-                    return edge;
-                }
-            }
-            return null;
-        }
-        */
-
-        public void addEdge(Edge way)
-        {
-            this.edges.Add(way);
-        }
-
-        public List<Edge> getEdges()
-        {
-            return this.edges;
-        }
-
-        public void setVisited(bool visited)
-        {
-            this.visited = visited;
-        }
-
-        public bool isVisited()
-        {
-            return this.visited;
-        }
-
-        public PointD getGeometry()
-        {
-            return this.point;
+            this.type = type;
+            this.edges = edges;
         }
     }
 }

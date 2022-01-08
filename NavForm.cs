@@ -40,6 +40,7 @@ namespace RoutingVisualizer
         private UtilityMap utilitymap;
         private BasicGraph graph;
         private Graph _graph;
+        private BaseGraph __graph;
         private PointD upperleft = new PointD(1314905, 6716660);
         private int zoom = 12;
         private GeometryContainer container = new GeometryContainer();
@@ -69,11 +70,19 @@ namespace RoutingVisualizer
             GraphFactory f = new GraphFactory();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            this.graph = f.loadGraphFromFile2("data/niedersachsen.graph");
+            //this.graph = f.loadGraphFromFile2("data/niedersachsen.graph");
+            this.__graph = f.loadBaseGraph("data/niedersachsen.graph");
             sw.Stop();
             appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
-            container.startnode = graph.getNode(Convert.ToInt32(txtstart.Text)).getGeometry();
-            container.endnode = graph.getNode(Convert.ToInt32(txtend.Text)).getGeometry();
+            sw.Restart();
+            sw.Start();
+            this.graph = f.loadBasicGraph2("data/niedersachsen.graph");
+            sw.Stop();
+            appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
+            //container.startnode = graph.getNode(Convert.ToInt32(txtstart.Text)).getGeometry();
+            //container.endnode = graph.getNode(Convert.ToInt32(txtend.Text)).getGeometry();
+            container.startnode = __graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));
+            container.endnode = __graph.getGeometry().getNode(Convert.ToInt32(txtend.Text));
             this.graphmap = new GraphMap(1000, 600);
             this.utilitymap = new UtilityMap(1000, 600, this.container);
             haschanged = true;
@@ -209,7 +218,7 @@ namespace RoutingVisualizer
                     break;
                 case "Basic-A*":
                     //algorithm = new BasicAStar(this.graph, start, end);
-                    algorithm = new Djkstra(this.graph, start, end);
+                    algorithm = new AStar2(this.__graph, start, end);
                     break;
                 default:
                     algorithm = new Djkstra(this.graph, start, end);
@@ -221,17 +230,21 @@ namespace RoutingVisualizer
             if (draw)
             {
                 this.drawrouting = true;
-            }
-            int j = 500;
-            List<LineD> lines = new List<LineD>();
-            while (algorithm.steps(j, lines))
-            {
-                if (draw)
+                int j = 500;
+                List<LineD> lines = new List<LineD>();
+                while (algorithm.steps(j, lines))
                 {
-                    this.graphmap.addLines(lines);
-                    drawMap();
-                    lines.Clear();
+                    if (draw)
+                    {
+                        this.graphmap.addLines(lines);
+                        drawMap();
+                        lines.Clear();
+                    }
                 }
+            }
+            else
+            {
+                algorithm.calcShortestPath();
             }
             sw.Stop();
             this.drawrouting = false;

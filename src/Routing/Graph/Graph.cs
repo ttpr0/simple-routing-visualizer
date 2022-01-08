@@ -12,34 +12,34 @@ namespace Simple.Routing.Graph
     /// </summary>
     class Graph
     {
-        Edge[] edges;
-        Node[] nodes;
+        GraphEdge[] edges;
+        GraphNode[] nodes;
 
         /// <summary>
         /// Constructor, connections between nodes and edges should be there allready
         /// </summary>
         /// <param name="nodes"></param>
         /// <param name="ways"></param>
-        public Graph(Node[] nodes, Edge[] ways)
+        public Graph(GraphNode[] nodes, GraphEdge[] ways)
         {
             this.nodes = nodes;
             this.edges = ways;
             initGraph();
         }
 
-        public Node[] getGraphNodes()
+        public GraphNode[] getGraphNodes()
         {
             return this.nodes;
         }
 
-        public Edge[] getGraphEdges()
+        public GraphEdge[] getGraphEdges()
         {
             return this.edges;
         }
 
-        public Node getNodeById(int id)
+        public GraphNode getNodeById(int id)
         {
-            foreach (Node node in nodes)
+            foreach (GraphNode node in nodes)
             {
                 if (node.getID() == id)
                 {
@@ -49,9 +49,9 @@ namespace Simple.Routing.Graph
             return null;
         }
 
-        public Edge getEdgeById(int id)
+        public GraphEdge getEdgeById(int id)
         {
-            foreach (Edge edge in edges)
+            foreach (GraphEdge edge in edges)
             {
                 if (edge.getID() == id)
                 {
@@ -66,13 +66,13 @@ namespace Simple.Routing.Graph
         /// </summary>
         public void initGraph()
         {
-            foreach (Node node in nodes)
+            foreach (GraphNode node in nodes)
             {
                 node.setVisited(false);
                 node.data.pathlength = 1000000000;
                 node.data.pathlength2 = 1000000000;
             }
-            foreach (Edge edge in edges)
+            foreach (GraphEdge edge in edges)
             {
                 edge.setVisited(false);
             }

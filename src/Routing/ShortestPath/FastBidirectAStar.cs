@@ -13,19 +13,19 @@ namespace Simple.Routing.ShortestPath
     /// </summary>
     class FastBidirectAStar : IShortestPath
     {
-        private SortedDictionary<double, Node> visited_start;
-        private SortedDictionary<double, Node> visited_end;
-        private Node startnode;
-        private Node endnode;
-        private Node midnode;
+        private SortedDictionary<double, GraphNode> visited_start;
+        private SortedDictionary<double, GraphNode> visited_end;
+        private GraphNode startnode;
+        private GraphNode endnode;
+        private GraphNode midnode;
 
-        public FastBidirectAStar(Node start, Node end)
+        public FastBidirectAStar(GraphNode start, GraphNode end)
         {
             this.startnode = start;
             this.endnode = end;
-            this.visited_start = new SortedDictionary<double, Node>();
+            this.visited_start = new SortedDictionary<double, GraphNode>();
             this.visited_start.Add(0, startnode);
-            this.visited_end = new SortedDictionary<double, Node>();
+            this.visited_end = new SortedDictionary<double, GraphNode>();
             this.visited_end.Add(0, endnode);
             startnode.data.distance = GraphUtils.getDistance(startnode, endnode);
             startnode.data.distance2 = 0;
@@ -60,7 +60,7 @@ namespace Simple.Routing.ShortestPath
         /// </summary>
         private void fromStart()
         {
-            Node currnode;
+            GraphNode currnode;
             double currkey;
             while (!this.finished)
             {
@@ -72,7 +72,7 @@ namespace Simple.Routing.ShortestPath
                     this.finished = true;
                     return;
                 }
-                foreach (Edge way in currnode.getEdges())
+                foreach (GraphEdge way in currnode.getEdges())
                 {
                     if (way.isVisited())
                     {
@@ -86,7 +86,7 @@ namespace Simple.Routing.ShortestPath
                         }
                     }
                     way.setVisited(true);
-                    Node othernode = way.getOtherNode(currnode);
+                    GraphNode othernode = way.getOtherNode(currnode);
                     othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
                     othernode.data.distance2 = GraphUtils.getDistance(othernode, startnode);
                     double newlength = currnode.data.pathlength - currnode.data.distance + way.getWeight() + othernode.data.distance;
@@ -111,7 +111,7 @@ namespace Simple.Routing.ShortestPath
         /// </summary>
         private void fromEnd()
         {
-            Node currnode;
+            GraphNode currnode;
             double currkey;
             while (!this.finished)
             {
@@ -123,7 +123,7 @@ namespace Simple.Routing.ShortestPath
                     this.finished = true;
                     return;
                 }
-                foreach (Edge edge in currnode.getEdges())
+                foreach (GraphEdge edge in currnode.getEdges())
                 {
                     if (edge.isVisited())
                     {
@@ -137,7 +137,7 @@ namespace Simple.Routing.ShortestPath
                         }
                     }
                     edge.setVisited(true);
-                    Node othernode = edge.getOtherNode(currnode);
+                    GraphNode othernode = edge.getOtherNode(currnode);
                     othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
                     othernode.data.distance2 = GraphUtils.getDistance(othernode, startnode);
                     double newlength = currnode.data.pathlength2 - currnode.data.distance2 + edge.getWeight() + othernode.data.distance2;
@@ -164,7 +164,7 @@ namespace Simple.Routing.ShortestPath
         /// <param name="newkey">key/pathlength of visited node</param>
         /// <param name="newnode">visited node</param>
         /// <returns>entry to dict, might differ from newkey param</returns>
-        private double addToVisitedStart(double newkey, Node newnode)
+        private double addToVisitedStart(double newkey, GraphNode newnode)
         {
             try
             {
@@ -184,7 +184,7 @@ namespace Simple.Routing.ShortestPath
         /// <param name="newkey">key/pathlength of visited node</param>
         /// <param name="newnode">visited node</param>
         /// <returns>entry to dict, might differ from newkey param</returns>
-        private double addToVisitedEnd(double newkey, Node newnode)
+        private double addToVisitedEnd(double newkey, GraphNode newnode)
         {
             try
             {
@@ -209,26 +209,26 @@ namespace Simple.Routing.ShortestPath
         public Path getShortestPath()
         {
             List<LineD> waylist = new List<LineD>();
-            Edge curredge;
-            Node currnode_start = midnode;
+            GraphEdge curredge;
+            GraphNode currnode_start = midnode;
             while (true)
             {
                 if (currnode_start == startnode)
                 {
                     break;
                 }
-                curredge = (Edge)currnode_start.data.prevEdge;
+                curredge = (GraphEdge)currnode_start.data.prevEdge;
                 waylist.Add(curredge.getGeometry());
                 currnode_start = curredge.getOtherNode(currnode_start);
             }
-            Node currnode_end = midnode;
+            GraphNode currnode_end = midnode;
             while (true)
             {
                 if (currnode_end == endnode)
                 {
                     break;
                 }
-                curredge = (Edge)currnode_end.data.prevEdge2;
+                curredge = (GraphEdge)currnode_end.data.prevEdge2;
                 waylist.Add(curredge.getGeometry());
                 currnode_end = curredge.getOtherNode(currnode_end);
             }
