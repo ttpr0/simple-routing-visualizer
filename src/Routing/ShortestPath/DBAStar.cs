@@ -70,7 +70,7 @@ namespace Simple.Routing.ShortestPath
                     }
                     edge.setVisited(true);
                     DBGraphNode othernode = edge.getOtherNode(currnode);
-                    othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
+                    othernode.data.distance = Distance.euclideanDistance(othernode.point, endnode.point);
                     double newlength = currnode.data.pathlength - currnode.data.distance + edge.getWeight() + othernode.data.distance;
                     if (othernode.data.pathlength > newlength)
                     {

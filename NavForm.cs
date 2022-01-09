@@ -39,7 +39,6 @@ namespace RoutingVisualizer
         private GraphMap graphmap;
         private UtilityMap utilitymap;
         private BasicGraph graph;
-        private Graph _graph;
         private BaseGraph __graph;
         private PointD upperleft = new PointD(1314905, 6716660);
         private int zoom = 12;

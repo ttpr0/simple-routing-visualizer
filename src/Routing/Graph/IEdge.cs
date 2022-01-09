@@ -7,6 +7,7 @@ using Simple.GeoData;
 
 namespace Simple.Routing.Graph
 {
+    [Obsolete]
     interface IEdge
     {
         public int getID();

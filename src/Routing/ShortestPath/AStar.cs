@@ -72,7 +72,7 @@ namespace Simple.Routing.ShortestPath
                     }
                     edge.setVisited(true);
                     BasicNode othernode = this.graph.getNode(edge.getOtherNode(currnode.getID()));
-                    othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
+                    othernode.data.distance = Distance.euclideanDistance(othernode.point, endnode.point);
                     double newlength = currnode.data.pathlength - currnode.data.distance + edge.getWeight() + othernode.data.distance;
                     if (othernode.data.pathlength > newlength)
                     {
@@ -115,7 +115,7 @@ namespace Simple.Routing.ShortestPath
                     edge.setVisited(true);
                     visitededges.Add(edge.getGeometry());
                     BasicNode othernode = this.graph.getNode(edge.getOtherNode(currnode.getID()));
-                    othernode.data.distance = GraphUtils.getDistance(othernode, endnode);
+                    othernode.data.distance = Distance.euclideanDistance(othernode.point, endnode.point);
                     double newlength = currnode.data.pathlength - currnode.data.distance + edge.getWeight() + othernode.data.distance;
                     if (othernode.data.pathlength > newlength)
                     {
