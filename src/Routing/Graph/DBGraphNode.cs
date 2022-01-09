@@ -8,7 +8,7 @@ using Simple.GeoData;
 namespace Simple.Routing.Graph
 {
     [Obsolete]
-    class DBGraphNode : INode
+    class DBGraphNode
     {
         private int id;
         /// <summary>
@@ -67,5 +67,15 @@ namespace Simple.Routing.Graph
         {
             return this.point;
         }
+    }
+
+    struct NodeData
+    {
+        public double pathlength;
+        public DBGraphEdge prevEdge;
+        public double pathlength2;
+        public DBGraphEdge prevEdge2;
+        public double distance;
+        public double distance2;
     }
 }

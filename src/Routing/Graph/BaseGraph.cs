@@ -46,6 +46,18 @@ namespace Simple.Routing.Graph
             return ref this.edges[edge];
         }
 
+        public bool isNode(int node)
+        {
+            if (node < this.nodes.Length)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public int edgeCount()
         { return this.edges.Length; }
 

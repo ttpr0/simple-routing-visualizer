@@ -38,8 +38,7 @@ namespace RoutingVisualizer
         private TileMap tilemap;
         private GraphMap graphmap;
         private UtilityMap utilitymap;
-        private BasicGraph graph;
-        private BaseGraph __graph;
+        private BaseGraph graph;
         private PointD upperleft = new PointD(1314905, 6716660);
         private int zoom = 12;
         private GeometryContainer container = new GeometryContainer();
@@ -69,19 +68,11 @@ namespace RoutingVisualizer
             GraphFactory f = new GraphFactory();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            //this.graph = f.loadGraphFromFile2("data/niedersachsen.graph");
-            this.__graph = f.loadBaseGraph("data/niedersachsen.graph");
+            this.graph = f.loadBaseGraph("data/niedersachsen.graph");
             sw.Stop();
             appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
-            sw.Restart();
-            sw.Start();
-            this.graph = f.loadBasicGraph2("data/niedersachsen.graph");
-            sw.Stop();
-            appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
-            //container.startnode = graph.getNode(Convert.ToInt32(txtstart.Text)).getGeometry();
-            //container.endnode = graph.getNode(Convert.ToInt32(txtend.Text)).getGeometry();
-            container.startnode = __graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));
-            container.endnode = __graph.getGeometry().getNode(Convert.ToInt32(txtend.Text));
+            container.startnode = graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));
+            container.endnode = graph.getGeometry().getNode(Convert.ToInt32(txtend.Text));
             this.graphmap = new GraphMap(1000, 600);
             this.utilitymap = new UtilityMap(1000, 600, this.container);
             haschanged = true;
@@ -167,7 +158,6 @@ namespace RoutingVisualizer
         private void btnRunShortestPath_Click(object sender, EventArgs e)
         {
             container.path = null;
-            graph.initGraph();
             int start;
             int end;
             try
@@ -180,15 +170,15 @@ namespace RoutingVisualizer
                 appendNewLine("pls insert valid ID");
                 return;
             }
-            if (graph.getNode(start) == null || graph.getNode(end) == null)
+            if (!graph.isNode(start) || !graph.isNode(end))
             {
                 appendNewLine("pls insert valid Node-ID");
                 return;
             }
             else
             {
-                container.startnode = graph.getNode(start).getGeometry();
-                container.endnode = graph.getNode(end).getGeometry();
+                container.startnode = graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));
+                container.endnode = graph.getGeometry().getNode(Convert.ToInt32(txtend.Text));
             }
             haschanged = true;
             //drawMap();
@@ -196,31 +186,19 @@ namespace RoutingVisualizer
             switch (cbxShortestPath.Text)
             {
                 case "Djkstra":
-                    algorithm = new Djkstra(this.graph, start, end);
+                    algorithm = new Dijkstra(this.graph, start, end);
                     break;
                 case "A*":
                     algorithm = new AStar(this.graph, start, end);
                     break;
                 case "Bidirect-Djkstra":
-                    algorithm = new BidirectDjkstra(this.graph, start, end);
+                    algorithm = new BidirectDijkstra(this.graph, start, end);
                     break;
                 case "Bidirect-A*":
                     algorithm = new BidirectAStar(this.graph, start, end);
                     break;
-                case "Fast-A*":
-                    //algorithm = new FastBidirectAStar(this._graph.getNodeById(start), this._graph.getNodeById(end));
-                    algorithm = new Djkstra(this.graph, start, end);
-                    break;
-                case "DB-A*":
-                    //algorithm = new DBAStar(start, end);
-                    algorithm = new Djkstra(this.graph, start, end);
-                    break;
-                case "Basic-A*":
-                    //algorithm = new BasicAStar(this.graph, start, end);
-                    algorithm = new AStar2(this.__graph, start, end);
-                    break;
                 default:
-                    algorithm = new Djkstra(this.graph, start, end);
+                    algorithm = new Dijkstra(this.graph, start, end);
                     break;
             }
             Stopwatch sw = new Stopwatch();
@@ -251,7 +229,6 @@ namespace RoutingVisualizer
             appendNewLine("finished");
             container.path = algorithm.getShortestPath();
             graphmap.clearMap();
-            graph.initGraph();
             haschanged = true;
             //drawMap();
         }
@@ -317,21 +294,22 @@ namespace RoutingVisualizer
             double distance = -1;
             long id = 0;
             double newdistance;
-            foreach (BasicNode node in graph.getNodes())
+            Geometry geom = graph.getGeometry();
+            for (int i = 0; i < geom.getPoints().Length; i++)
             {
-                PointD point = node.getGeometry();
+                PointD point = geom.getNode(i);
                 newdistance = Math.Sqrt(Math.Pow(clickpoint.lon - point.lon, 2) + Math.Pow(clickpoint.lat - point.lat, 2));
                 if (distance == -1)
                 {
                     container.startnode = point;
                     distance = newdistance;
-                    id = node.getID();
+                    id = i;
                 }
                 if (newdistance < distance)
                 {
                     distance = newdistance;
                     container.startnode = point;
-                    id = node.getID();
+                    id = i;
                 }
             }
             txtstart.Text = id.ToString();
@@ -344,21 +322,22 @@ namespace RoutingVisualizer
             double distance = -1;
             long id = 0;
             double newdistance;
-            foreach (BasicNode node in graph.getNodes())
+            Geometry geom = graph.getGeometry();
+            for (int i = 0; i < geom.getPoints().Length; i++)
             {
-                PointD point = node.getGeometry();
+                PointD point = geom.getNode(i);
                 newdistance = Math.Sqrt(Math.Pow(clickpoint.lon - point.lon, 2) + Math.Pow(clickpoint.lat - point.lat, 2));
                 if (distance == -1)
-                {
+                { 
                     container.endnode = point;
                     distance = newdistance;
-                    id = node.getID();
+                    id = i;
                 }
                 if (newdistance < distance)
                 {
                     distance = newdistance;
                     container.endnode = point;
-                    id = node.getID();
+                    id = i;
                 }
             }
             txtend.Text = id.ToString();

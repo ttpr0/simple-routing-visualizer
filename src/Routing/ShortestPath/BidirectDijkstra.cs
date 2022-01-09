@@ -8,7 +8,7 @@ using Simple.Routing.Graph;
 
 namespace Simple.Routing.ShortestPath
 {
-    class BidirectAStar : IShortestPath
+    class BidirectDijkstra : IShortestPath
     {
         private PriorityQueue<Node, int> startheap;
         private PriorityQueue<Node, int> endheap;
@@ -19,22 +19,18 @@ namespace Simple.Routing.ShortestPath
         private Geometry geom;
         private Weighting weight;
         private Flag[] flags;
-        private PointD endpoint;
-        private PointD startpoint;
 
         private struct Flag
         {
             public double pathlength;
             public double pathlength2;
-            public double distance;
-            public double distance2;
             public int prevEdge;
             public int prevEdge2;
             public bool visited = false;
             public bool visited2 = false;
         }
 
-        public BidirectAStar(BaseGraph graph, int start, int end)
+        public BidirectDijkstra(BaseGraph graph, int start, int end)
         {
             this.graph = graph;
             this.start = graph.getNode(start);
@@ -53,8 +49,6 @@ namespace Simple.Routing.ShortestPath
             }
             flags[start].pathlength = 0;
             flags[end].pathlength2 = 0;
-            this.startpoint = this.geom.getNode(start);
-            this.endpoint = this.geom.getNode(end);
         }
 
         private bool finished = false;
@@ -66,7 +60,7 @@ namespace Simple.Routing.ShortestPath
         {
             var s = Task.Run(() => { fromStart(); });
             var e = Task.Run(() => { fromEnd(); });
-            Task.WaitAll(new[] { s, e });
+            Task.WaitAll(new[] {s,e});
             return true;
         }
 
@@ -105,8 +99,7 @@ namespace Simple.Routing.ShortestPath
                             continue;
                         }
                     }
-                    otherflag.distance = Distance.euclideanDistance(this.geom.getNode(other.id), endpoint);
-                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edge.id) + otherflag.distance;
+                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edge.id);
                     if (otherflag.pathlength > newlength)
                     {
                         otherflag.prevEdge = edge.id;
@@ -152,8 +145,7 @@ namespace Simple.Routing.ShortestPath
                             continue;
                         }
                     }
-                    otherflag.distance2 = Distance.euclideanDistance(this.geom.getNode(other.id), startpoint);
-                    double newlength = currflag.pathlength2 - currflag.distance2 + this.weight.getEdgeWeight(edge.id) + otherflag.distance2;
+                    double newlength = currflag.pathlength2 + this.weight.getEdgeWeight(edge.id);
                     if (otherflag.pathlength2 > newlength)
                     {
                         otherflag.prevEdge2 = edge.id;
@@ -199,8 +191,7 @@ namespace Simple.Routing.ShortestPath
                         }
                     }
                     visitededges.Add(this.geom.getEdge(edge.id));
-                    otherflag.distance = Distance.euclideanDistance(this.geom.getNode(other.id), endpoint);
-                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edge.id) + otherflag.distance;
+                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edge.id);
                     if (otherflag.pathlength > newlength)
                     {
                         otherflag.prevEdge = edge.id;
@@ -238,8 +229,7 @@ namespace Simple.Routing.ShortestPath
                         }
                     }
                     visitededges.Add(this.geom.getEdge(edge.id));
-                    otherflag.distance2 = Distance.euclideanDistance(this.geom.getNode(other.id), startpoint);
-                    double newlength = currflag.pathlength2 - currflag.distance2 + this.weight.getEdgeWeight(edge.id) + otherflag.distance2;
+                    double newlength = currflag.pathlength2 + this.weight.getEdgeWeight(edge.id);
                     if (otherflag.pathlength2 > newlength)
                     {
                         otherflag.prevEdge2 = edge.id;

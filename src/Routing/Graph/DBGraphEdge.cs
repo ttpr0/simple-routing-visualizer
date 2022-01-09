@@ -9,7 +9,7 @@ using Simple.GeoData;
 namespace Simple.Routing.Graph
 {
     [Obsolete]
-    class DBGraphEdge : IEdge
+    class DBGraphEdge
     {
         private int id;
         private DBGraphNode node_a;
@@ -103,5 +103,13 @@ namespace Simple.Routing.Graph
         {
             return this.visited;
         }
+    }
+
+    struct EdgeData
+    {
+        public bool oneway;
+        public double weight;
+        public string type;
+        public bool important;
     }
 }
