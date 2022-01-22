@@ -16,5 +16,8 @@ namespace Simple.Maps
         public PointD startnode;
         public PointD endnode;
         public Path path;
+        public PointCloudD valuepoints;
+        public PolygonD polygon;
+        public RasterImage mgimg;
     }
 }

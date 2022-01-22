@@ -18,6 +18,7 @@ using Simple.Routing.ShortestPath;
 using Simple.Maps;
 using Simple.Maps.TileMap; 
 using Microsoft.Data.Sqlite;
+using Simple.Routing.Isodistance;
 
 namespace RoutingVisualizer
 {
@@ -68,7 +69,7 @@ namespace RoutingVisualizer
             GraphFactory f = new GraphFactory();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            this.graph = f.loadBaseGraph("data/germany_s.graph");
+            this.graph = f.loadBaseGraph("data/niedersachsen.graph");
             sw.Stop();
             appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
             container.startnode = graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));
@@ -158,6 +159,9 @@ namespace RoutingVisualizer
         private void btnRunShortestPath_Click(object sender, EventArgs e)
         {
             container.path = null;
+            container.valuepoints = null;
+            container.polygon = null;
+            container.mgimg = null;
             int start;
             int end;
             try
@@ -229,6 +233,59 @@ namespace RoutingVisualizer
             appendNewLine("finished");
             container.path = algorithm.getShortestPath();
             graphmap.clearMap();
+            haschanged = true;
+            //drawMap();
+        }
+
+        private void btnRunMultiGraph_Click(object sender, EventArgs e)
+        {
+            container.path = null;
+            container.valuepoints = null;
+            container.polygon = null;
+            container.mgimg = null;
+            int start;
+            try
+            {
+                start = Convert.ToInt32(txtstart.Text);
+            }
+            catch (Exception)
+            {
+                appendNewLine("pls insert valid ID");
+                return;
+            }
+            if (!graph.isNode(start))
+            {
+                appendNewLine("pls insert valid Node-ID");
+                return;
+            }
+            else
+            {
+                container.startnode = graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));
+                container.endnode = graph.getGeometry().getNode(Convert.ToInt32(txtend.Text));
+            }
+            haschanged = true;
+            //drawMap();
+            MultiGraph mg = new MultiGraph(this.graph, start, 3600);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            mg.calcMultiGraph();
+            sw.Stop();
+            this.drawrouting = false;
+            appendNewLine(sw.ElapsedMilliseconds.ToString());
+            appendNewLine("finished");
+            
+            sw.Restart();
+            Raster raster = new Raster(new PointD(708071.8, 7186169.6), 2500, 2500, 200);
+            raster.valuesFromPointCloud(mg.getMultiGraph());
+            sw.Stop();
+            appendNewLine(sw.ElapsedMilliseconds.ToString());
+            sw.Restart();
+            container.mgimg = new RasterImage(raster, new ColorFactory(Color.Green, Color.Red, 12));
+            sw.Stop();
+            appendNewLine(sw.ElapsedMilliseconds.ToString());
+            /*
+            container.valuepoints = mg.getMultiGraph();
+            */
             haschanged = true;
             //drawMap();
         }

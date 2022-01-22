@@ -44,6 +44,7 @@ namespace RoutingVisualizer
             this.lblalgtype = new System.Windows.Forms.Label();
             this.chbxDraw = new System.Windows.Forms.CheckBox();
             this.timerDrawPbx = new System.Windows.Forms.Timer(this.components);
+            this.btnRunMultiGraph = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbxout)).BeginInit();
             this.ctmpbx.SuspendLayout();
             this.SuspendLayout();
@@ -172,11 +173,22 @@ namespace RoutingVisualizer
             this.timerDrawPbx.Interval = 30;
             this.timerDrawPbx.Tick += new System.EventHandler(this.timerDrawPbx_Tick);
             // 
+            // btnRunMultiGraph
+            // 
+            this.btnRunMultiGraph.Location = new System.Drawing.Point(1011, 625);
+            this.btnRunMultiGraph.Name = "btnRunMultiGraph";
+            this.btnRunMultiGraph.Size = new System.Drawing.Size(75, 23);
+            this.btnRunMultiGraph.TabIndex = 13;
+            this.btnRunMultiGraph.Text = "MultiGraph";
+            this.btnRunMultiGraph.UseVisualStyleBackColor = true;
+            this.btnRunMultiGraph.Click += new System.EventHandler(this.btnRunMultiGraph_Click);
+            // 
             // NavForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1256, 660);
+            this.Controls.Add(this.btnRunMultiGraph);
             this.Controls.Add(this.chbxDraw);
             this.Controls.Add(this.lblalgtype);
             this.Controls.Add(this.cbxShortestPath);
@@ -214,6 +226,7 @@ namespace RoutingVisualizer
         private System.Windows.Forms.CheckBox chbxDraw;
 
         private System.Windows.Forms.Timer timerDrawPbx;
+        private System.Windows.Forms.Button btnRunMultiGraph;
     }
 }
 
