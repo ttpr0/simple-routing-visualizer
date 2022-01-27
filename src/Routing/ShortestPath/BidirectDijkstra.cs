@@ -10,11 +10,11 @@ namespace Simple.Routing.ShortestPath
 {
     class BidirectDijkstra : IShortestPath
     {
-        private PriorityQueue<Node, int> startheap;
-        private PriorityQueue<Node, int> endheap;
-        private Node mid;
-        private Node start;
-        private Node end;
+        private PriorityQueue<int, int> startheap;
+        private PriorityQueue<int, int> endheap;
+        private int midid;
+        private int startid;
+        private int endid;
         private BaseGraph graph;
         private Geometry geom;
         private Weighting weight;
@@ -33,12 +33,12 @@ namespace Simple.Routing.ShortestPath
         public BidirectDijkstra(BaseGraph graph, int start, int end)
         {
             this.graph = graph;
-            this.start = graph.getNode(start);
-            this.end = graph.getNode(end);
-            this.startheap = new PriorityQueue<Node, int>();
-            this.startheap.Enqueue(this.start, 0);
-            this.endheap = new PriorityQueue<Node, int>();
-            this.endheap.Enqueue(this.end, 0);
+            this.startid = start;
+            this.endid = end;
+            this.startheap = new PriorityQueue<int, int>();
+            this.startheap.Enqueue(this.startid, 0);
+            this.endheap = new PriorityQueue<int, int>();
+            this.endheap.Enqueue(this.endid, 0);
             this.flags = new Flag[graph.nodeCount()];
             this.geom = graph.getGeometry();
             this.weight = graph.getWeighting();
@@ -66,45 +66,48 @@ namespace Simple.Routing.ShortestPath
 
         private void fromStart()
         {
-            Node curr;
+            int currid;
             while (!finished)
             {
-                curr = this.startheap.Dequeue();
-                ref Flag currflag = ref this.flags[curr.id];
+                currid = this.startheap.Dequeue();
+                Node curr = this.graph.getNode(currid);
+                ref Flag currflag = ref this.flags[currid];
                 if (currflag.visited)
                 {
                     continue;
                 }
                 if (currflag.visited2)
                 {
-                    mid = curr;
+                    midid = currid;
                     finished = true;
                     return;
                 }
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(curr.id);
+                int[] edges = this.graph.getAdjEdges(currid);
                 for (int i = 0; i < edges.Length; i++)
                 {
-                    Edge edge = this.graph.getEdge(edges[i]);
-                    Node other = this.graph.getNode(this.graph.getOtherNode(edge.id, curr.id));
-                    ref Flag otherflag = ref this.flags[other.id];
+                    int edgeid = edges[i];
+                    Edge edge = this.graph.getEdge(edgeid);
+                    int otherid = this.graph.getOtherNode(edgeid, currid);
+                    Node other = this.graph.getNode(otherid);
+                    ref Flag otherflag = ref this.flags[otherid];
                     if (otherflag.visited)
                     {
                         continue;
                     }
                     if (edge.oneway)
                     {
-                        if (edge.nodeB == curr.id)
+                        if (edge.nodeB == currid)
                         {
                             continue;
                         }
                     }
-                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edge.id);
+                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edgeid);
                     if (otherflag.pathlength > newlength)
                     {
-                        otherflag.prevEdge = edge.id;
+                        otherflag.prevEdge = edgeid;
                         otherflag.pathlength = newlength;
-                        this.startheap.Enqueue(other, (int)newlength);
+                        this.startheap.Enqueue(otherid, (int)newlength);
                     }
                 }
             }
@@ -112,129 +115,138 @@ namespace Simple.Routing.ShortestPath
 
         private void fromEnd()
         {
-            Node curr;
+            int currid;
             while (!finished)
             {
-                curr = this.endheap.Dequeue();
-                ref Flag currflag = ref this.flags[curr.id];
+                currid = this.endheap.Dequeue();
+                Node curr = this.graph.getNode(currid);
+                ref Flag currflag = ref this.flags[currid];
                 if (currflag.visited2)
                 {
                     continue;
                 }
                 if (currflag.visited)
                 {
-                    mid = curr;
+                    midid = currid;
                     finished = true;
                     return;
                 }
                 currflag.visited2 = true;
-                int[] edges = this.graph.getAdjEdges(curr.id);
+                int[] edges = this.graph.getAdjEdges(currid);
                 for (int i = 0; i < edges.Length; i++)
                 {
-                    Edge edge = this.graph.getEdge(edges[i]);
-                    Node other = this.graph.getNode(this.graph.getOtherNode(edge.id, curr.id));
-                    ref Flag otherflag = ref this.flags[other.id];
+                    int edgeid = edges[i];
+                    Edge edge = this.graph.getEdge(edgeid);
+                    int otherid = this.graph.getOtherNode(edgeid, currid);
+                    Node other = this.graph.getNode(otherid);
+                    ref Flag otherflag = ref this.flags[otherid];
                     if (otherflag.visited2)
                     {
                         continue;
                     }
                     if (edge.oneway)
                     {
-                        if (edge.nodeA == curr.id)
+                        if (edge.nodeA == currid)
                         {
                             continue;
                         }
                     }
-                    double newlength = currflag.pathlength2 + this.weight.getEdgeWeight(edge.id);
+                    double newlength = currflag.pathlength2 + this.weight.getEdgeWeight(edgeid);
                     if (otherflag.pathlength2 > newlength)
                     {
-                        otherflag.prevEdge2 = edge.id;
+                        otherflag.prevEdge2 = edgeid;
                         otherflag.pathlength2 = newlength;
-                        this.endheap.Enqueue(other, (int)newlength);
+                        this.endheap.Enqueue(otherid, (int)newlength);
                     }
                 }
             }
         }
 
-        private Node curr;
+        private int currid;
         public bool steps(int count, List<LineD> visitededges)
         {
             for (int c = 0; c < count; c++)
             {
-                curr = this.startheap.Dequeue();
-                ref Flag currflag = ref this.flags[curr.id];
+                currid = this.startheap.Dequeue();
+                Node curr = this.graph.getNode(currid);
+                ref Flag currflag = ref this.flags[currid];
                 if (currflag.visited)
                 {
                     continue;
                 }
                 if (currflag.visited2)
                 {
-                    mid = curr;
+                    midid = currid;
                     return false;
                 }
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(curr.id);
+                int[] edges = this.graph.getAdjEdges(currid);
                 for (int i = 0; i < edges.Length; i++)
                 {
-                    Edge edge = this.graph.getEdge(edges[i]);
-                    Node other = this.graph.getNode(this.graph.getOtherNode(edge.id, curr.id));
-                    ref Flag otherflag = ref this.flags[other.id];
+                    int edgeid = edges[i];
+                    Edge edge = this.graph.getEdge(edgeid);
+                    int otherid = this.graph.getOtherNode(edgeid, currid);
+                    Node other = this.graph.getNode(otherid);
+                    ref Flag otherflag = ref this.flags[otherid];
                     if (otherflag.visited)
                     {
                         continue;
                     }
                     if (edge.oneway)
                     {
-                        if (edge.nodeB == curr.id)
+                        if (edge.nodeB == currid)
                         {
                             continue;
                         }
                     }
-                    visitededges.Add(this.geom.getEdge(edge.id));
-                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edge.id);
+                    visitededges.Add(this.geom.getEdge(edgeid));
+                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edgeid);
                     if (otherflag.pathlength > newlength)
                     {
-                        otherflag.prevEdge = edge.id;
+                        otherflag.prevEdge = edgeid;
                         otherflag.pathlength = newlength;
-                        this.startheap.Enqueue(other, (int)newlength);
+                        this.startheap.Enqueue(otherid, (int)newlength);
                     }
                 }
-                curr = this.endheap.Dequeue();
-                currflag = ref this.flags[curr.id];
+                currid = this.endheap.Dequeue();
+                curr = this.graph.getNode(currid);
+                currflag = ref this.flags[currid];
                 if (currflag.visited2)
                 {
                     continue;
                 }
                 if (currflag.visited)
                 {
-                    mid = curr;
+                    midid = currid;
                     return false;
                 }
                 currflag.visited2 = true;
-                edges = this.graph.getAdjEdges(curr.id);
+                edges = this.graph.getAdjEdges(currid);
                 for (int i = 0; i < edges.Length; i++)
                 {
-                    Edge edge = this.graph.getEdge(edges[i]);
-                    Node other = this.graph.getNode(this.graph.getOtherNode(edge.id, curr.id));
-                    ref Flag otherflag = ref this.flags[other.id];
+                    int edgeid = edges[i];
+                    Edge edge = this.graph.getEdge(edgeid);
+                    int otherid = this.graph.getOtherNode(edgeid, currid);
+                    Node other = this.graph.getNode(otherid);
+                    ref Flag otherflag = ref this.flags[otherid];
                     if (otherflag.visited2)
                     {
                         continue;
                     }
                     if (edge.oneway)
                     {
-                        if (edge.nodeA == curr.id)
+                        if (edge.nodeA == currid)
                         {
                             continue;
                         }
                     }
-                    visitededges.Add(this.geom.getEdge(edge.id));
-                    double newlength = currflag.pathlength2 + this.weight.getEdgeWeight(edge.id);
+                    visitededges.Add(this.geom.getEdge(edgeid));
+                    double newlength = currflag.pathlength2 + this.weight.getEdgeWeight(edgeid);
                     if (otherflag.pathlength2 > newlength)
                     {
-                        otherflag.prevEdge2 = edge.id;
+                        otherflag.prevEdge2 = edgeid;
                         otherflag.pathlength2 = newlength;
-                        this.endheap.Enqueue(other, (int)newlength);
+                        this.endheap.Enqueue(otherid, (int)newlength);
                     }
                 }
             }
@@ -250,27 +262,27 @@ namespace Simple.Routing.ShortestPath
             List<LineD> geometry = new List<LineD>();
             List<int> edges = new List<int>();
             int edge;
-            curr = mid;
+            currid = midid;
             while (true)
             {
-                if (curr.id == start.id)
+                if (currid == startid)
                 {
                     break;
                 }
-                edge = this.flags[curr.id].prevEdge;
+                edge = this.flags[currid].prevEdge;
                 geometry.Add(this.geom.getEdge(edge));
-                curr = this.graph.getNode(this.graph.getOtherNode(edge, curr.id));
+                currid = this.graph.getOtherNode(edge, currid);
             }
-            curr = mid;
+            currid = midid;
             while (true)
             {
-                if (curr.id == end.id)
+                if (currid == endid)
                 {
                     break;
                 }
-                edge = this.flags[curr.id].prevEdge2;
+                edge = this.flags[currid].prevEdge2;
                 geometry.Add(this.geom.getEdge(edge));
-                curr = this.graph.getNode(this.graph.getOtherNode(edge, curr.id));
+                currid = this.graph.getOtherNode(edge, currid);
             }
             return new Path(edges, geometry);
         }

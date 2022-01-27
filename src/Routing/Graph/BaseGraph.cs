@@ -98,7 +98,7 @@ namespace Simple.Routing.Graph
             int i = this.edges.Length;
             this.nodes[nodeA].edges.Append(i);
             this.nodes[nodeB].edges.Append(i);
-            this.edges.Append(new Edge(i, nodeA, nodeB, oneway, type));
+            this.edges.Append(new Edge(nodeA, nodeB, oneway, type));
             this.geom.getLines().Append(line);
             this.weight.edgeweight.Append(weight);
             return i;
@@ -115,7 +115,7 @@ namespace Simple.Routing.Graph
             try
             {
                 int i = this.nodes.Length;
-                this.nodes.Append(new Node(i, type, new int[0]));
+                this.nodes.Append(new Node(type, new int[0]));
                 this.geom.getPoints().Append(point);
                 return i;
             }

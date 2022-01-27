@@ -46,7 +46,7 @@ namespace Simple.Routing.Graph
                 {
                     edges[j] = br.ReadInt32();
                 }
-                nodearr[id] = new Node(id, 1, edges); 
+                nodearr[id] = new Node(1, edges); 
                 pointarr[id] = new PointD(x, y);
             }
             int edgecount = br.ReadInt32();
@@ -69,7 +69,7 @@ namespace Simple.Routing.Graph
                     double y = br.ReadDouble();
                     points.Add(new PointD(x, y));
                 } 
-                edgearr[id] = new Edge(id, start, end, oneway, type);
+                edgearr[id] = new Edge(start, end, oneway, type);
                 linearr[id] = new LineD(points.ToArray());
                 weightarr[id] = weight;
             }

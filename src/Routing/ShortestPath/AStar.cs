@@ -10,11 +10,11 @@ namespace Simple.Routing.ShortestPath
 {
     class AStar : IShortestPath
     {
-        private PriorityQueue<Node, int> heap;
+        private PriorityQueue<int, int> heap;
         private BaseGraph graph;
         private Flag[] flags;
-        private Node start;
-        private Node end;
+        private int startid;
+        private int endid;
         private PointD endpoint;
         private Geometry geom;
         private Weighting weight;
@@ -35,10 +35,10 @@ namespace Simple.Routing.ShortestPath
         public AStar(BaseGraph graph, int start, int end)
         {
             this.graph = graph;
-            this.end = graph.getNode(end);
-            this.start = graph.getNode(start);
-            this.heap = new PriorityQueue<Node, int>();
-            this.heap.Enqueue(this.start, 0);
+            this.endid = end;
+            this.startid = start;
+            this.heap = new PriorityQueue<int, int>();
+            this.heap.Enqueue(this.startid, 0);
             this.flags = new Flag[graph.nodeCount()];
             this.geom = graph.getGeometry();
             this.weight = graph.getWeighting();
@@ -50,7 +50,7 @@ namespace Simple.Routing.ShortestPath
             flags[start].pathlength = 0;
         }
 
-        private Node curr;
+        private int currid;
         /// <summary>
         /// performs one step of A* algorithm,
         /// sets visited GraphEdges to visited
@@ -62,43 +62,46 @@ namespace Simple.Routing.ShortestPath
             {
                 try
                 {
-                    curr = this.heap.Dequeue();
+                    currid = this.heap.Dequeue();
                 }
                 catch (Exception)
                 {
                     return false;
                 }
-                if (curr.id == end.id)
+                if (currid == endid)
                 {
                     return true;
                 }
-                ref Flag currflag = ref this.flags[curr.id];
+                Node curr = this.graph.getNode(currid);
+                ref Flag currflag = ref this.flags[currid];
                 if (currflag.visited) continue;
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(curr.id);
+                int[] edges = this.graph.getAdjEdges(currid);
                 for (int i = 0; i < edges.Length; i++)
                 {
-                    Edge edge = this.graph.getEdge(edges[i]);
-                    Node other = this.graph.getNode(this.graph.getOtherNode(edge.id, curr.id));
-                    ref Flag otherflag = ref this.flags[other.id];
+                    int edgeid = edges[i];
+                    Edge edge = this.graph.getEdge(edgeid);
+                    int otherid = this.graph.getOtherNode(edgeid, currid);
+                    Node other = this.graph.getNode(otherid);
+                    ref Flag otherflag = ref this.flags[otherid];
                     if (otherflag.visited)
                     {
                         continue;
                     }
                     if (edge.oneway)
                     {
-                        if (edge.nodeB == curr.id)
+                        if (edge.nodeB == currid)
                         {
                             continue;
                         }
                     }
-                    otherflag.distance = Distance.euclideanDistance(this.geom.getNode(other.id), endpoint);
-                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edge.id) + otherflag.distance;
+                    otherflag.distance = Distance.euclideanDistance(this.geom.getNode(otherid), endpoint);
+                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edgeid) + otherflag.distance;
                     if (otherflag.pathlength > newlength)
                     {
-                        otherflag.prevEdge = edge.id;
+                        otherflag.prevEdge = edgeid;
                         otherflag.pathlength = newlength;
-                        this.heap.Enqueue(other, (int)newlength);
+                        this.heap.Enqueue(otherid, (int)newlength);
                     }
                 }
             }
@@ -108,39 +111,42 @@ namespace Simple.Routing.ShortestPath
         {
             for (int c = 0; c < count; c++)
             {
-                curr = this.heap.Dequeue();
-                if (curr.id == end.id)
+                currid = this.heap.Dequeue();
+                if (currid == endid)
                 {
                     return false;
                 }
-                ref Flag currflag = ref this.flags[curr.id];
+                Node curr = this.graph.getNode(currid);
+                ref Flag currflag = ref this.flags[currid];
                 if (currflag.visited) continue;
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(curr.id);
+                int[] edges = this.graph.getAdjEdges(currid);
                 for (int i = 0; i < edges.Length; i++)
                 {
-                    Edge edge = this.graph.getEdge(edges[i]);
-                    Node other = this.graph.getNode(this.graph.getOtherNode(edge.id, curr.id));
-                    ref Flag otherflag = ref this.flags[other.id];
+                    int edgeid = edges[i];
+                    Edge edge = this.graph.getEdge(edgeid);
+                    int otherid = this.graph.getOtherNode(edgeid, currid);
+                    Node other = this.graph.getNode(otherid);
+                    ref Flag otherflag = ref this.flags[otherid];
                     if (otherflag.visited)
                     {
                         continue;
                     }
                     if (edge.oneway)
                     {
-                        if (edge.nodeB == curr.id)
+                        if (edge.nodeB == currid)
                         {
                             continue;
                         }
                     }
-                    visitededges.Add(this.geom.getEdge(edge.id));
-                    otherflag.distance = Distance.euclideanDistance(this.geom.getNode(other.id), endpoint);
-                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edge.id) + otherflag.distance;
+                    visitededges.Add(this.geom.getEdge(edgeid));
+                    otherflag.distance = Distance.euclideanDistance(this.geom.getNode(otherid), endpoint);
+                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edgeid) + otherflag.distance;
                     if (otherflag.pathlength > newlength)
                     {
-                        otherflag.prevEdge = edge.id;
+                        otherflag.prevEdge = edgeid;
                         otherflag.pathlength = newlength;
-                        this.heap.Enqueue(other, (int)newlength);
+                        this.heap.Enqueue(otherid, (int)newlength);
                     }
                 }
             }
@@ -155,17 +161,17 @@ namespace Simple.Routing.ShortestPath
         {
             List<LineD> geometry = new List<LineD>();
             List<int> edges = new List<int>();
-            curr = end;
+            currid = endid;
             int edge;
             while (true)
             {
-                if (curr.id == start.id)
+                if (currid == startid)
                 {
                     break;
                 }
-                edge = this.flags[curr.id].prevEdge;
+                edge = this.flags[currid].prevEdge;
                 geometry.Add(this.geom.getEdge(edge));
-                curr = this.graph.getNode(this.graph.getOtherNode(edge, curr.id));
+                currid = this.graph.getOtherNode(edge, currid);
             }
             return new Path(edges, geometry);
         }

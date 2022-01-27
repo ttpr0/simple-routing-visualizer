@@ -8,16 +8,14 @@ namespace Simple.Routing.Graph
 {
     struct Edge
     {
-        public int id;
         public int nodeA;
         public int nodeB;
         public bool oneway;
         public byte type;
 
-        public Edge(int id, int nodeA, int nodeB, bool oneway, byte type)
+        public Edge(int nodeA, int nodeB, bool oneway, byte type)
         {
-            this.type = type;
-            this.id = id;   
+            this.type = type; 
             this.nodeA = nodeA;
             this.nodeB = nodeB;
             this.oneway = oneway;

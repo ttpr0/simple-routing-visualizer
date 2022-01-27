@@ -10,8 +10,8 @@ namespace Simple.Routing.Isodistance
 {
     class MultiGraph
     {
-        private PriorityQueue<Node, int> heap;
-        private Node start;
+        private PriorityQueue<int, int> heap;
+        private int startid;
         private int maxvalue;
         private BaseGraph graph;
         private Geometry geom;
@@ -34,9 +34,9 @@ namespace Simple.Routing.Isodistance
         {
             this.graph = graph;
             this.maxvalue = maxvalue;
-            this.start = this.graph.getNode(start);
-            this.heap = new PriorityQueue<Node, int>();
-            this.heap.Enqueue(this.start, 0);
+            this.startid = start;
+            this.heap = new PriorityQueue<int, int>();
+            this.heap.Enqueue(this.startid, 0);
             this.flags = new Flag[graph.nodeCount()];
             this.points = new List<Tuple<int,int>>();
             this.geom = graph.getGeometry();
@@ -48,7 +48,7 @@ namespace Simple.Routing.Isodistance
             flags[start].pathlength = 0;
         }
 
-        private Node curr;
+        private int currid;
         /// <summary>
         /// performs one step of Djkstra algorithm
         /// </summary>
@@ -58,13 +58,14 @@ namespace Simple.Routing.Isodistance
             {
                 try
                 {
-                    curr = this.heap.Dequeue();
+                    currid = this.heap.Dequeue();
                 }
                 catch (Exception)
                 {
                     return;
                 }
-                ref Flag currflag = ref this.flags[curr.id];
+                Node curr = this.graph.getNode(currid);
+                ref Flag currflag = ref this.flags[currid];
                 if (currflag.pathlength/36 > maxvalue)
                 {
                     return;
@@ -73,30 +74,32 @@ namespace Simple.Routing.Isodistance
                 {
                     continue;
                 }
-                points.Add(new Tuple<int,int>(curr.id, (int)(currflag.pathlength/36)));
+                points.Add(new Tuple<int,int>(currid, (int)(currflag.pathlength/36)));
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(curr.id);
+                int[] edges = this.graph.getAdjEdges(currid);
                 for (int i = 0; i < edges.Length; i++)
                 {
-                    Edge edge = this.graph.getEdge(edges[i]);
-                    Node other = this.graph.getNode(this.graph.getOtherNode(edge.id, curr.id));
-                    ref Flag otherflag = ref this.flags[other.id];
+                    int edgeid = edges[i];
+                    Edge edge = this.graph.getEdge(edgeid);
+                    int otherid = this.graph.getOtherNode(edgeid, currid);
+                    Node other = this.graph.getNode(otherid);
+                    ref Flag otherflag = ref this.flags[otherid];
                     if (otherflag.visited)
                     {
                         continue;
                     }
                     if (edge.oneway)
                     {
-                        if (edge.nodeB == curr.id)
+                        if (edge.nodeB == currid)
                         {
                             continue;
                         }
                     }
-                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edge.id);
+                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edgeid);
                     if (otherflag.pathlength > newlength)
                     {
                         otherflag.pathlength = newlength;
-                        this.heap.Enqueue(other, (int)newlength);
+                        this.heap.Enqueue(otherid, (int)newlength);
                     }
                 }
             }
