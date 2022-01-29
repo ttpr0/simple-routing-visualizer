@@ -7,7 +7,7 @@ using Simple.GeoData;
 
 namespace Simple.Routing.Graph
 {
-    class Geometry
+    class Geometry : IGeometry
     {
         public PointD[] nodegeometry;
         public LineD[] edgegeometry;
@@ -28,12 +28,12 @@ namespace Simple.Routing.Graph
             return edgegeometry[edge];
         }
 
-        public LineD[] getLines()
+        public LineD[] getAllEdges()
         {
             return this.edgegeometry;    
         }
 
-        public PointD[] getPoints()
+        public PointD[] getAllNodes()
         {
             return this.nodegeometry;
         }

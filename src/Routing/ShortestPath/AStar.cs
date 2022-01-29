@@ -16,8 +16,8 @@ namespace Simple.Routing.ShortestPath
         private int startid;
         private int endid;
         private PointD endpoint;
-        private Geometry geom;
-        private Weighting weight;
+        private IGeometry geom;
+        private IWeighting weight;
 
         private struct Flag
         {

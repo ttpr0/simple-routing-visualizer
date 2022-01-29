@@ -16,8 +16,8 @@ namespace Simple.Routing.ShortestPath
         private int startid;
         private int endid;
         private BaseGraph graph;
-        private Geometry geom;
-        private Weighting weight;
+        private IGeometry geom;
+        private IWeighting weight;
         private Flag[] flags;
         private PointD endpoint;
         private PointD startpoint;

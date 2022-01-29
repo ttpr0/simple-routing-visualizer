@@ -351,8 +351,8 @@ namespace RoutingVisualizer
             double distance = -1;
             long id = 0;
             double newdistance;
-            Geometry geom = graph.getGeometry();
-            for (int i = 0; i < geom.getPoints().Length; i++)
+            IGeometry geom = graph.getGeometry();
+            for (int i = 0; i < geom.getAllNodes().Length; i++)
             {
                 PointD point = geom.getNode(i);
                 newdistance = Math.Sqrt(Math.Pow(clickpoint.lon - point.lon, 2) + Math.Pow(clickpoint.lat - point.lat, 2));
@@ -379,8 +379,8 @@ namespace RoutingVisualizer
             double distance = -1;
             long id = 0;
             double newdistance;
-            Geometry geom = graph.getGeometry();
-            for (int i = 0; i < geom.getPoints().Length; i++)
+            IGeometry geom = graph.getGeometry();
+            for (int i = 0; i < geom.getAllNodes().Length; i++)
             {
                 PointD point = geom.getNode(i);
                 newdistance = Math.Sqrt(Math.Pow(clickpoint.lon - point.lon, 2) + Math.Pow(clickpoint.lat - point.lat, 2));

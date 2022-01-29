@@ -14,8 +14,8 @@ namespace Simple.Routing.Isodistance
         private int startid;
         private int maxvalue;
         private BaseGraph graph;
-        private Geometry geom;
-        private Weighting weight;
+        private IGeometry geom;
+        private IWeighting weight;
         private Flag[] flags;
         private List<Tuple<int,int>> points;
 

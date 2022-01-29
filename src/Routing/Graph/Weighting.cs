@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Simple.Routing.Graph
 {
-    class Weighting
+    class Weighting : IWeighting
     {
         public int[] edgeweight;
         public TurnCostMatrix<int>[] nodeweights;

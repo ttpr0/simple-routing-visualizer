@@ -11,10 +11,10 @@ namespace Simple.Routing.Graph
     {
         private Edge[] edges;
         private Node[] nodes;
-        private Geometry geom;
-        private Weighting weight;
+        private IGeometry geom;
+        private IWeighting weight;
 
-        public BaseGraph(Edge[] edges, Node[] nodes, Geometry geometry, Weighting weighting)
+        public BaseGraph(Edge[] edges, Node[] nodes, IGeometry geometry, IWeighting weighting)
         {
             this.edges = edges;
             this.nodes = nodes;
@@ -69,12 +69,12 @@ namespace Simple.Routing.Graph
             return nodes[node].edges;
         }
 
-        public Geometry getGeometry()
+        public IGeometry getGeometry()
         {
             return geom;
         }
 
-        public Weighting getWeighting()
+        public IWeighting getWeighting()
         {
             return weight;
         }
@@ -99,8 +99,8 @@ namespace Simple.Routing.Graph
             this.nodes[nodeA].edges.Append(i);
             this.nodes[nodeB].edges.Append(i);
             this.edges.Append(new Edge(nodeA, nodeB, oneway, type));
-            this.geom.getLines().Append(line);
-            this.weight.edgeweight.Append(weight);
+            this.geom.getAllEdges().Append(line);
+            //this.weight.edgeweight.Append(weight);
             return i;
         }
 
@@ -116,7 +116,7 @@ namespace Simple.Routing.Graph
             {
                 int i = this.nodes.Length;
                 this.nodes.Append(new Node(type, new int[0]));
-                this.geom.getPoints().Append(point);
+                this.geom.getAllNodes().Append(point);
                 return i;
             }
             catch (Exception)
