@@ -90,6 +90,7 @@ namespace Simple.Routing.ShortestPath
                 }
                 currflag.visited = true;
                 int[] edges = this.graph.getAdjEdges(currid);
+                int from = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
                     int edgeid = edges[i];
@@ -109,7 +110,7 @@ namespace Simple.Routing.ShortestPath
                         }
                     }
                     otherflag.distance = Distance.euclideanDistance(this.geom.getNode(otherid), endpoint);
-                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edgeid) + otherflag.distance;
+                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edgeid) + otherflag.distance + this.weight.getTurnCost(from, currid, i);
                     if (otherflag.pathlength > newlength)
                     {
                         otherflag.prevEdge = edgeid;
@@ -140,6 +141,7 @@ namespace Simple.Routing.ShortestPath
                 }
                 currflag.visited2 = true;
                 int[] edges = this.graph.getAdjEdges(currid);
+                int to = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
                     int edgeid = edges[i];
@@ -159,7 +161,7 @@ namespace Simple.Routing.ShortestPath
                         }
                     }
                     otherflag.distance2 = Distance.euclideanDistance(this.geom.getNode(otherid), startpoint);
-                    double newlength = currflag.pathlength2 - currflag.distance2 + this.weight.getEdgeWeight(edgeid) + otherflag.distance2;
+                    double newlength = currflag.pathlength2 - currflag.distance2 + this.weight.getEdgeWeight(edgeid) + otherflag.distance2 + this.weight.getTurnCost(i, currid, to);
                     if (otherflag.pathlength2 > newlength)
                     {
                         otherflag.prevEdge2 = edgeid;
@@ -189,6 +191,7 @@ namespace Simple.Routing.ShortestPath
                 }
                 currflag.visited = true;
                 int[] edges = this.graph.getAdjEdges(currid);
+                int from = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
                     int edgeid = edges[i];
@@ -209,7 +212,7 @@ namespace Simple.Routing.ShortestPath
                     }
                     visitededges.Add(this.geom.getEdge(edgeid));
                     otherflag.distance = Distance.euclideanDistance(this.geom.getNode(otherid), endpoint);
-                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edgeid) + otherflag.distance;
+                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edgeid) + otherflag.distance + this.weight.getTurnCost(from, currid, i);
                     if (otherflag.pathlength > newlength)
                     {
                         otherflag.prevEdge = edgeid;
@@ -231,6 +234,7 @@ namespace Simple.Routing.ShortestPath
                 }
                 currflag.visited2 = true;
                 edges = this.graph.getAdjEdges(currid);
+                int to = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
                     int edgeid = edges[i];
@@ -251,7 +255,7 @@ namespace Simple.Routing.ShortestPath
                     }
                     visitededges.Add(this.geom.getEdge(edgeid));
                     otherflag.distance2 = Distance.euclideanDistance(this.geom.getNode(otherid), startpoint);
-                    double newlength = currflag.pathlength2 - currflag.distance2 + this.weight.getEdgeWeight(edgeid) + otherflag.distance2;
+                    double newlength = currflag.pathlength2 - currflag.distance2 + this.weight.getEdgeWeight(edgeid) + otherflag.distance2 + this.weight.getTurnCost(i, currid, to);
                     if (otherflag.pathlength2 > newlength)
                     {
                         otherflag.prevEdge2 = edgeid;

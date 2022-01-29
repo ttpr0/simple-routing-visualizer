@@ -35,6 +35,7 @@ namespace Simple.Routing.Graph
             int nodecount = br.ReadInt32();
             Node[] nodearr = new Node[nodecount];
             PointD[] pointarr = new PointD[nodecount];
+            TurnCostMatrix<int>[] turnweightarr = new TurnCostMatrix<int>[nodecount];
             for (int i = 0; i < nodecount; i++)
             {
                 int id = i;
@@ -46,13 +47,15 @@ namespace Simple.Routing.Graph
                 {
                     edges[j] = br.ReadInt32();
                 }
+                int[,] weights = new int[c, c];
                 nodearr[id] = new Node(1, edges); 
                 pointarr[id] = new PointD(x, y);
+                turnweightarr[id] = new TurnCostMatrix<int>(weights);
             }
             int edgecount = br.ReadInt32();
             Edge[] edgearr = new Edge[edgecount];
             LineD[] linearr = new LineD[edgecount];
-            int[] weightarr = new int[edgecount];
+            int[] edgeweightarr = new int[edgecount];
             for (int i = 0; i < edgecount; i++)
             {
                 int id = i;
@@ -71,9 +74,9 @@ namespace Simple.Routing.Graph
                 } 
                 edgearr[id] = new Edge(start, end, oneway, type);
                 linearr[id] = new LineD(points.ToArray());
-                weightarr[id] = weight;
+                edgeweightarr[id] = weight;
             }
-            return new BaseGraph(edgearr, nodearr, new Geometry(pointarr, linearr), new Weighting(weightarr, new int[0,0,0]));
+            return new BaseGraph(edgearr, nodearr, new Geometry(pointarr, linearr), new Weighting(edgeweightarr, turnweightarr));
         }
     }
 }

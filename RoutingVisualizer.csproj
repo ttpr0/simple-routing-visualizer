@@ -6,6 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon />
     <Win32Resource />
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

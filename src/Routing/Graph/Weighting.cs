@@ -9,9 +9,9 @@ namespace Simple.Routing.Graph
     class Weighting
     {
         public int[] edgeweight;
-        public int[,,] nodeweights;
+        public TurnCostMatrix<int>[] nodeweights;
 
-        public Weighting(int[] edges, int[,,] nodes)
+        public Weighting(int[] edges, TurnCostMatrix<int>[] nodes)
         {
             this.edgeweight = edges;
             this.nodeweights = nodes;
@@ -24,7 +24,11 @@ namespace Simple.Routing.Graph
 
         public int getTurnCost(int from, int via, int to)
         {
-            return 0;
+            if (from == -1 || to == -1)
+            {
+                return 0;
+            }
+            return this.nodeweights[via][from, to];
         }
     }
 }

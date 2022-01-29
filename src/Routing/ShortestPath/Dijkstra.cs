@@ -76,6 +76,7 @@ namespace Simple.Routing.ShortestPath
                 }
                 currflag.visited = true;
                 int[] edges = this.graph.getAdjEdges(currid);
+                int from = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
                     int edgeid = edges[i];
@@ -94,7 +95,7 @@ namespace Simple.Routing.ShortestPath
                             continue;
                         }
                     }
-                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edgeid);
+                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edgeid) + this.weight.getTurnCost(from, currid, i);
                     if (otherflag.pathlength > newlength)
                     {
                         otherflag.prevEdge = edgeid;
@@ -122,6 +123,7 @@ namespace Simple.Routing.ShortestPath
                 }
                 currflag.visited = true;
                 int[] edges = this.graph.getAdjEdges(currid);
+                int from = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
                     int edgeid = edges[i];
@@ -141,7 +143,7 @@ namespace Simple.Routing.ShortestPath
                         }
                     }
                     visitededges.Add(this.geom.getEdge(edgeid));
-                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edgeid);
+                    double newlength = currflag.pathlength + this.weight.getEdgeWeight(edgeid) + this.weight.getTurnCost(from, currid, i);
                     if (otherflag.pathlength > newlength)
                     {
                         otherflag.prevEdge = edgeid;
