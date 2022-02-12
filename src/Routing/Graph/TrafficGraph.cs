@@ -7,21 +7,21 @@ using Simple.GeoData;
 
 namespace Simple.Routing.Graph
 {
-    class BaseGraph : IGraph
+    class TrafficGraph : IGraph
     {
         private Edge[] edges;
         private Node[] nodes;
         private IGeometry geom;
-        private IWeighting weight;
+        private TrafficWeighting weight;
         private TrafficTable traffic;
 
-        public BaseGraph(Edge[] edges, Node[] nodes, IGeometry geometry, IWeighting weighting)
+        public TrafficGraph(Edge[] edges, Node[] nodes, IGeometry geometry, TrafficWeighting weighting, TrafficTable traffic)
         {
             this.edges = edges;
             this.nodes = nodes;
             this.geom = geometry;
             this.weight = weighting;
-            this.traffic = new TrafficTable(new int[edges.Count()]);
+            this.traffic = traffic;
         }
 
         public int getOtherNode(int edge, int node)

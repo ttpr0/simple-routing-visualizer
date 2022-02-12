@@ -15,7 +15,7 @@ namespace Simple.Routing.ShortestPath
         private int midid;
         private int startid;
         private int endid;
-        private BaseGraph graph;
+        private IGraph graph;
         private IGeometry geom;
         private IWeighting weight;
         private Flag[] flags;
@@ -30,7 +30,7 @@ namespace Simple.Routing.ShortestPath
             public bool visited2 = false;
         }
 
-        public BidirectDijkstra(BaseGraph graph, int start, int end)
+        public BidirectDijkstra(IGraph graph, int start, int end)
         {
             this.graph = graph;
             this.startid = start;
@@ -83,7 +83,7 @@ namespace Simple.Routing.ShortestPath
                     return;
                 }
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(currid);
+                int[] edges = this.graph.getAdjacentEdges(currid);
                 int from = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
@@ -133,7 +133,7 @@ namespace Simple.Routing.ShortestPath
                     return;
                 }
                 currflag.visited2 = true;
-                int[] edges = this.graph.getAdjEdges(currid);
+                int[] edges = this.graph.getAdjacentEdges(currid);
                 int to = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
@@ -182,7 +182,7 @@ namespace Simple.Routing.ShortestPath
                     return false;
                 }
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(currid);
+                int[] edges = this.graph.getAdjacentEdges(currid);
                 int from = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
@@ -224,7 +224,7 @@ namespace Simple.Routing.ShortestPath
                     return false;
                 }
                 currflag.visited2 = true;
-                edges = this.graph.getAdjEdges(currid);
+                edges = this.graph.getAdjacentEdges(currid);
                 int to = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {

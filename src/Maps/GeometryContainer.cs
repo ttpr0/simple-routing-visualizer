@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Simple.GeoData;
 using Simple.Routing.ShortestPath;
+using Simple.Routing.Graph;
 
 namespace Simple.Maps
 {
@@ -19,5 +20,7 @@ namespace Simple.Maps
         public PointCloudD valuepoints;
         public PolygonD polygon;
         public RasterImage mgimg;
+        public TrafficTable traffic;
+        public IGeometry geom;
     }
 }

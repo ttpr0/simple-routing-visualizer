@@ -19,6 +19,7 @@ using Simple.Maps;
 using Simple.Maps.TileMap; 
 using Microsoft.Data.Sqlite;
 using Simple.Routing.Isodistance;
+using Simple.Analysis.Traffic;
 
 namespace RoutingVisualizer
 {
@@ -39,7 +40,7 @@ namespace RoutingVisualizer
         private TileMap tilemap;
         private GraphMap graphmap;
         private UtilityMap utilitymap;
-        private BaseGraph graph;
+        private IGraph graph;
         private PointD upperleft = new PointD(1314905, 6716660);
         private int zoom = 12;
         private GeometryContainer container = new GeometryContainer();
@@ -69,11 +70,13 @@ namespace RoutingVisualizer
             GraphFactory f = new GraphFactory();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            this.graph = f.loadBaseGraph("data/niedersachsen.graph");
+            this.graph = f.loadTrafficGraph("data/niedersachsen.graph");
             sw.Stop();
             appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
             container.startnode = graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));
             container.endnode = graph.getGeometry().getNode(Convert.ToInt32(txtend.Text));
+            container.traffic = graph.getTraffic();
+            container.geom = graph.getGeometry(); 
             this.graphmap = new GraphMap(1000, 600);
             this.utilitymap = new UtilityMap(1000, 600, this.container);
             haschanged = true;
@@ -286,6 +289,50 @@ namespace RoutingVisualizer
             /*
             container.valuepoints = mg.getMultiGraph();
             */
+            haschanged = true;
+            //drawMap();
+        }
+
+        private void btnRunTrafficSim_Click(object sender, EventArgs e)
+        {
+            container.path = null;
+            container.valuepoints = null;
+            container.polygon = null;
+            container.mgimg = null;
+            int start;
+            int end;
+            try
+            {
+                start = Convert.ToInt32(txtstart.Text);
+                end = Convert.ToInt32(txtend.Text);
+            }
+            catch (Exception)
+            {
+                appendNewLine("pls insert valid ID");
+                return;
+            }
+            if (!graph.isNode(start) || !graph.isNode(end))
+            {
+                appendNewLine("pls insert valid Node-ID");
+                return;
+            }
+            else
+            {
+                container.startnode = graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));
+                container.endnode = graph.getGeometry().getNode(Convert.ToInt32(txtend.Text));
+            }
+            haschanged = true;
+            //drawMap();
+            Simulation sim = new Simulation(graph, 100, start, end);
+            while (sim.step())
+            {
+                if (sim.draw())
+                {
+                    drawMap();
+                }
+            }
+            appendNewLine("finished");
+            graphmap.clearMap();
             haschanged = true;
             //drawMap();
         }

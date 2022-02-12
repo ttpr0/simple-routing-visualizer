@@ -45,6 +45,7 @@ namespace RoutingVisualizer
             this.chbxDraw = new System.Windows.Forms.CheckBox();
             this.timerDrawPbx = new System.Windows.Forms.Timer(this.components);
             this.btnRunMultiGraph = new System.Windows.Forms.Button();
+            this.btnRunTrafficSim = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbxout)).BeginInit();
             this.ctmpbx.SuspendLayout();
             this.SuspendLayout();
@@ -183,11 +184,22 @@ namespace RoutingVisualizer
             this.btnRunMultiGraph.UseVisualStyleBackColor = true;
             this.btnRunMultiGraph.Click += new System.EventHandler(this.btnRunMultiGraph_Click);
             // 
+            // btnRunTrafficSim
+            // 
+            this.btnRunTrafficSim.Location = new System.Drawing.Point(1123, 625);
+            this.btnRunTrafficSim.Name = "btnRunTrafficSim";
+            this.btnRunTrafficSim.Size = new System.Drawing.Size(75, 23);
+            this.btnRunTrafficSim.TabIndex = 14;
+            this.btnRunTrafficSim.Text = "Traffic Sim";
+            this.btnRunTrafficSim.UseVisualStyleBackColor = true;
+            this.btnRunTrafficSim.Click += new System.EventHandler(this.btnRunTrafficSim_Click);
+            // 
             // NavForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1256, 660);
+            this.Controls.Add(this.btnRunTrafficSim);
             this.Controls.Add(this.btnRunMultiGraph);
             this.Controls.Add(this.chbxDraw);
             this.Controls.Add(this.lblalgtype);
@@ -227,6 +239,7 @@ namespace RoutingVisualizer
 
         private System.Windows.Forms.Timer timerDrawPbx;
         private System.Windows.Forms.Button btnRunMultiGraph;
+        private System.Windows.Forms.Button btnRunTrafficSim;
     }
 }
 

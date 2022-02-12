@@ -11,7 +11,7 @@ namespace Simple.Routing.ShortestPath
     class AStar : IShortestPath
     {
         private PriorityQueue<int, int> heap;
-        private BaseGraph graph;
+        private IGraph graph;
         private Flag[] flags;
         private int startid;
         private int endid;
@@ -32,7 +32,7 @@ namespace Simple.Routing.ShortestPath
         /// </summary>
         /// <param name="start">startnode</param>
         /// <param name="end">endnode</param>
-        public AStar(BaseGraph graph, int start, int end)
+        public AStar(IGraph graph, int start, int end)
         {
             this.graph = graph;
             this.endid = end;
@@ -48,6 +48,20 @@ namespace Simple.Routing.ShortestPath
                 flags[i].pathlength = 1000000000;
             }
             flags[start].pathlength = 0;
+        }
+
+        public void setStartEnd(int start, int end)
+        {
+            this.startid = start;
+            this.endid = end;
+            this.heap.Clear();
+            this.heap.Enqueue(this.startid, 0);
+            for (int i = 0; i < flags.Length; i++)
+            {
+                flags[i].pathlength = 1000000000;
+            }
+            flags[start].pathlength = 0;
+            this.endpoint = this.geom.getNode(end);
         }
 
         private int currid;
@@ -76,7 +90,7 @@ namespace Simple.Routing.ShortestPath
                 ref Flag currflag = ref this.flags[currid];
                 if (currflag.visited) continue;
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(currid);
+                int[] edges = this.graph.getAdjacentEdges(currid);
                 int from = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
@@ -121,7 +135,7 @@ namespace Simple.Routing.ShortestPath
                 ref Flag currflag = ref this.flags[currid];
                 if (currflag.visited) continue;
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(currid);
+                int[] edges = this.graph.getAdjacentEdges(currid);
                 int from = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
@@ -176,6 +190,23 @@ namespace Simple.Routing.ShortestPath
                 currid = this.graph.getOtherNode(edge, currid);
             }
             return new Path(edges, geometry);
+        }
+
+
+        public int getNextEdge()
+        {
+            int edge = 0;
+            currid = endid;
+            while (true)
+            {
+                if (currid == startid)
+                {
+                    break;
+                }
+                edge = this.flags[currid].prevEdge;
+                currid = this.graph.getOtherNode(edge, currid);
+            }
+            return edge;
         }
     }
 }

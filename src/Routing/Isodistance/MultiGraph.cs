@@ -13,7 +13,7 @@ namespace Simple.Routing.Isodistance
         private PriorityQueue<int, int> heap;
         private int startid;
         private int maxvalue;
-        private BaseGraph graph;
+        private IGraph graph;
         private IGeometry geom;
         private IWeighting weight;
         private Flag[] flags;
@@ -30,7 +30,7 @@ namespace Simple.Routing.Isodistance
         /// </summary>
         /// <param name="start">startnode</param>
         /// <param name="end">endnode</param>
-        public MultiGraph(BaseGraph graph, int start, int maxvalue)
+        public MultiGraph(IGraph graph, int start, int maxvalue)
         {
             this.graph = graph;
             this.maxvalue = maxvalue;
@@ -76,7 +76,7 @@ namespace Simple.Routing.Isodistance
                 }
                 points.Add(new Tuple<int,int>(currid, (int)(currflag.pathlength/36)));
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(currid);
+                int[] edges = this.graph.getAdjacentEdges(currid);
                 for (int i = 0; i < edges.Length; i++)
                 {
                     int edgeid = edges[i];

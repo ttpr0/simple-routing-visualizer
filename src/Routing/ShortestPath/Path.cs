@@ -24,5 +24,11 @@ namespace Simple.Routing.ShortestPath
         {
             return this.geometry;
         }
+
+        public void addEdge(int edgeid, LineD geom)
+        {
+            this.edges.Add(edgeid);
+            this.geometry.Add(geom);
+        }
     }
 }

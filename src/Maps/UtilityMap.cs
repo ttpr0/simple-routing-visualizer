@@ -50,6 +50,7 @@ namespace Simple.Maps
         private Pen startpen = new Pen(Color.Red, 2);
         private Pen finishpen = new Pen(Color.Blue, 2);
         private Pen isochornespen = new Pen(Color.Green, 3);
+        private Pen trafficpen = new Pen(Color.Green, 3);
         private SolidBrush multibrush = new SolidBrush(Color.Transparent);
         private IEnumerable<Color> multicolors;
         private PointD upperleft;
@@ -109,6 +110,28 @@ namespace Simple.Maps
                 double width = container.mgimg.width * 256 / tilesize;
                 double height = container.mgimg.height * 256 / tilesize;
                 g.DrawImage(container.mgimg.image, ul.X, ul.Y, (int)width, (int)height);
+            }
+            if (container.traffic != null)
+            {
+                for (int i = 0; i < container.traffic.edgetraffic.Length; i++)
+                {
+                    int t = container.traffic.edgetraffic[i];
+                    if (t > 0)
+                    {
+                        LineD line = container.geom.getEdge(i);
+                        Point[] points = new Point[line.points.Length];
+                        for (int j = 0; j < line.points.Length; j++)
+                        {
+                            points[j] = realToScreen(line.points[j]);
+                        }
+                        if (t > 11)
+                        {
+                            t = 11;
+                        }
+                        trafficpen.Color = this.multicolors.ElementAt(t);
+                        g.DrawLines(trafficpen, points);
+                    }
+                }
             }
             Point startpoint = realToScreen(container.startnode);
             g.DrawEllipse(startpen, new Rectangle(startpoint.X - 5, startpoint.Y - 5, 10, 10));

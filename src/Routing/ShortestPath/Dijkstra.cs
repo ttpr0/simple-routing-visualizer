@@ -13,7 +13,7 @@ namespace Simple.Routing.ShortestPath
         private PriorityQueue<int, int> heap;
         private int endid;
         private int startid;
-        private BaseGraph graph;
+        private IGraph graph;
         private IGeometry geom;
         private IWeighting weight;
         private Flag[] flags;
@@ -30,7 +30,7 @@ namespace Simple.Routing.ShortestPath
         /// </summary>
         /// <param name="start">startnode</param>
         /// <param name="end">endnode</param>
-        public Dijkstra(BaseGraph graph, int start, int end)
+        public Dijkstra(IGraph graph, int start, int end)
         {
             this.graph = graph;
             this.endid = end;
@@ -75,7 +75,7 @@ namespace Simple.Routing.ShortestPath
                     continue;
                 }
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(currid);
+                int[] edges = this.graph.getAdjacentEdges(currid);
                 int from = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
@@ -122,7 +122,7 @@ namespace Simple.Routing.ShortestPath
                     continue;
                 }
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjEdges(currid);
+                int[] edges = this.graph.getAdjacentEdges(currid);
                 int from = Array.IndexOf(edges, currflag.prevEdge);
                 for (int i = 0; i < edges.Length; i++)
                 {
