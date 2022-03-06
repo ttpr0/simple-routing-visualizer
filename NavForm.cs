@@ -62,15 +62,15 @@ namespace RoutingVisualizer
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             g = Graphics.FromImage(screen);
-            txtstart.Text = "100";
-            txtend.Text = "20000";
+            txtstart.Text = "1198";
+            txtend.Text = "220";
             cbxShortestPath.Text = "Djkstra";
             this.tilemap = new TileMap(1000, 600);
             this.tilemap.getFactory().changed += this.changed;
             GraphFactory f = new GraphFactory();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            this.graph = f.loadTrafficGraph("data/niedersachsen.graph");
+            this.graph = f.loadTrafficGraph("data/default.graph");
             sw.Stop();
             appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
             container.startnode = graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));
@@ -323,10 +323,12 @@ namespace RoutingVisualizer
             }
             haschanged = true;
             //drawMap();
-            Simulation sim = new Simulation(graph, 100, start, end);
+            Simulation sim = new Simulation(graph, 1000);
+            int c = 0;
             while (sim.step())
             {
-                if (sim.draw())
+                c++;
+                if (sim.draw() && c%100 == 0)
                 {
                     drawMap();
                 }

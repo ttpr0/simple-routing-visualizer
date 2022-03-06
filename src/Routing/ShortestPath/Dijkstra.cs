@@ -161,21 +161,22 @@ namespace Simple.Routing.ShortestPath
         /// <returns>list of LineD representing shortest path</returns>
         public Path getShortestPath()
         {
-            List<LineD> geometry = new List<LineD>();
-            List<int> edges = new List<int>();
+            List<int> path = new List<int>();
             currid = endid;
             int edge;
             while (true)
             {
+                path.Add(currid);
                 if (currid == startid)
                 {
                     break;
                 }
                 edge = this.flags[currid].prevEdge;
-                geometry.Add(this.geom.getEdge(edge));
+                path.Add(edge);
                 currid = this.graph.getOtherNode(edge, currid);
             }
-            return new Path(edges, geometry);
+            path.Reverse();
+            return new Path(this.graph, path);
         }
     }
 }

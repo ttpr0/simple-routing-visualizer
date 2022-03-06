@@ -17,12 +17,12 @@ namespace Simple.Routing.Graph
 
         public void addTraffic(int edge)
         {
-            this.edgetraffic[edge]++;
+            this.edgetraffic[edge] += 1;
         }
 
         public void subTraffic(int edge)
         {
-            this.edgetraffic[edge]--;
+            this.edgetraffic[edge] -= 1;
         }
 
         public int getTraffic(int edge)

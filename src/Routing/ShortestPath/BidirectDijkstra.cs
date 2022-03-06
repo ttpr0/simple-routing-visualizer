@@ -263,32 +263,35 @@ namespace Simple.Routing.ShortestPath
         /// <returns>list of LineD representing shortest path</returns>
         public Path getShortestPath()
         {
-            List<LineD> geometry = new List<LineD>();
-            List<int> edges = new List<int>();
+            List<int> path = new List<int>();
             int edge;
             currid = midid;
             while (true)
             {
+                path.Add(currid);
                 if (currid == startid)
                 {
                     break;
                 }
                 edge = this.flags[currid].prevEdge;
-                geometry.Add(this.geom.getEdge(edge));
+                path.Add(edge);
                 currid = this.graph.getOtherNode(edge, currid);
             }
+            path.RemoveAt(0);
+            path.Reverse();
             currid = midid;
             while (true)
             {
+                path.Add(currid);
                 if (currid == endid)
                 {
                     break;
                 }
                 edge = this.flags[currid].prevEdge2;
-                geometry.Add(this.geom.getEdge(edge));
+                path.Add(edge);
                 currid = this.graph.getOtherNode(edge, currid);
             }
-            return new Path(edges, geometry);
+            return new Path(this.graph, path);
         }
     }
 }

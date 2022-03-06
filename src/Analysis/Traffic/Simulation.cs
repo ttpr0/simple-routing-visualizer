@@ -29,6 +29,24 @@ namespace Simple.Analysis.Traffic
             for (int i = 0; i < agentscount; i++)
             {
                 Agent a = new Agent(start, end);
+                a.timecount = i;
+                this.agents.Add(a);
+            }
+        }
+
+        public Simulation(IGraph graph, int agentscount)
+        {
+            this.graph = graph;
+            this.weight = graph.getWeighting();
+            this.traffic = graph.getTraffic();
+            this.alg = new AStar(this.graph, 0, 0);
+            this.agents = new List<Agent>();
+            int nc = this.graph.nodeCount();
+            Random rnd = new Random();
+            for (int i = 0; i < agentscount; i++)
+            {
+                Agent a = new Agent(rnd.Next(10, 1000), rnd.Next(10, 1000));
+                a.timecount = i;
                 this.agents.Add(a);
             }
         }
@@ -45,13 +63,7 @@ namespace Simple.Analysis.Traffic
                 changed = true;
                 if (agent.decreaseCount())
                 {
-                    this.traffic.subTraffic(agent.curredge);
-                    this.alg.setStartEnd(agent.nextnode, agent.end);
-                    this.alg.calcShortestPath();
-                    int e = this.alg.getNextEdge();
-                    agent.addEdge(e, this.graph.getOtherNode(e, agent.nextnode));
-                    agent.setCount(this.weight.getEdgeWeight(e));
-                    this.traffic.addTraffic(agent.curredge);
+                    agent.step(alg, this.traffic, this.weight);
                     this.tc = true;
                 }
             }

@@ -59,6 +59,7 @@ namespace Simple.Routing.ShortestPath
             for (int i = 0; i < flags.Length; i++)
             {
                 flags[i].pathlength = 1000000000;
+                flags[i].visited = false;
             }
             flags[start].pathlength = 0;
             this.endpoint = this.geom.getNode(end);
@@ -175,21 +176,26 @@ namespace Simple.Routing.ShortestPath
         /// <returns>list of LineD representing shortest path</returns>
         public Path getShortestPath()
         {
-            List<LineD> geometry = new List<LineD>();
-            List<int> edges = new List<int>();
+            List<int> path = new List<int>();
             currid = endid;
             int edge;
             while (true)
             {
+                path.Add(currid);
                 if (currid == startid)
                 {
                     break;
                 }
+                if (path.Count > 10000)
+                {
+                    throw new Exception();
+                }
                 edge = this.flags[currid].prevEdge;
-                geometry.Add(this.geom.getEdge(edge));
+                path.Add(edge);
                 currid = this.graph.getOtherNode(edge, currid);
             }
-            return new Path(edges, geometry);
+            path.Reverse();
+            return new Path(this.graph, path);
         }
 
 

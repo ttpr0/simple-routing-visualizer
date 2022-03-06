@@ -19,7 +19,7 @@ namespace Simple.Routing.Graph
 
         public int getEdgeWeight(int edge)
         {
-            double factor = 1 + this.traffic.getTraffic(edge) / 100;
+            double factor = 1 + this.traffic.getTraffic(edge) / 20;
             return (int)(this.edgeweight[edge] * factor);
         }
 

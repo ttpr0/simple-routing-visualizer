@@ -4,31 +4,68 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Simple.GeoData;
+using Simple.Routing.Graph;
 
 namespace Simple.Routing.ShortestPath
 {
     class Path
     {
-        private List<int> edges;
-        private List<LineD> geometry;
-        private double distance;
-        private double time;
+        private List<int> path;
+        private List<LineD> lines;
+        private IGraph graph;
+        private IGeometry geometry;
+        private IWeighting weighting;
 
-        public Path(List<int> edges, List<LineD> geometry)
+        private int curr;
+        private bool changed = false;
+
+        public Path(IGraph graph, List<int> path)
         {
-            this.edges = edges;
-            this.geometry = geometry;
+            this.graph = graph;
+            this.weighting = graph.getWeighting();
+            this.geometry = graph.getGeometry();
+            this.path = path;
+            this.curr = 1;
         }
 
         public List<LineD> getGeometry()
         {
-            return this.geometry;
+            if (lines == null || changed)
+            {
+                this.lines = new List<LineD>();
+                for (int i = curr; i < this.path.Count; i = i + 2)
+                {
+                    lines.Add(this.geometry.getEdge(path[i]));
+                }
+            }
+            return this.lines;
         }
 
-        public void addEdge(int edgeid, LineD geom)
+        public IEnumerable<int> edgeIterator()
         {
-            this.edges.Add(edgeid);
-            this.geometry.Add(geom);
+            for (int i = curr; i < this.path.Count; i = i + 2)
+            {
+                yield return this.path[i];
+            }
+        }
+
+        public bool step()
+        {
+            if (curr >= this.path.Count - 2)
+            {
+                return false;
+            }
+            curr = curr + 2;
+            return true;
+        }
+
+        public (int currEdge, int nextNode, int nextEdge) getCurrent()
+        {
+            if (curr == this.path.Count-2)
+            {
+                return (this.path[curr], this.path[curr + 1], -1);
+            }
+            return (this.path[curr], this.path[curr + 1], this.path[curr + 2]);
         }
     }
 }
