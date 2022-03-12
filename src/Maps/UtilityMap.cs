@@ -101,7 +101,7 @@ namespace Simple.Maps
                         index = 11;
                     }
                     multibrush.Color = this.multicolors.ElementAt(index);
-                    g.FillEllipse(multibrush, curr.X, curr.Y, 2, 2);
+                    g.FillEllipse(multibrush, curr.X, curr.Y, 5, 5);
                 }
             }
             if (container.mgimg != null)

@@ -70,7 +70,7 @@ namespace RoutingVisualizer
             GraphFactory f = new GraphFactory();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            this.graph = f.loadTrafficGraph("data/default.graph");
+            this.graph = f.loadTrafficGraph("data/niedersachsen.graph");
             sw.Stop();
             appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
             container.startnode = graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));
@@ -268,7 +268,7 @@ namespace RoutingVisualizer
             }
             haschanged = true;
             //drawMap();
-            MultiGraph mg = new MultiGraph(this.graph, start, 3600);
+            MultiGraph mg = new MultiGraph(this.graph, start, 3600, new DefaultRasterizer(2000));
             Stopwatch sw = new Stopwatch();
             sw.Start();
             mg.calcMultiGraph();
@@ -276,16 +276,18 @@ namespace RoutingVisualizer
             this.drawrouting = false;
             appendNewLine(sw.ElapsedMilliseconds.ToString());
             appendNewLine("finished");
-            
-            sw.Restart();
-            Raster raster = new Raster(new PointD(708071.8, 7186169.6), 2500, 2500, 200);
-            raster.valuesFromPointCloud(mg.getMultiGraph());
-            sw.Stop();
-            appendNewLine(sw.ElapsedMilliseconds.ToString());
-            sw.Restart();
-            container.mgimg = new RasterImage(raster, new ColorFactory(Color.Green, Color.Red, 12));
-            sw.Stop();
-            appendNewLine(sw.ElapsedMilliseconds.ToString());
+
+            container.valuepoints = mg.getMultiGraph();
+
+            //sw.Restart();
+            //Raster raster = new Raster(new PointD(708071.8, 7186169.6), 2500, 2500, 200);
+            //raster.valuesFromPointCloud(mg.getMultiGraph());
+            //sw.Stop();
+            //appendNewLine(sw.ElapsedMilliseconds.ToString());
+            //sw.Restart();
+            //container.mgimg = new RasterImage(raster, new ColorFactory(Color.Green, Color.Red, 12));
+            //sw.Stop();
+            //appendNewLine(sw.ElapsedMilliseconds.ToString());
             /*
             container.valuepoints = mg.getMultiGraph();
             */

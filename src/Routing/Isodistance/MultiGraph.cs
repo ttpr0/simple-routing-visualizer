@@ -17,7 +17,8 @@ namespace Simple.Routing.Isodistance
         private IGeometry geom;
         private IWeighting weight;
         private Flag[] flags;
-        private List<Tuple<int,int>> points;
+        private QuadTree points;
+        private IRasterizer rasterizer;
 
         private struct Flag
         {
@@ -30,7 +31,7 @@ namespace Simple.Routing.Isodistance
         /// </summary>
         /// <param name="start">startnode</param>
         /// <param name="end">endnode</param>
-        public MultiGraph(IGraph graph, int start, int maxvalue)
+        public MultiGraph(IGraph graph, int start, int maxvalue, IRasterizer rasterizer)
         {
             this.graph = graph;
             this.maxvalue = maxvalue;
@@ -38,9 +39,10 @@ namespace Simple.Routing.Isodistance
             this.heap = new PriorityQueue<int, int>();
             this.heap.Enqueue(this.startid, 0);
             this.flags = new Flag[graph.nodeCount()];
-            this.points = new List<Tuple<int,int>>();
+            this.points = new QuadTree();
             this.geom = graph.getGeometry();
             this.weight = graph.getWeighting();
+            this.rasterizer = rasterizer;
             for (int i = 0; i < flags.Length; i++)
             {
                 flags[i].pathlength = 1000000000;
@@ -74,7 +76,8 @@ namespace Simple.Routing.Isodistance
                 {
                     continue;
                 }
-                points.Add(new Tuple<int,int>(currid, (int)(currflag.pathlength/36)));
+                (int x, int y) = rasterizer.pointToIndex(this.geom.getNode(currid));
+                points.insert(x, y, (int)(currflag.pathlength/36));
                 currflag.visited = true;
                 int[] edges = this.graph.getAdjacentEdges(currid);
                 for (int i = 0; i < edges.Length; i++)
@@ -111,10 +114,11 @@ namespace Simple.Routing.Isodistance
         /// <returns>list of LineD representing shortest path</returns>
         public PointCloudD getMultiGraph()
         {
-            ValuePointD[] vpoints = new ValuePointD[points.Count];
-            for (int i = 0; i < points.Count; i++)
+            List<QuadNode> nodes = this.points.toList();
+            ValuePointD[] vpoints = new ValuePointD[nodes.Count];
+            for (int i = 0; i < nodes.Count; i++)
             {
-                vpoints[i] = new ValuePointD(this.geom.getNode(points[i].Item1), points[i].Item2);
+                vpoints[i] = new ValuePointD(this.rasterizer.indexToPoint(nodes[i].x, nodes[i].y), nodes[i].value);
             }
             return new PointCloudD(vpoints);
         }
