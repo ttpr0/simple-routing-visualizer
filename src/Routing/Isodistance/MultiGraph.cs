@@ -22,8 +22,8 @@ namespace Simple.Routing.Isodistance
 
         private struct Flag
         {
-            public double pathlength = 1000000000;
-            public bool visited = false;
+            public double pathlength;
+            public bool visited;
         }
 
         /// <summary>

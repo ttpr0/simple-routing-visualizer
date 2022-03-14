@@ -20,9 +20,9 @@ namespace Simple.Routing.ShortestPath
 
         private struct Flag
         {
-            public double pathlength = 1000000000;
+            public double pathlength;
             public int prevEdge;
-            public bool visited = false;
+            public bool visited;
         }
 
         /// <summary>

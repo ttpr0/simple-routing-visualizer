@@ -30,8 +30,8 @@ namespace Simple.Routing.ShortestPath
             public double distance2;
             public int prevEdge;
             public int prevEdge2;
-            public bool visited = false;
-            public bool visited2 = false;
+            public bool visited;
+            public bool visited2;
         }
 
         public BidirectAStar(IGraph graph, int start, int end)

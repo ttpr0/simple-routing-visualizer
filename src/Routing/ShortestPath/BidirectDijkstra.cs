@@ -26,8 +26,8 @@ namespace Simple.Routing.ShortestPath
             public double pathlength2;
             public int prevEdge;
             public int prevEdge2;
-            public bool visited = false;
-            public bool visited2 = false;
+            public bool visited;
+            public bool visited2;
         }
 
         public BidirectDijkstra(IGraph graph, int start, int end)
