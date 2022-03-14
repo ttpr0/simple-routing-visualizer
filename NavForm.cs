@@ -67,10 +67,9 @@ namespace RoutingVisualizer
             cbxShortestPath.Text = "Djkstra";
             this.tilemap = new TileMap(1000, 600);
             this.tilemap.getFactory().changed += this.changed;
-            GraphFactory f = new GraphFactory();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            this.graph = f.loadTrafficGraph("data/default.graph");
+            this.graph = GraphFactory.loadTrafficGraph("data/default.graph");
             sw.Stop();
             appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
             container.startnode = graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));

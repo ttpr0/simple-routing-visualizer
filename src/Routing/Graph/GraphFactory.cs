@@ -14,7 +14,7 @@ namespace Simple.Routing.Graph
     /// <summary>
     /// static class, creates and returns different graph-objects
     /// </summary>
-    class GraphFactory
+    static class GraphFactory
     {
         /// <summary>
         /// loads BaseGraph from .graph file
@@ -22,7 +22,7 @@ namespace Simple.Routing.Graph
         /// <param name="url">path to file</param>
         /// <returns>BaseGraph</returns>
         /// <exception cref="FileNotFoundException"></exception>
-        public BaseGraph loadBaseGraph(string url)
+        public static BaseGraph loadBaseGraph(string url)
         {
             FileInfo f = new FileInfo(url);
             if (!f.Exists || f.Name.Split(".")[1] != "graph")
@@ -79,7 +79,7 @@ namespace Simple.Routing.Graph
             return new BaseGraph(edgearr, nodearr, new Geometry(pointarr, linearr), new Weighting(edgeweightarr, turnweightarr));
         }
 
-        public TrafficGraph loadTrafficGraph(string url)
+        public static TrafficGraph loadTrafficGraph(string url)
         {
             FileInfo f = new FileInfo(url);
             if (!f.Exists || f.Name.Split(".")[1] != "graph")
