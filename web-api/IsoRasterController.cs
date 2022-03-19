@@ -2,31 +2,16 @@ using System.Runtime.InteropServices;
 using Simple.GeoData;
 using Simple.Routing.Graph;
 using System;
-using Simple.Routing.Isodistance;
+using Simple.Routing.IsoRaster;
 using Microsoft.AspNetCore.Http;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Simple.WebApi
 {
-    static class MultiGraphController
+    static class IsoRasterController
     {
-        static PointD transformMercator(PointD point)
-        {
-            int a = 6378137;
-            double x = a * point.lon * Math.PI / 180;
-            double y = a * Math.Log(Math.Tan(Math.PI / 4 + point.lat * Math.PI / 360));
-            return new PointD(x, y);
-        }
-
-        public static PointD revTransformMercator(PointD point)
-        {
-            int a = 6378137;
-            double lon = point.lon * 180 / (a * Math.PI);
-            double lat = 360 * (Math.Atan(Math.Exp(point.lat / a)) - Math.PI / 4) / Math.PI;
-            return new PointD(lon, lat);
-        }
-
         static int getClosestNode(PointD startpoint)
         {
             double distance = -1;
@@ -51,44 +36,59 @@ namespace Simple.WebApi
             return id;
         }
 
-        static PointCloudD runMultiGraph(PointD start, int distance, int precession)
+        static PolygonD[] runIsoRaster(PointD start, int distance, int precession)
         {
-            MultiGraph mg = new MultiGraph(Application.graph, getClosestNode(start), distance, new DefaultRasterizer(precession));
+            ShortestPathTree mg = new ShortestPathTree(Application.graph, getClosestNode(start), distance, new DefaultRasterizer(precession));
 
             mg.calcMultiGraph();
 
-            return mg.getMultiGraph();
+            return mg.getIsoRaster();
         }
 
-        public static MultiGraphResponse handleMultiGraphRequest(MultiGraphRequest request)
+        public static IsoRasterResponse handleMultiGraphRequest(IsoRasterRequest request)
         {
-            PointD start = transformMercator(new PointD(request.locations[0][0], request.locations[0][1]));
-            PointCloudD pc = runMultiGraph(start, request.range, request.precession);
-            MultiGraphResponse response = new MultiGraphResponse(pc);
+            PointD start = new PointD(request.locations[0][0], request.locations[0][1]);
+            PolygonD[] pc = runIsoRaster(start, request.range, request.precession);
+            IsoRasterResponse response = new IsoRasterResponse(pc);
             return response;
         }
     }
 
-    class MultiGraphRequest
+    class IsoRasterRequest
     {
         public double[][] locations { get; set; }
         public int range { get; set; }
         public int precession { get; set; }
     }
 
-    class MultiGraphResponse
+    class IsoRasterResponse
     {
         public string type { get; set; }
-        public List<PointFeature> features { get; set;}
+        public PolygonD[] features { get; set;}
 
-        public MultiGraphResponse(PointCloudD pc)
+        public IsoRasterResponse(PolygonD[] pc)
         {
             this.type = "FeatureCollection";
-            this.features = new List<PointFeature>();
-            foreach (ValuePointD point in pc.points)
+            this.features = pc;
+        }
+
+        public object getGeoJson()
+        {
+            var geojson = new
             {
-                features.Add(new PointFeature(MultiGraphController.revTransformMercator(point.point), point.value));
-            }
+                type = "FeatureCollection",
+                features = from polygon in this.features select new
+                           {
+                               type = "Feature",
+                               properties = new { value = polygon.value },
+                               geometry = new
+                               {
+                                   type = "Polygon",
+                                   coordinates = new[] { from point in polygon.points select new[] { point.lon, point.lat } }
+                               }
+                           }
+            };
+            return geojson;
         }
     }
 

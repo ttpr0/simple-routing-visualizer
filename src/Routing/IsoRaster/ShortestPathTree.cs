@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Simple.Routing.Graph;
 using Simple.GeoData;
 
-namespace Simple.Routing.Isodistance
+namespace Simple.Routing.IsoRaster
 {
-    class MultiGraph
+    class ShortestPathTree
     {
         private PriorityQueue<int, int> heap;
         private int startid;
@@ -31,7 +31,7 @@ namespace Simple.Routing.Isodistance
         /// </summary>
         /// <param name="start">startnode</param>
         /// <param name="end">endnode</param>
-        public MultiGraph(IGraph graph, int start, int maxvalue, IRasterizer rasterizer)
+        public ShortestPathTree(IGraph graph, int start, int maxvalue, IRasterizer rasterizer)
         {
             this.graph = graph;
             this.maxvalue = maxvalue;
@@ -112,7 +112,7 @@ namespace Simple.Routing.Isodistance
         /// use only after path finsing finished
         /// </summary>
         /// <returns>list of LineD representing shortest path</returns>
-        public PointCloudD getMultiGraph()
+        public PointCloudD getPointCloud()
         {
             List<QuadNode> nodes = this.points.toList();
             ValuePointD[] vpoints = new ValuePointD[nodes.Count];
@@ -121,6 +121,30 @@ namespace Simple.Routing.Isodistance
                 vpoints[i] = new ValuePointD(this.rasterizer.indexToPoint(nodes[i].x, nodes[i].y), nodes[i].value);
             }
             return new PointCloudD(vpoints);
+        }
+
+        public PolygonD[] getIsoRaster()
+        {
+            List<QuadNode> nodes = this.points.toList();
+            PolygonD[] poly = new PolygonD[nodes.Count];
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                PointD ul = this.rasterizer.indexToPoint(nodes[i].x, nodes[i].y);
+                PointD lr = this.rasterizer.indexToPoint(nodes[i].x + 1, nodes[i].y + 1);
+                PointD[] p = new PointD[5];
+                p[0].lon = ul.lon;
+                p[0].lat = ul.lat;
+                p[1].lon = lr.lon;
+                p[1].lat = ul.lat;
+                p[2].lon = lr.lon;
+                p[2].lat = lr.lat;
+                p[3].lon = ul.lon;
+                p[3].lat = lr.lat;
+                p[4].lon = ul.lon;
+                p[4].lat = ul.lat;
+                poly[i] = new PolygonD(p, nodes[i].value);
+            }
+            return poly;
         }
     }
 }

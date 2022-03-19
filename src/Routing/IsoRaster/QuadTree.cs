@@ -5,33 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Simple.GeoData;
 
-namespace Simple.Routing.Isodistance
+namespace Simple.Routing.IsoRaster
 {
-    interface IRasterizer
-    {
-        public (int x, int y) pointToIndex(PointD point);
-        public PointD indexToPoint(int x, int y);
-    }
-
-    class DefaultRasterizer : IRasterizer
-    {
-        private double factor;
-        public DefaultRasterizer(float precession)
-        {
-            this.factor = 1 / precession;
-        }
-
-        public (int x, int y) pointToIndex(PointD point)
-        {
-            return ((int)(point.lon * factor), (int)(point.lat * factor));
-        }
-
-        public PointD indexToPoint(int x, int y)
-        {
-            return new PointD(x / factor, y / factor);
-        }
-    }
-
     public class QuadNode
     {
         public int x;

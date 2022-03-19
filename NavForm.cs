@@ -18,7 +18,7 @@ using Simple.Routing.ShortestPath;
 using Simple.Maps;
 using Simple.Maps.TileMap; 
 using Microsoft.Data.Sqlite;
-using Simple.Routing.Isodistance;
+using Simple.Routing.IsoRaster;
 using Simple.Analysis.Traffic;
 
 namespace RoutingVisualizer
@@ -267,7 +267,7 @@ namespace RoutingVisualizer
             }
             haschanged = true;
             //drawMap();
-            MultiGraph mg = new MultiGraph(this.graph, start, 3600, new DefaultRasterizer(2000));
+            ShortestPathTree mg = new ShortestPathTree(this.graph, start, 3600, new DefaultRasterizer(2000));
             Stopwatch sw = new Stopwatch();
             sw.Start();
             mg.calcMultiGraph();
@@ -276,7 +276,7 @@ namespace RoutingVisualizer
             appendNewLine(sw.ElapsedMilliseconds.ToString());
             appendNewLine("finished");
 
-            container.valuepoints = mg.getMultiGraph();
+            container.valuepoints = mg.getPointCloud();
 
             //sw.Restart();
             //Raster raster = new Raster(new PointD(708071.8, 7186169.6), 2500, 2500, 200);

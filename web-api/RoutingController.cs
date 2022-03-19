@@ -46,22 +46,6 @@ namespace Simple.WebApi
         IShortestPath? alg = null;
         bool draw;
 
-        static PointD transformMercator(PointD point)
-        {
-            int a = 6378137;
-            double x = a * point.lon * Math.PI / 180;
-            double y = a * Math.Log(Math.Tan(Math.PI / 4 + point.lat * Math.PI / 360));
-            return new PointD(x, y);
-        }
-
-        public static PointD revTransformMercator(PointD point)
-        {
-            int a = 6378137;
-            double lon = point.lon * 180 / (a * Math.PI);
-            double lat = 360 * (Math.Atan(Math.Exp(point.lat / a)) - Math.PI / 4) / Math.PI;
-            return new PointD(lon, lat);
-        }
-
         static int getClosestNode(PointD startpoint)
         {
             double distance = -1;
@@ -90,8 +74,8 @@ namespace Simple.WebApi
         {
             if (alg == null)
             {
-                PointD start = transformMercator(new PointD(request.start[0], request.start[1]));
-                PointD end = transformMercator(new PointD(request.end[0], request.end[1]));
+                PointD start = new PointD(request.start[0], request.start[1]);
+                PointD end = new PointD(request.end[0], request.end[1]);
                 switch (request.algorithm)
                 {
                     case "Dijkstra":
@@ -158,7 +142,7 @@ namespace Simple.WebApi
                 PointD[] points = new PointD[line.points.Length];
                 for (int i = 0; i < line.points.Length; i++)
                 {
-                    points[i] = RoutingController.revTransformMercator(line.points[i]);
+                    points[i] = line.points[i];
                 }
                 this.features.Add(new LineD(points));
             }

@@ -8,12 +8,13 @@ using System.IO;
 using Simple.Routing.Graph;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using System.Windows.Forms;
 
 namespace Simple.WebApi
 {
     static class Application
     {
-        public static IGraph graph = GraphFactory.loadBaseGraph("data/niedersachsen.graph");
+        public static IGraph graph = GraphFactory.loadBaseGraph("data/default.graph");
 
         public static void Start(string[] args)
         { 
@@ -37,9 +38,9 @@ namespace Simple.WebApi
             //add request-handlers
             app.MapGet("/close", () => { app.StopAsync().Wait(); });
 
-            app.MapPost("/v0/shortestpathtree/driving-car", ( [FromBody] MultiGraphRequest request) =>
+            app.MapPost("/v0/shortestpathtree/driving-car", ( [FromBody] IsoRasterRequest request) =>
             {
-                return MultiGraphController.handleMultiGraphRequest(request);
+                return IsoRasterController.handleMultiGraphRequest(request).getGeoJson();
             });
 
             app.MapPost("/v0/routing/driving-car", ([FromBody] RoutingRequest request) =>
