@@ -24,6 +24,7 @@ namespace Simple.WebApi
                 // Look for static files in webroot
                 WebRootPath = "web-app"
             });
+
             var app = builder.Build();
 
             //add static file provider

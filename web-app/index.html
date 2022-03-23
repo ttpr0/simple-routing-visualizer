@@ -1,68 +1,19 @@
-<html>
-  <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" type="text/css">
-    <link rel="stylesheet" href="style.css" type="text/css">
-    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/build/ol.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
-    <title>ORS test_01</title>
-    <script>
-      window.addEventListener('beforeunload', function (e) {
-        fetch("http://localhost:5000/close");
-    });
-    </script>
-  </head>
-  <body>
-    <div id="map" class="map"></div>
-    <div class="sidebar">
-      <div class="container">
-        <div class="button"><button type="button" id="btnrouting" onclick="routing()">routing</button></div>
-        <div>
-          <input type="checkbox" id="drawrouting" name="cbxdrawrouting" checked>
-          <label>draw?</label>
-        </div>
-        <label for="algs">Choose a algorithm:</label>
-        <select name="algs" id="algselect">
-          <option value="Dijktra">Dijktra</option>
-          <option value="A*">A-Star</option>
-          <option value="Bidirect-Dijkstra">Bidirectional Dijktra</option>
-          <option value="Bidirect-A*">Bidirectional A-Star</option>
-        </select>
-        <div class="button"><button type="button" id="btnmg" onclick="multigraph()">multigraph</button></div>
-        <div>
-          <input type="range" id="range" name="range" min="0" max="5400">
-          <label for="range" id="lblslider">Entfernung</label>
-        </div>
-        <div>
-          <input type="range" id="rangecount" name="rangecount" min="100" max="1000">
-          <label for="rangecount" id="lblslider2">Range-Count</label>
-        </div>
-        <div id="txttime"></div>
-      </div>
-
-      <div class="container">
-        <button type="button" id="btnstart" onclick="activate_interaction()">im Rechteck auswählen</button> 
-        <div>
-          <input type="checkbox" id="ors" name="ors" checked>
-          <label >OpenRouteService</label>
-          <label class="ors">&#8718</label>
-        </div>
-        <div>
-          <input type="checkbox" id="mg" name="mg" checked>
-          <label>MultiGraph</label>
-          <label class="mg">&#8718</label>
-        </div>
-        <div>
-          <input type="checkbox" id="routing" name="routing">
-          <label>Routing</label>
-          <label class="routing">&#8718</label>
-        </div>
-      </div>
-    </div>
-    <script src="styles.js"></script>
-    <script src="util.js"></script>
-    <script src="layers.js"></script>
-    <script src="app.js"></script>
-    <script src="tests.js"></script>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple-Routing-Visualizer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" type="text/css">
+  <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/build/ol.js"></script>
+  <script>
+    window.addEventListener('beforeunload', function (e) {
+      fetch("http://localhost:5000/close");
+  });
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="app.js"></script>
+</body>
 </html>

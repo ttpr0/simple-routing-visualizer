@@ -111,7 +111,7 @@ namespace Simple.Routing.ShortestPath
                             continue;
                         }
                     }
-                    otherflag.distance = Distance.haversineDistance(this.geom.getNode(otherid), endpoint);
+                    otherflag.distance = Distance.haversineDistance(this.geom.getNode(otherid), endpoint) * 1.7;
                     double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edgeid) + otherflag.distance + this.weight.getTurnCost(from, currid, i);
                     if (otherflag.pathlength > newlength)
                     {
@@ -157,7 +157,7 @@ namespace Simple.Routing.ShortestPath
                         }
                     }
                     visitededges.Add(this.geom.getEdge(edgeid));
-                    otherflag.distance = Distance.haversineDistance(this.geom.getNode(otherid), endpoint);
+                    otherflag.distance = Distance.haversineDistance(this.geom.getNode(otherid), endpoint) * 1.7;
                     double newlength = currflag.pathlength - currflag.distance + otherflag.distance + this.weight.getEdgeWeight(edgeid) + this.weight.getTurnCost(from, currid, i);
                     if (otherflag.pathlength > newlength)
                     {

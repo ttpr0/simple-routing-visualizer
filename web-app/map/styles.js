@@ -1,3 +1,30 @@
+const defaultStyle = {
+  'Point': new ol.style.Style({
+    image: new ol.style.RegularShape({
+      fill: new ol.style.Fill({color: 'black'}),
+      stroke: new ol.style.Stroke({color: 'black'}),
+      points: 3,
+      radius: 10,
+      angle: 0,
+    })
+  }),
+  'LineString': new ol.style.Style({
+    stroke: new ol.style.Stroke({
+      color: '#f00',
+      width: 3
+    })
+  }),
+  'Polygon': new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: 'rgba(0,255,255,0.5)'
+    }),
+    stroke: new ol.style.Stroke({
+      color: '#0ff',
+      width: 1
+    })
+  }),
+};
+
 var width = 2;
 function ors_style(feature, resolution) 
 {
@@ -55,7 +82,7 @@ var fills = [
   new ol.style.Fill({color: [233,21,30,0.8]})
 ]
 
-r = 3
+var r = 3;
 var styles = {
     300: new ol.style.Style({image: new ol.style.Circle({fill: fills[0], radius:r}), fill: fills[0]}),
     600: new ol.style.Style({image: new ol.style.Circle({fill: fills[1], radius:r}), fill: fills[1]}),
@@ -119,3 +146,5 @@ const lineStyle = (final) => {
     })
   }
 }
+
+export {pointstyle, highlightpointstyle, defaultStyle, accessibilityStyleFunction, lineStyle}
