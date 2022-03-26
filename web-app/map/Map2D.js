@@ -1,6 +1,5 @@
 import { VectorLayer } from "/map/VectorLayer.js";
 import { pointstyle, highlightpointstyle } from "/map/styles.js";
-import { createApp, ref, reactive, computed, watch } from '/lib/vue.js'
 
 class Map2D 
 {

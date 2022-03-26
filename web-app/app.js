@@ -1,15 +1,21 @@
-import { createApp, ref, reactive, onMounted} from '/lib/vue.js'
-import { mapregion } from '/components/MapRegion.js';
+import { createApp, ref, reactive, onMounted} from 'vue'
 import { Map2D } from '/map/Map2D.js';
-import { sidebar } from '/components/SideBar.js';
 import { VectorLayer } from './map/VectorLayer.js';
 import { pointstyle, highlightpointstyle } from "/map/styles.js";
 import { store } from './store/store.js';
+import { mapregion } from './components/MapRegion.js';
+import { sidebar } from '/components/SideBar.js';
+import { toolbar } from './components/ToolBar.js';
+import { getMap } from './map/maps.js';
 
 const app = createApp({
-  components: { mapregion, sidebar },
+  components: { sidebar, toolbar, mapregion },
   setup() {
     const map = getMap();
+
+    function updateLayerTree() {
+      store.commit('updateLayerTree');
+    }
 
     fetch(window.location.origin + '/datalayers/hospitals.geojson')
       .then(response => response.json())
@@ -18,23 +24,20 @@ const app = createApp({
         var layer = new VectorLayer(points, 'Point', 'hospitals');
         map.addVectorLayer(layer);
         store.commit('setFocusLayer', layer.name);
+        updateLayerTree();
     });
 
     return {  }
   },
 
   template: `
-  <sidebar></sidebar>
-  <mapregion style="height: 100%; width: 80%; float: right;"></mapregion>
+  <div class="appcontainer">
+    <toolbar></toolbar>
+    <sidebar></sidebar>
+    <mapregion></mapregion>
+  </div>
   `
 })
-
-const map = new Map2D();
-
-function getMap()
-{
-  return map;
-}
 
 app.use(store);
   

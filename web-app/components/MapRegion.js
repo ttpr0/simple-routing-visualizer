@@ -1,12 +1,12 @@
-import { computed, ref, reactive, onMounted, watch} from '/lib/vue.js'
+import { computed, ref, reactive, onMounted, watch} from 'vue';
 import { dragablewindow } from './DragableWindow.js';
-import { useStore } from '/lib/vuex.js';
-import { getMap } from '../app.js';
+import { useStore } from 'vuex';
+import { getMap } from '/map/maps.js';
 
 const mapregion = {
     components: { dragablewindow },
-    props: ["style"],
-    setup(props) {
+    props: [],
+    setup() {
         const store = useStore();
         const map = getMap();
 
@@ -38,7 +38,7 @@ const mapregion = {
         return {text, store, pos, showDialog, setShow}
     },
     template: `
-    <div id="mapregion" :style="style"></div>
+    <div id="mapregion"></div>
     <dragablewindow v-if="showDialog" :pos="pos" name="Feature-Info" @onclose="setShow(false)">
         <textarea class="featuretext">{{ text }}</textarea>
     </dragablewindow>

@@ -6,14 +6,9 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" type="text/css">
   <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/build/ol.js"></script>
-  <script>
-    window.addEventListener('beforeunload', function (e) {
-      fetch("http://localhost:5000/close");
-  });
-  </script>
 </head>
 <body>
-  <div id="app"></div>
-  <script type="module" src="app.js"></script>
+  <div id="app" class="app"></div>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>

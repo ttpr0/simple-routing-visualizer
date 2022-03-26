@@ -1,14 +1,14 @@
-import { computed, ref, reactive, watch, toRef} from '/lib/vue.js'
-import { layercheckbox } from '/components/LayerCheckBox.js'
+import { computed, ref, reactive, watch, toRef} from 'vue'
 import { pointstyle } from '/map/styles.js'
 import { VectorLayer } from '/map/VectorLayer.js'
-import { useStore } from '/lib/vuex.js';
-import { getMap } from '../app.js'
+import { useStore } from 'vuex';
+import { getMap } from '/map/maps.js';
 import { getMultiGraph, getRouting } from '../routing/api.js';
 import { accessibilityStyleFunction, lineStyle } from '../map/styles.js';
+import { toolbarcomp } from './ToolBarComp.js';
 
-const analysisbar = {
-    components: { layercheckbox },
+const analysistoolbar = {
+    components: { toolbarcomp },
     props: [ ],
     setup(props) {
         const store = useStore();
@@ -22,9 +22,7 @@ const analysisbar = {
         const draw = ref(false);
 
         const range = ref(900);
-        const count = ref(1);
-        
-        const precession = computed(() => { return count.value*100; });
+        const count = ref(100); 
 
         const time = ref(0);
 
@@ -51,7 +49,7 @@ const analysisbar = {
               locations.push(element.getGeometry().getCoordinates());
             })
             var start = new Date().getTime();
-            var geojson = await getMultiGraph(locations, range.value, precession.value);
+            var geojson = await getMultiGraph(locations, range.value, count.value);
             var end = new Date().getTime();
             time.value = end - start;
             var multigraphlayer = map.getVectorLayerByName("multigraphlayer");
@@ -103,6 +101,7 @@ const analysisbar = {
             {
                 routinglayer.delete();
             }
+            console.log(geojson)
             var features = new ol.format.GeoJSON().readFeatures(geojson);
             routinglayer = new VectorLayer(features, 'LineString', 'routinglayer');
             routinglayer.setStyle(lineStyle(true));
@@ -131,46 +130,54 @@ const analysisbar = {
                 key = geojson.key;
                 finished = geojson.finished;
                 var features = new ol.format.GeoJSON().readFeatures(geojson);
-                routinglayer.addFeatures(features);
+                routinglayer.getSource().addFeatures(features);
             } while (!geojson.finished)
             var end = new Date().getTime();
             time.value = end - start;
-            routinglayer.delete();
-            updateLayerTree();
             features = new ol.format.GeoJSON().readFeatures(geojson);
             routinglayer = new VectorLayer(features, 'LineString', 'routinglayer');
             routinglayer.setStyle(lineStyle(true));
             map.addVectorLayer(routinglayer);
         }
 
-        return { routingtype, draw, range, count, time, precession, multigraph, routing }
+        return { routingtype, draw, range, count, time, multigraph, routing }
     },
     template: `
-    <div class="analysisbar">
-        <div class="button"><button type="button" id="btnrouting" @click="routing()">routing</button></div>
-        <div>
+    <div class="analysistoolbar">
+      <toolbarcomp name="Routing">
+        <div class="container">
+          <button class="bigbutton" @click="routing()">Start<br>Routing</button>
+        </div>
+        <div class="container">
+          <div>
             <input type="checkbox" id="drawrouting" v-model="draw">
             <label for="drawrouting">draw?</label>
+          </div>
+          <div>
+            <label for="algs">Choose a algorithm:</label><br>
+            <select v-model="routingtype">
+              <option value="Dijktra">Dijktra</option>
+              <option value="A*">A-Star</option>
+              <option value="Bidirect-Dijkstra">Bidirectional Dijktra</option>
+              <option value="Bidirect-A*">Bidirectional A-Star</option>
+            </select>
+          </div>
+          <div id="txttime">Calculation Time: {{ time }}</div>
         </div>
-        <label for="algs">Choose a algorithm:</label>
-        <select v-model="routingtype">
-            <option value="Dijktra">Dijktra</option>
-            <option value="A*">A-Star</option>
-            <option value="Bidirect-Dijkstra">Bidirectional Dijktra</option>
-            <option value="Bidirect-A*">Bidirectional A-Star</option>
-        </select>
-        <div class="button"><button type="button" id="btnmg" @click="multigraph()">multigraph</button></div>
-        <div>
-            <input type="range" id="range" v-model="range" min="0" max="5400">
-            <label for="range">{{ range }}</label>
+      </toolbarcomp>
+      <toolbarcomp name="Multigraph">
+        <div class="container">
+          <button class="bigbutton" @click="multigraph()">Run<br>Multigraph</button>
         </div>
-        <div>
-            <input type="range" id="rangecount" v-model="count" min="1" max="10">
-            <label for="rangecount">{{ precession }}</label>
+        <div class="container">
+          <label for="range">{{ range }}</label><br>
+          <input type="range" id="range" v-model="range" min="0" max="5400"><br>
+          <label for="rangecount">{{ count }}</label><br>
+          <input type="range" id="rangecount" v-model="count" min="100" max="1000"><br>
         </div>
-        <div id="txttime">Calculation Time: {{ time }}</div>
+      </toolbarcomp>
     </div>
     `
 } 
 
-export { analysisbar }
+export { analysistoolbar }

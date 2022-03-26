@@ -17,7 +17,8 @@ namespace Simple.WebApi
         public static IGraph graph = GraphFactory.loadBaseGraph("data/default.graph");
 
         public static void Start(string[] args)
-        { 
+        {
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
             var builder = WebApplication.CreateBuilder(new WebApplicationOptions
             {
                 Args = args,
@@ -25,7 +26,18 @@ namespace Simple.WebApi
                 WebRootPath = "web-app"
             });
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://localhost:3000");
+                                  });
+            });
+
             var app = builder.Build();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             //add static file provider
             var provider = new FileExtensionContentTypeProvider();
@@ -60,11 +72,11 @@ namespace Simple.WebApi
             });
 
 
-            var uri = "http://localhost:5000/index.html";
-            var psi = new System.Diagnostics.ProcessStartInfo();
-            psi.UseShellExecute = true;
-            psi.FileName = uri;
-            System.Diagnostics.Process.Start(psi);
+            //var uri = "http://localhost:5000/index.html";
+            //var psi = new System.Diagnostics.ProcessStartInfo();
+            //psi.UseShellExecute = true;
+            //psi.FileName = uri;
+            //System.Diagnostics.Process.Start(psi);
 
             app.Run("http://localhost:5000");
         }

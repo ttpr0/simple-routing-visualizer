@@ -1,6 +1,4 @@
-import { createApp, ref, reactive, onMounted, watch} from '/lib/vue.js'
-import { layerbar } from '/components/LayerBar.js';
-import { selectbar } from '/components/SelectBar.js';
+import { createApp, ref, reactive, onMounted, watch} from 'vue'
 
 const dragablewindow = {
     components: { },

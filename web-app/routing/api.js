@@ -5,7 +5,7 @@ async function getMultiGraph(locations, ranges, precession)
         method: 'POST', 
         mode: 'cors',
         cache: 'no-cache', 
-        credentials: 'same-origin', 
+        //credentials: 'same-origin', 
         headers: {
           'Content-Type': 'application/json',
         },
@@ -21,7 +21,7 @@ async function getMultiGraph(locations, ranges, precession)
         })
       });
     var json = await response.json();
-    //console.log(json);
+    console.log(json);
     return json;
 }
 
@@ -32,7 +32,7 @@ async function getRouting(start, end, key, draw, stepcount, algorithm)
         method: 'POST', 
         mode: 'cors',
         cache: 'no-cache', 
-        credentials: 'same-origin', 
+        //credentials: 'same-origin', 
         headers: {
           'Content-Type': 'application/json',
         },
@@ -51,7 +51,7 @@ async function getRouting(start, end, key, draw, stepcount, algorithm)
         })
       });
     var json = await response.json();
-    //console.log(json);
+    console.log(json);
     return json;
 }
 

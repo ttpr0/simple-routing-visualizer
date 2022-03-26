@@ -117,12 +117,6 @@ class VectorLayer extends ol.layer.Vector
         }
     }
 
-    addFeatures(features)
-    {
-        features.forEach(element => { element.set('layer', this); element.set('selected', false); });
-        super.getSource().addFeatures(features);
-    }
-
     removeFeature(feature)
     {
         super.getSource().removeFeature(feature);

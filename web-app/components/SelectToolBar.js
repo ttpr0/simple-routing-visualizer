@@ -1,12 +1,12 @@
-import { createApp, ref, reactive, computed, watch, onMounted } from '/lib/vue.js'
-import { layercheckbox } from '/components/LayerCheckBox.js'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer.js'
 import { pointstyle, highlightpointstyle } from "/map/styles.js";
-import { useStore } from '/lib/vuex.js';
-import { getMap } from '../app.js';
+import { useStore } from 'vuex';
+import { getMap } from '/map/maps.js';
+import { toolbarcomp } from './ToolBarComp.js';
 
-const selectbar = {
-    components: { },
+const selecttoolbar = {
+    components: { toolbarcomp },
     props: [ ],
     setup(props) {
       const store = useStore();
@@ -170,27 +170,41 @@ const selectbar = {
         }
       }
 
-      return { activateDragBox, activateFeatureInfo, activateSelect, activateAddPoint, activateDelPoint, dragboxActive, featureinfoActive, selectActive, addpointActive, delpointActive }
+      return { activateDragBox, activateFeatureInfo, activateSelect, activateAddPoint, activateDelPoint, dragboxActive, selectActive, addpointActive, delpointActive, featureinfoActive }
     },
     template: `
-    <div class="selectbar">
-      <div class="topbar-bodyitem">
-        <button :class="[{highlightbutton: featureinfoActive}, {normalbutton: true}]" type="button" @click="activateFeatureInfo()">Feature-Info</button>
-      </div>
-      <div class="topbar-bodyitem">
-        <button :class="[{highlightbutton: selectActive}, {normalbutton: true}]" type="button" @click="activateSelect()">Features auswählen</button>
-      </div>
-      <div class="topbar-bodyitem">
-        <button :class="[{highlightbutton: dragboxActive}, {normalbutton: true}]" type="button" @click="activateDragBox()">im Rechteck auswählen</button>
-      </div>
-      <div class="topbar-bodyitem">
-        <button :class="[{highlightbutton: addpointActive}, {normalbutton: true}]" type="button" @click="activateAddPoint()">Add Point</button>
-      </div>  
-      <div class="topbar-bodyitem">
-        <button :class="[{highlightbutton: delpointActive}, {normalbutton: true}]" type="button" @click="activateDelPoint()">Delete Point</button> 
-      </div>
+    <div class="selecttoolbar">
+      <toolbarcomp name="Selection">
+        <div class="container">
+          <button :class="[{highlight:featureinfoActive},{bigbutton:true}]" @click="activateFeatureInfo()">
+            Feature<br>Info
+          </button>
+        </div>
+        <div class="container">
+          <button :class="[{highlight:selectActive},{bigbutton:true}]" @click="activateSelect()">
+            Features<br>auswählen
+          </button>
+        </div>
+        <div class="container">
+          <button :class="[{highlight:dragboxActive},{bigbutton:true}]" @click="activateDragBox()">
+            im Rechteck<br>auswählen
+          </button>
+        </div>
+      </toolbarcomp>
+      <toolbarcomp name="Modify">
+        <div class="container">
+          <button :class="[{highlight:addpointActive},{bigbutton:true}]" @click="activateAddPoint()">
+            Add<br> Point
+          </button>
+        </div>
+        <div class="container">
+          <button :class="[{highlight:delpointActive},{bigbutton:true}]" @click="activateDelPoint()">
+            Delete<br> Point
+          </button>
+        </div>
+      </toolbarcomp>
     </div>
     `
 } 
 
-export { selectbar }
+export { selecttoolbar }
