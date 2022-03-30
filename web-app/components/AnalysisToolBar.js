@@ -1,5 +1,4 @@
 import { computed, ref, reactive, watch, toRef} from 'vue'
-import { pointstyle } from '/map/styles.js'
 import { VectorLayer } from '/map/VectorLayer.js'
 import { useStore } from 'vuex';
 import { getMap } from '/map/maps.js';
@@ -81,7 +80,7 @@ const analysistoolbar = {
             var endpoint = layer.selectedfeatures[1].getGeometry().getCoordinates();
             if (draw.value)
             {
-              draw_routing(routingtype.value, startpoint, endpoint, 1000)
+              draw_routing(routingtype.value, startpoint, endpoint, 1000);
             }
             else
             {
@@ -134,10 +133,12 @@ const analysistoolbar = {
             } while (!geojson.finished)
             var end = new Date().getTime();
             time.value = end - start;
+            routinglayer.delete();
             features = new ol.format.GeoJSON().readFeatures(geojson);
             routinglayer = new VectorLayer(features, 'LineString', 'routinglayer');
             routinglayer.setStyle(lineStyle(true));
             map.addVectorLayer(routinglayer);
+            updateLayerTree();
         }
 
         return { routingtype, draw, range, count, time, multigraph, routing }

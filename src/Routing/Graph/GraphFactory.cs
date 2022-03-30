@@ -136,5 +136,98 @@ namespace Simple.Routing.Graph
             TrafficTable t = new TrafficTable(new int[edgearr.Length]);
             return new TrafficGraph(edgearr, nodearr, new Geometry(pointarr, linearr), new TrafficWeighting(edgeweightarr, t), t);
         }
+
+        public static BaseGraph _loadBaseGraph(string url)
+        {
+            FileInfo f = new FileInfo(url);
+            if (!f.Exists || f.Name.Split(".")[1] != "graph")
+            {
+                throw new FileNotFoundException("specified path doesnt meet requirements");
+            }
+            string filename = f.Name.Split(".")[0];
+            Byte[] graphdata = File.ReadAllBytes(url);
+            Byte[] attribdata = File.ReadAllBytes(f.DirectoryName + "/" + filename + "-attrib");
+            MemoryStream graphstream = new MemoryStream(graphdata);
+            BinaryReader graphreader = new BinaryReader(graphstream);
+            int nodecount = graphreader.ReadInt32();
+            int edgecount = graphreader.ReadInt32();
+            int startindex = 8 + nodecount * 5 + edgecount * 8;
+            MemoryStream edgerefstream = new MemoryStream(graphdata, startindex, graphdata.Length - startindex);
+            BinaryReader edgerefreader = new BinaryReader(edgerefstream);
+            MemoryStream attribstream = new MemoryStream(attribdata);
+            BinaryReader attribreader = new BinaryReader(attribstream);
+            Node[] nodearr = new Node[nodecount];
+            for (int i = 0; i < nodecount; i++)
+            {
+                int s = graphreader.ReadInt32();
+                sbyte c = graphreader.ReadSByte();
+                int[] edges = new int[c];
+                for (int j = 0; j < c; j++)
+                {
+                    edges[j] = edgerefreader.ReadInt32();
+                }
+                sbyte t = attribreader.ReadSByte();
+                nodearr[i] = new Node((byte)t, edges);
+            }
+            Edge[] edgearr = new Edge[edgecount];
+            for (int i = 0; i < edgecount; i++)
+            {
+                int start = graphreader.ReadInt32();
+                int end = graphreader.ReadInt32();
+                sbyte type = attribreader.ReadSByte();
+                attribreader.ReadInt32();
+                attribreader.ReadByte();
+                bool oneway = attribreader.ReadBoolean();
+                edgearr[i] = new Edge(start, end, oneway, (byte)type);
+            }
+            graphreader.Close();
+            edgerefreader.Close();
+            attribreader.Close();
+            graphstream.Close();
+            edgerefstream.Close();
+            attribstream.Close();
+            Byte[] weightdata = File.ReadAllBytes(f.DirectoryName + "/" + filename + "-weight");
+            MemoryStream weightstream = new MemoryStream(weightdata);
+            BinaryReader weightreader = new BinaryReader(weightstream);
+            int[] edgeweights = new int[edgecount];
+            for (int i = 0; i < edgecount; i++)
+            {
+                edgeweights[i] = weightreader.ReadByte();
+            }
+            weightreader.Close();
+            weightstream.Close();
+            Byte[] geomdata = File.ReadAllBytes(f.DirectoryName + "/" + filename + "-geom");
+            startindex = nodecount * 8 + edgecount * 5;
+            MemoryStream geomstream = new MemoryStream(geomdata);
+            BinaryReader geomreader = new BinaryReader(geomstream);
+            MemoryStream linestream = new MemoryStream(geomdata, startindex, geomdata.Length - startindex);
+            BinaryReader linereader = new BinaryReader(linestream);
+            PointD[] pointarr = new PointD[nodecount];
+            for (int i = 0; i < nodecount; i++)
+            {
+                float lon = geomreader.ReadSingle();
+                float lat = geomreader.ReadSingle();
+                pointarr[i] = new PointD(lon, lat);
+            }
+            LineD[] linearr = new LineD[edgecount];
+            for (int i = 0; i < edgecount; i++)
+            {
+                int s = geomreader.ReadInt32();
+                byte c = geomreader.ReadByte();
+                List<PointD> points = new List<PointD>();
+                for (int j = 0; j < c; j++)
+                {
+                    float lon = linereader.ReadSingle();
+                    float lat = linereader.ReadSingle();
+                    points.Add(new PointD(lon, lat));
+                }
+                linearr[i] = new LineD(points.ToArray());
+            }
+            geomreader.Close();
+            linereader.Close();
+            geomstream.Close();
+            linestream.Close();
+            return new BaseGraph(edgearr, nodearr, new Geometry(pointarr, linearr), new Weighting(edgeweights, null));
+        }
     }
 }

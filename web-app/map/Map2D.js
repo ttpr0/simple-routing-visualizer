@@ -1,5 +1,5 @@
 import { VectorLayer } from "/map/VectorLayer.js";
-import { pointstyle, highlightpointstyle } from "/map/styles.js";
+
 
 class Map2D 
 {

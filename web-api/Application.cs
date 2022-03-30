@@ -14,10 +14,18 @@ namespace Simple.WebApi
 {
     static class Application
     {
-        public static IGraph graph = GraphFactory.loadBaseGraph("data/default.graph");
+        public static IGraph graph = GraphFactory._loadBaseGraph("data/default.graph");
 
         public static void Start(string[] args)
         {
+            for (int i = 0; i < Application.graph.edgeCount(); i++)
+            {
+                IWeighting weight = Application.graph.getWeighting();
+                if (weight.getEdgeWeight(i) < 0)
+                {
+                    Console.WriteLine("test: " + weight.getEdgeWeight(i));
+                }
+            }
             var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
             var builder = WebApplication.CreateBuilder(new WebApplicationOptions
             {
@@ -36,6 +44,7 @@ namespace Simple.WebApi
             });
 
             var app = builder.Build();
+            
 
             app.UseCors(MyAllowSpecificOrigins);
 

@@ -6,23 +6,23 @@ using System.Threading.Tasks;
 
 namespace Simple.Routing.Graph
 {
-    enum RoadType
+    enum RoadType : sbyte
     {
-        motorway = 0,
-        trunk = 1,
-        primary = 2,
-        secondary = 3,
-        tertiary = 4,
-        residential = 5,
-        unclassified = 6,
-        motorway_link = 7,
-        trunk_link = 8,
-        primary_link = 9,
-        secondary_link = 10,
-        tertiary_link = 11,
-        service = 12,
-        living_street = 13,
-        track = 14,
+        motorway = 1,
+        motorway_link = 2,
+        trunk = 3,
+        trunk_link = 4,
+        primary = 5,
+        primary_link = 6,
+        secondary = 7,
+        secondary_link = 8,
+        tertiary = 9,
+        tertiary_link = 10,
+        residential = 11,
+        living_street = 12,
+        unclassified = 13,
+        road = 14,
+        track = 15,
     }
 
     [Flags]

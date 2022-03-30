@@ -1,6 +1,5 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { layertreeitem } from './LayerTreeItem.js';
-import { pointstyle } from '/map/styles.js';
 import { VectorLayer } from '/map/VectorLayer.js';
 import { useStore } from 'vuex';
 import { getMap } from '/map/maps.js';

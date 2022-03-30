@@ -24,11 +24,12 @@ namespace Simple.Routing.Graph
 
         public int getTurnCost(int from, int via, int to)
         {
-            if (from == -1 || to == -1)
-            {
-                return 0;
-            }
-            return this.nodeweights[via][from, to];
+            //if (from == -1 || to == -1)
+            //{
+            //    return 0;
+            //}
+            //return this.nodeweights[via][from, to];
+            return 0;
         }
     }
 }

@@ -1,7 +1,6 @@
 import { createApp, ref, reactive, computed, watch, onMounted } from '/lib/vue.js'
 import { layercheckbox } from '/components/LayerCheckBox.js'
 import { VectorLayer } from '/map/VectorLayer.js'
-import { pointstyle, highlightpointstyle } from "/map/styles.js";
 import { useStore } from '/lib/vuex.js';
 import { getMap } from '../app.js';
 

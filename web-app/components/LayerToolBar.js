@@ -1,6 +1,5 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer.js'
-import { pointstyle, highlightpointstyle } from "/map/styles.js";
 import { useStore } from 'vuex';
 import { getMap } from '/map/maps.js';
 import { toolbarcomp } from './ToolBarComp.js';

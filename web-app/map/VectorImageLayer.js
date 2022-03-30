@@ -1,6 +1,6 @@
 import { defaultStyle, highlightDefaultStyle } from "./styles.js";
 
-class VectorLayer extends ol.layer.Vector 
+class VectorImageLayer extends ol.layer.VectorImage 
 {
     constructor(features, type, name)
     {
@@ -47,8 +47,8 @@ class VectorLayer extends ol.layer.Vector
         }
         else 
         {
-            this.style = style;
             super.setStyle(this.styleFunction);
+            this.style = style;
         }
     }
 
@@ -105,8 +105,6 @@ class VectorLayer extends ol.layer.Vector
     {
         if (feature.getGeometry().getType()  === this.type || feature.getGeometry().getType() === "Multi" + this.type)
         {
-            feature.set('layer', this);
-            feature.set('selected', false);
             super.getSource().addFeature(feature);
         }
     }
@@ -125,4 +123,4 @@ class VectorLayer extends ol.layer.Vector
     }
 }
 
-export {VectorLayer}
+export {VectorImageLayer}

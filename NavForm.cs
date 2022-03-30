@@ -69,7 +69,7 @@ namespace RoutingVisualizer
             this.tilemap.getFactory().changed += this.changed;
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            this.graph = GraphFactory.loadTrafficGraph("data/default.graph");
+            this.graph = GraphFactory._loadBaseGraph("data/default.graph");
             sw.Stop();
             appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
             container.startnode = graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));

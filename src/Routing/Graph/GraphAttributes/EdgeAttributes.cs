@@ -1,29 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Simple.Routing.Graph
 {
+    [StructLayout(LayoutKind.Explicit)]
     struct EdgeAttributes
     {
-        public RoadType type { get; set; }
+        [FieldOffset(0)] public RoadType type;
 
-        public int length;
+        [FieldOffset(1)] public float length;
 
-        public int maxspeed;
+        [FieldOffset(5)] public byte maxspeed;
 
-        public bool oneway;
-
-        public short fcapacity;
-
-        public short bcapacity;
-
-        public Access access;
-
-        public Obstacles[] obstacles;
-
-        public Restrictions[] restrictions;
+        [FieldOffset(6)] public bool oneway;
     }
 }

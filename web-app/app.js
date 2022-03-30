@@ -1,7 +1,6 @@
 import { createApp, ref, reactive, onMounted} from 'vue'
 import { Map2D } from '/map/Map2D.js';
 import { VectorLayer } from './map/VectorLayer.js';
-import { pointstyle, highlightpointstyle } from "/map/styles.js";
 import { store } from './store/store.js';
 import { mapregion } from './components/MapRegion.js';
 import { sidebar } from '/components/SideBar.js';

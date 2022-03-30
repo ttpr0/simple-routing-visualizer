@@ -10,8 +10,31 @@ const defaultStyle = {
   }),
   'LineString': new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: '#f00',
+      color: 'black',
       width: 3
+    })
+  }),
+  'Polygon': new ol.style.Style({
+    stroke: new ol.style.Stroke({
+      color: 'black',
+      width: 2
+    })
+  }),
+};
+const highlightDefaultStyle = {
+  'Point': new ol.style.Style({
+    image: new ol.style.RegularShape({
+      fill: new ol.style.Fill({color: 'lightseagreen'}),
+      stroke: new ol.style.Stroke({color: 'lightseagreen'}),
+      points: 3,
+      radius: 10,
+      angle: 0,
+    })
+  }),
+  'LineString': new ol.style.Style({
+    stroke: new ol.style.Stroke({
+      color: 'lightseagreen',
+      width: 2
     })
   }),
   'Polygon': new ol.style.Style({
@@ -19,8 +42,8 @@ const defaultStyle = {
       color: 'rgba(0,255,255,0.5)'
     }),
     stroke: new ol.style.Stroke({
-      color: '#0ff',
-      width: 1
+      color: 'lightseagreen',
+      width: 3
     })
   }),
 };
@@ -29,6 +52,18 @@ var width = 2;
 function ors_style(feature, resolution) 
 {
     return new ol.style.Style({stroke: new ol.style.Stroke({color: 'black', width: width})});
+}
+function mapbox_style(feature, resolution) 
+{
+    return new ol.style.Style({stroke: new ol.style.Stroke({color: 'red', width: width})});
+}
+function targamo_style(feature, resolution) 
+{
+    return new ol.style.Style({stroke: new ol.style.Stroke({color: 'green', width: width})});
+}
+function bing_style(feature, resolution) 
+{
+    return new ol.style.Style({stroke: new ol.style.Stroke({color: 'blue', width: width})});
 }
 
 var styleCache = {};
@@ -52,25 +87,6 @@ function styleFunction(feature, resolution)
   }
   return styleCache[value];
 }
-
-const pointstyle = new ol.style.Style({
-    image: new ol.style.RegularShape({
-      fill: new ol.style.Fill({color: 'black'}),
-      stroke: new ol.style.Stroke({color: 'black'}),
-      points: 3,
-      radius: 10,
-      angle: 0,
-    })
-});
-const highlightpointstyle = new ol.style.Style({
-    image: new ol.style.RegularShape({
-      fill: new ol.style.Fill({color: 'red'}),
-      stroke: new ol.style.Stroke({color: 'red'}),
-      points: 3,
-      radius: 10,
-      angle: 0,
-    })
-});
 
 var fills = [
   new ol.style.Fill({color: [35,120,163,0.8]}),
@@ -147,4 +163,4 @@ const lineStyle = (final) => {
   }
 }
 
-export {pointstyle, highlightpointstyle, defaultStyle, accessibilityStyleFunction, lineStyle}
+export { defaultStyle, highlightDefaultStyle, accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, targamo_style, bing_style }

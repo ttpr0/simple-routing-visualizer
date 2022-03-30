@@ -9,6 +9,7 @@ lib
 include
 datalayers
 assets
+tests
 
 # Logs
 logs
