@@ -14,7 +14,7 @@ namespace Simple.WebApi
 {
     static class Application
     {
-        public static IGraph graph = GraphFactory._loadBaseGraph("data/default.graph");
+        public static IGraph graph = GraphFactory.loadBaseGraph("data/default.graph");
 
         public static void Start(string[] args)
         {

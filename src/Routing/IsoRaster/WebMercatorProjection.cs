@@ -9,18 +9,18 @@ namespace Simple.Routing.IsoRaster
 {
     class WebMercatorProjection : IProjection
     {
-        public void proj(ref PointD point)
+        public void proj(ref Point point)
         {
             int a = 6378137;
-            point.lon = a * point.lon * Math.PI / 180;
-            point.lat = a * Math.Log(Math.Tan(Math.PI / 4 + point.lat * Math.PI / 360));
+            point[0] = (float)(a * point[0] * Math.PI / 180);
+            point[1] = (float)(a * Math.Log(Math.Tan(Math.PI / 4 + point[1] * Math.PI / 360)));
         }
 
-        public void reproj(ref PointD point)
+        public void reproj(ref Point point)
         {
             int a = 6378137;
-            point.lon = point.lon * 180 / (a * Math.PI);
-            point.lat = 360 * (Math.Atan(Math.Exp(point.lat / a)) - Math.PI / 4) / Math.PI;
+            point[0] = (float)(point[0] * 180 / (a * Math.PI));
+            point[1] = (float)(360 * (Math.Atan(Math.Exp(point[1] / a)) - Math.PI / 4) / Math.PI);
         }
     }
 }

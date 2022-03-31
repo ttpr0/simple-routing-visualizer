@@ -66,7 +66,7 @@ namespace Simple.Routing.IsoRaster
                 {
                     return;
                 }
-                Node curr = this.graph.getNode(currid);
+                ref NodeAttributes curr = ref this.graph.getNode(currid);
                 ref Flag currflag = ref this.flags[currid];
                 if (currflag.pathlength/36 > maxvalue)
                 {
@@ -79,24 +79,21 @@ namespace Simple.Routing.IsoRaster
                 (int x, int y) = rasterizer.pointToIndex(this.geom.getNode(currid));
                 points.insert(x, y, (int)(currflag.pathlength/36));
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjacentEdges(currid);
-                for (int i = 0; i < edges.Length; i++)
+                IEdgeRefStore edges = this.graph.getAdjacentEdges(currid);
+                for (int i = 0; i < edges.length; i++)
                 {
                     int edgeid = edges[i];
-                    Edge edge = this.graph.getEdge(edgeid);
-                    int otherid = this.graph.getOtherNode(edgeid, currid);
-                    Node other = this.graph.getNode(otherid);
+                    ref EdgeAttributes edge = ref this.graph.getEdge(edgeid);
+                    int otherid = this.graph.getOtherNode(edgeid, currid, out Direction dir);
+                    ref NodeAttributes other = ref this.graph.getNode(otherid);
                     ref Flag otherflag = ref this.flags[otherid];
                     if (otherflag.visited)
                     {
                         continue;
                     }
-                    if (edge.oneway)
+                    if (edge.oneway && dir == Direction.backward)
                     {
-                        if (edge.nodeB == currid)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
                     double newlength = currflag.pathlength + this.weight.getEdgeWeight(edgeid);
                     if (otherflag.pathlength > newlength)
@@ -116,33 +113,34 @@ namespace Simple.Routing.IsoRaster
         {
             List<QuadNode> nodes = this.points.toList();
             ValuePointD[] vpoints = new ValuePointD[nodes.Count];
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                vpoints[i] = new ValuePointD(this.rasterizer.indexToPoint(nodes[i].x, nodes[i].y), nodes[i].value);
-            }
+            //for (int i = 0; i < nodes.Count; i++)
+            //{
+            //    vpoints[i] = new ValuePointD(this.rasterizer.indexToPoint(nodes[i].x, nodes[i].y), nodes[i].value);
+            //}
             return new PointCloudD(vpoints);
         }
 
-        public PolygonD[] getIsoRaster()
+        public GeoJsonPolygon[] getIsoRaster()
         {
             List<QuadNode> nodes = this.points.toList();
-            PolygonD[] poly = new PolygonD[nodes.Count];
+            GeoJsonPolygon[] poly = new GeoJsonPolygon[nodes.Count];
             for (int i = 0; i < nodes.Count; i++)
             {
-                PointD ul = this.rasterizer.indexToPoint(nodes[i].x, nodes[i].y);
-                PointD lr = this.rasterizer.indexToPoint(nodes[i].x + 1, nodes[i].y + 1);
-                PointD[] p = new PointD[5];
-                p[0].lon = ul.lon;
-                p[0].lat = ul.lat;
-                p[1].lon = lr.lon;
-                p[1].lat = ul.lat;
-                p[2].lon = lr.lon;
-                p[2].lat = lr.lat;
-                p[3].lon = ul.lon;
-                p[3].lat = lr.lat;
-                p[4].lon = ul.lon;
-                p[4].lat = ul.lat;
-                poly[i] = new PolygonD(p, nodes[i].value);
+                Point ul = this.rasterizer.indexToPoint(nodes[i].x, nodes[i].y);
+                Point lr = this.rasterizer.indexToPoint(nodes[i].x + 1, nodes[i].y + 1);
+                Line line = new Line(new Point[5]);
+                line[0][0] = ul[0];
+                line[0][1] = ul[1];
+                line[1][0] = lr[0];
+                line[1][1] = ul[1];
+                line[2][0] = lr[0];
+                line[2][1] = lr[1];
+                line[3][0] = ul[0];
+                line[3][1] = lr[1];
+                line[4][0] = ul[0];
+                line[4][1] = ul[1];
+                line[0] = new Point(1, 0);
+                poly[i] = new GeoJsonPolygon(new Polygon(new Line[1] { line }), nodes[i].value);
             }
             return poly;
         }

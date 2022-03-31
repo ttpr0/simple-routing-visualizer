@@ -14,11 +14,11 @@ namespace Simple.Maps
     /// </summary>
     class GeometryContainer
     {
-        public PointD startnode;
-        public PointD endnode;
+        public Point startnode;
+        public Point endnode;
         public Path path;
         public PointCloudD valuepoints;
-        public PolygonD polygon;
+        public Polygon? polygon;
         public RasterImage mgimg;
         public TrafficTable traffic;
         public IGeometry geom;

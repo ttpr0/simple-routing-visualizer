@@ -19,7 +19,7 @@ namespace Simple.Maps
     {
         private Bitmap map;
         private Graphics g;
-        private List<LineD> lines;
+        private List<Line> lines;
 
         /// <summary>
         /// Constructor
@@ -34,7 +34,7 @@ namespace Simple.Maps
         }
 
         private Pen visitedpen = new Pen(Color.MediumVioletRed, 2);
-        private PointD upperleft;
+        private Simple.GeoData.Point upperleft;
         /// <summary>
         /// draws map, only GraphEdges marked visited and !drawn are used
         /// Map should not be moved while using this function, before moving re-init Graph
@@ -42,16 +42,16 @@ namespace Simple.Maps
         /// <param name="upperleft">upperleft of Bitmap, real-world coordinates (web-mercator, x from Greenwich / y from equator)</param>
         /// <param name="zoom">zoom level (for tile-map)</param>
         /// <returns>drawn Bitmap</returns>
-        public Bitmap createMap(PointD upperleft, int zoom)
+        public Bitmap createMap(Simple.GeoData.Point upperleft, int zoom)
         {
             double tilesize = 40075016.69 / Math.Pow(2, zoom);
             this.upperleft = upperleft;
-            foreach (LineD line in this.lines)
+            foreach (Line line in this.lines)
             {
-                Point[] points = new Point[line.points.Length];
+                System.Drawing.Point[] points = new System.Drawing.Point[line.points.Length];
                 for (int j = 0; j < line.points.Length; j++)
                 {
-                    points[j] = realToScreen(line.points[j], tilesize);
+                    points[j] = realToScreen(line[j], tilesize);
                 }
                 g.DrawLines(visitedpen, points);
             }
@@ -67,14 +67,14 @@ namespace Simple.Maps
             g.Clear(Color.Transparent);
         }
 
-        private Point realToScreen(PointD point, double tilesize)
+        private System.Drawing.Point realToScreen(Simple.GeoData.Point point, double tilesize)
         {
-            double x = (point.lon - upperleft.lon) * 256 / tilesize;
-            double y = -(point.lat - upperleft.lat) * 256 / tilesize;
-            return new Point((int)x, (int)y);
+            double x = (point[0] - upperleft[0]) * 256 / tilesize;
+            double y = -(point[0] - upperleft[1]) * 256 / tilesize;
+            return new System.Drawing.Point((int)x, (int)y);
         }
 
-        public void addLines(List<LineD> lines)
+        public void addLines(List<Line> lines)
         {
             this.lines = lines;
         }

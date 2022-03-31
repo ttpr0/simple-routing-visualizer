@@ -10,42 +10,39 @@ namespace Simple.Routing.Graph
     class TrafficGraph : IGraph
     {
         private Edge[] edges;
-        private Node[] nodes;
+        private EdgeAttributes[] edgeattributes;
+        private TrafficNode[] nodes;
+        private NodeAttributes[] nodeattributes;
         private IGeometry geom;
-        private TrafficWeighting weight;
+        private IWeighting weight;
         private TrafficTable traffic;
 
-        public TrafficGraph(Edge[] edges, Node[] nodes, IGeometry geometry, TrafficWeighting weighting, TrafficTable traffic)
+        public TrafficGraph(Edge[] edges, EdgeAttributes[] edgeattributes, TrafficNode[] nodes, NodeAttributes[] nodeattributes, IGeometry geometry, IWeighting weighting, TrafficTable traffic)
         {
             this.edges = edges;
+            this.edgeattributes = edgeattributes;
             this.nodes = nodes;
+            this.nodeattributes = nodeattributes;
             this.geom = geometry;
             this.weight = weighting;
             this.traffic = traffic;
         }
 
-        public int getOtherNode(int edge, int node)
+        public int getOtherNode(int edge, int node, out Direction direction)
         {
             Edge e = edges[edge];
             if (node == e.nodeA)
             {
+                direction = Direction.forward;
                 return e.nodeB;
             }
             if (node == e.nodeB)
             {
+                direction = Direction.backward;
                 return e.nodeA;
             }
+            direction = 0;
             return 0;
-        }
-
-        public ref Node getNode(int node)
-        {
-            return ref this.nodes[node];
-        }
-
-        public ref Edge getEdge(int edge)
-        {
-            return ref this.edges[edge];
         }
 
         public bool isNode(int node)
@@ -60,15 +57,35 @@ namespace Simple.Routing.Graph
             }
         }
 
+        public byte getEdgeIndex(int edge, int node)
+        {
+            return 0;
+        }
+
+        public ref NodeAttributes getNode(int node)
+        {
+            return ref this.nodeattributes[node];
+        }
+
+        public ref EdgeAttributes getEdge(int edge)
+        {
+            return ref this.edgeattributes[edge];
+        }
+
         public int edgeCount()
         { return this.edges.Length; }
 
         public int nodeCount()
         { return this.nodes.Length; }
 
-        public int[] getAdjacentEdges(int node)
+        public IEdgeRefStore getAdjacentEdges(int node)
         {
-            return nodes[node].edges;
+            return new EdgeRefArray(this.nodes[node].edges);
+        }
+
+        public void forEachEdge(int node, Action<int> func)
+        {
+
         }
 
         public IGeometry getGeometry()
@@ -85,51 +102,24 @@ namespace Simple.Routing.Graph
         {
             return this.traffic;
         }
+    }
 
-        /// <summary>
-        /// creates an edge between two nodes
-        /// </summary>
-        /// <param name="nodeA">from</param>
-        /// <param name="nodeB">to</param>
-        /// <param name="oneway">true if oneway</param>
-        /// <param name="type">byte-flag for edge-type</param>
-        /// <param name="line">geometry</param>
-        /// <param name="weight">weight of edge (e.g. sec to travel)</param>
-        /// <returns>id if successfull, else -1</returns>
-        public int addEdge(int nodeA, int nodeB, bool oneway, byte type, LineD line, int weight)
-        {
-            if ((nodeA >= this.nodes.Length) || (nodeB >= this.nodes.Length))
-            {
-                return -1;
-            }
-            int i = this.edges.Length;
-            this.nodes[nodeA].edges.Append(i);
-            this.nodes[nodeB].edges.Append(i);
-            this.edges.Append(new Edge(nodeA, nodeB, oneway, type));
-            this.geom.getAllEdges().Append(line);
-            //this.weight.edgeweight.Append(weight);
-            return i;
+    public unsafe struct EdgeRefArray : IEdgeRefStore
+    {
+        public int[] edges { get; set; }
+        public int length 
+        { 
+            get { return edges.Length; }
         }
 
-        /// <summary>
-        /// adds Node to graph (without edge references)
-        /// </summary>
-        /// <param name="type">type of node</param>
-        /// <param name="point">location</param>
-        /// <returns>id if successful, else -1</returns>
-        public int addNode(byte type, PointD point)
+        public EdgeRefArray(int[] edges)
         {
-            try
-            {
-                int i = this.nodes.Length;
-                this.nodes.Append(new Node(type, new int[0]));
-                this.geom.getAllNodes().Append(point);
-                return i;
-            }
-            catch (Exception)
-            {
-                return -1;
-            }
+            this.edges = edges;
+        }
+
+        public int this[int a]
+        {
+            get { return edges[a]; }
         }
     }
 }

@@ -14,18 +14,28 @@ namespace Simple.Routing.Graph
 
         public TrafficTable getTraffic();
 
-        public int getOtherNode(int edge, int node);
+        public int getOtherNode(int edge, int node, out Direction direction);
 
-        public int[] getAdjacentEdges(int node);
+        public byte getEdgeIndex(int edge, int node);
+
+        public IEdgeRefStore getAdjacentEdges(int node);
+
+        public void forEachEdge(int node, Action<int> func);
 
         public int nodeCount();
 
         public int edgeCount();
 
-        public ref Node getNode(int node);
-
-        public ref Edge getEdge(int edge);
-
         public bool isNode(int node);
+
+        public ref NodeAttributes getNode(int node);
+
+        public ref EdgeAttributes getEdge(int edge);
+    }
+
+    public interface IEdgeRefStore
+    {
+        public int this[int a] { get; }
+        public int length { get; }
     }
 }

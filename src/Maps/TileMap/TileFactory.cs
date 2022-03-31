@@ -77,20 +77,6 @@ namespace Simple.Maps.TileMap
                     return;
                 }
             }
-            TileData tiledata = datacache.getTileData(x, y, z);
-            if (tiledata == null)
-            {
-                return;
-            }
-            try
-            {
-                tilecache.Add(key, new Tile(x, y, z, tiledata));
-                this.changed();
-            }
-            catch (Exception)
-            {
-                return;
-            }
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Simple.Routing.ShortestPath
         /// <param name="count">number of steps to be perfomed</param>
         /// <param name="visitededges">visited edges are added to this list</param>
         /// <returns>false if finished</returns>
-        public bool steps(int count, List<LineD> visitededges);
+        public bool steps(int count, List<Line> visitededges);
 
         /// <summary>
         /// should only be used after path-finding completed

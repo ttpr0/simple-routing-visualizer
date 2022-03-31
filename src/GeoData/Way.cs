@@ -8,11 +8,11 @@ namespace Simple.GeoData
 {
     struct Way
     {
-        public LineD line;
+        public Line line;
         public string type;
-        public Way(PointD[] points, string type)
+        public Way(Point[] points, string type)
         {
-            this.line = new LineD(points);
+            this.line = new Line(points);
             this.type = type;
         }
     }

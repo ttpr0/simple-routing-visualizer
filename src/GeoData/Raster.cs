@@ -9,13 +9,13 @@ namespace Simple.GeoData
 {
     class Raster
     {
-        public PointD upperleft;
+        public Point upperleft;
         public int cellsize;
         public int rows;
         public int cols;
         public int[,] values;
 
-        public Raster(PointD upperleft, int rows, int columns, int cellsize)
+        public Raster(Point upperleft, int rows, int columns, int cellsize)
         {
             this.upperleft = upperleft;
             this.values = new int[columns,rows];
@@ -35,8 +35,8 @@ namespace Simple.GeoData
         {
             for (int i = 0; i < cloud.points.Count(); i++)
             {
-                int x = (int)((cloud.points[i].point.lon - upperleft.lon) / cellsize);
-                int y = (int)((cloud.points[i].point.lat - upperleft.lat + rows * cellsize) / cellsize);
+                int x = (int)((cloud.points[i].point[0] - upperleft[0]) / cellsize);
+                int y = (int)((cloud.points[i].point[1] - upperleft[1] + rows * cellsize) / cellsize);
                 if (x < 0 || x >= cols || y < 0 || y >= rows)
                 {
                     continue;

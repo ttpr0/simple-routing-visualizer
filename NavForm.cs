@@ -41,7 +41,7 @@ namespace RoutingVisualizer
         private GraphMap graphmap;
         private UtilityMap utilitymap;
         private IGraph graph;
-        private PointD upperleft = new PointD(1314905, 6716660);
+        private Simple.GeoData.Point upperleft = new Simple.GeoData.Point(1314905, 6716660);
         private int zoom = 12;
         private GeometryContainer container = new GeometryContainer();
         private Bitmap screen = new Bitmap(1000, 600);
@@ -69,7 +69,7 @@ namespace RoutingVisualizer
             this.tilemap.getFactory().changed += this.changed;
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            this.graph = GraphFactory._loadBaseGraph("data/default.graph");
+            this.graph = GraphFactory.loadTrafficGraph("data/default.graph");
             sw.Stop();
             appendNewLine(Convert.ToString(sw.ElapsedMilliseconds));
             container.startnode = graph.getGeometry().getNode(Convert.ToInt32(txtstart.Text));
@@ -88,11 +88,11 @@ namespace RoutingVisualizer
         /// <param name="point"></param>
         /// <param name="tilesize"></param>
         /// <returns>converted point</returns>
-        private Point realToScreen(PointD point, double tilesize)
+        private System.Drawing.Point realToScreen(Simple.GeoData.Point point, double tilesize)
         {
-            double x = (point.lon - upperleft.lon) * 256 / tilesize;
-            double y = -(point.lat - upperleft.lat) * 256 / tilesize;
-            return new Point((int)x, (int)y);
+            double x = (point[0] - upperleft[0]) * 256 / tilesize;
+            double y = -(point[1] - upperleft[1]) * 256 / tilesize;
+            return new System.Drawing.Point((int)x, (int)y);
         }
 
         /// <summary>
@@ -101,11 +101,11 @@ namespace RoutingVisualizer
         /// <param name="point"></param>
         /// <param name="tilesize"></param>
         /// <returns>converted point</returns>
-        private PointD screenToReal(Point point, double tilesize)
+        private Simple.GeoData.Point screenToReal(System.Drawing.Point point, float tilesize)
         {
-            double x = upperleft.lon + point.X * tilesize / 256;
-            double y = upperleft.lat - point.Y * tilesize / 256;
-            return new PointD(x, y);
+            float x = upperleft[0] + point.X * tilesize / 256;
+            float y = upperleft[1] - point.Y * tilesize / 256;
+            return new Simple.GeoData.Point(x, y);
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace RoutingVisualizer
             {
                 this.drawrouting = true;
                 int j = 500;
-                List<LineD> lines = new List<LineD>();
+                List<Line> lines = new List<Line>();
                 while (algorithm.steps(j, lines))
                 {
                     if (draw)
@@ -344,8 +344,8 @@ namespace RoutingVisualizer
         private bool mousedown = false;
         private int mousex = 0;
         private int mousey = 0;
-        private PointD ul = new PointD(0, 0);
-        private PointD clickpoint = new PointD(0, 0);
+        private Simple.GeoData.Point ul = new Simple.GeoData.Point(0, 0);
+        private Simple.GeoData.Point clickpoint = new Simple.GeoData.Point(0, 0);
         private void pbxout_MouseDown(object sender, MouseEventArgs e)
         {
             mousedown = true;
@@ -366,17 +366,17 @@ namespace RoutingVisualizer
                 return;
             }
 
-            double tilesize = 40075016.69 / Math.Pow(2, zoom);
-            upperleft.lon = ul.lon + (mousex - e.X) * tilesize / 256;
-            upperleft.lat = ul.lat + (e.Y - mousey) * tilesize / 256;
+            float tilesize = (float)(40075016.69 / Math.Pow(2, zoom));
+            upperleft[0] = ul[0] + (mousex - e.X) * tilesize / 256;
+            upperleft[1] = ul[1] + (e.Y - mousey) * tilesize / 256;
 
             haschanged = true;
         }
         private void pbxout_MouseWheel(object sender, MouseEventArgs e)
         {
-            double tilesize = 40075016.69 / Math.Pow(2, zoom);
-            double realX = upperleft.lon + (e.X * tilesize / 256);
-            double realY = upperleft.lat - (e.Y * tilesize / 256);
+            float tilesize = (float)(40075016.69 / Math.Pow(2, zoom));
+            float realX = upperleft[0] + (e.X * tilesize / 256);
+            float realY = upperleft[1] - (e.Y * tilesize / 256);
             if (zoom <= 14 && zoom >= 8)
             {
                 zoom += (int)(e.Delta / 120);
@@ -389,9 +389,9 @@ namespace RoutingVisualizer
                     zoom = 8;
                 }
             }
-            tilesize = 40075016.69 / Math.Pow(2, zoom);
-            upperleft.lon = realX - (e.X * tilesize / 256);
-            upperleft.lat = realY + (e.Y * tilesize / 256);
+            tilesize = (float)(40075016.69 / Math.Pow(2, zoom));
+            upperleft[0] = realX - (e.X * tilesize / 256);
+            upperleft[1] = realY + (e.Y * tilesize / 256);
             haschanged = true;
             //drawMap();
         }
@@ -404,8 +404,8 @@ namespace RoutingVisualizer
             IGeometry geom = graph.getGeometry();
             for (int i = 0; i < geom.getAllNodes().Length; i++)
             {
-                PointD point = geom.getNode(i);
-                newdistance = Math.Sqrt(Math.Pow(clickpoint.lon - point.lon, 2) + Math.Pow(clickpoint.lat - point.lat, 2));
+                Simple.GeoData.Point point = geom.getNode(i);
+                newdistance = Math.Sqrt(Math.Pow(clickpoint[0] - point[0], 2) + Math.Pow(clickpoint[1] - point[1], 2));
                 if (distance == -1)
                 {
                     container.startnode = point;
@@ -432,8 +432,8 @@ namespace RoutingVisualizer
             IGeometry geom = graph.getGeometry();
             for (int i = 0; i < geom.getAllNodes().Length; i++)
             {
-                PointD point = geom.getNode(i);
-                newdistance = Math.Sqrt(Math.Pow(clickpoint.lon - point.lon, 2) + Math.Pow(clickpoint.lat - point.lat, 2));
+                Simple.GeoData.Point point = geom.getNode(i);
+                newdistance = Math.Sqrt(Math.Pow(clickpoint[0] - point[0], 2) + Math.Pow(clickpoint[1] - point[1], 2));
                 if (distance == -1)
                 { 
                     container.endnode = point;
@@ -456,7 +456,7 @@ namespace RoutingVisualizer
         {
             if (e.Button == MouseButtons.Right)
             {
-                double tilesize = 40075016.69 / Math.Pow(2, this.zoom);
+                float tilesize = (float)(40075016.69 / Math.Pow(2, zoom));
                 clickpoint = screenToReal(e.Location, tilesize);
                 ctmpbx.Show(pbxout, e.Location);
             }

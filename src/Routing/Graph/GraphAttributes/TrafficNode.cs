@@ -1,19 +1,18 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Simple.Routing.Graph
 {
-    struct Node
+    struct TrafficNode
     {
         public int[] edges;
-        public byte type;
 
-        public Node(byte type, int[] edges)
+        public TrafficNode(int[] edges)
         {
-            this.type = type;
             this.edges = edges;
         }
     }

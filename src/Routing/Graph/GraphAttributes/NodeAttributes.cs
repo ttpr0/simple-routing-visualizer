@@ -11,5 +11,10 @@ namespace Simple.Routing.Graph
     struct NodeAttributes
     {
         [FieldOffset(0)] public sbyte type;
+
+        public NodeAttributes(sbyte type)
+        {
+            this.type = type;
+        }
     }
 }

@@ -3,54 +3,62 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using Simple.GeoData;
 
 namespace Simple.Routing.Graph
 {
-    class BaseGraph : IGraph
+    unsafe class BaseGraph : IGraph, IDisposable
     {
-        private Edge[] edges;
-        private Node[] nodes;
+        private static int EDGESIZE = sizeof(Edge);
+        private static int NODESIZE = sizeof(Node);
+        private static int EDGEATTRIBSIZE = sizeof(EdgeAttributes);
+        private static int NODEATTRIBSIZE = sizeof(NodeAttributes);
+
+        private int nodecount;
+        private int edgecount;
+        private byte* graph = (byte*)IntPtr.Zero;
+        private byte* attrib = (byte*)IntPtr.Zero;
         private IGeometry geom;
         private IWeighting weight;
         private TrafficTable traffic;
 
-        public BaseGraph(Edge[] edges, Node[] nodes, IGeometry geometry, IWeighting weighting)
+        public BaseGraph(int nodecount, int edgecount, byte[] graph, byte[] attrib, IGeometry geometry, IWeighting weighting)
         {
-            this.edges = edges;
-            this.nodes = nodes;
+            this.nodecount = nodecount;
+            this.edgecount = edgecount;
+            this.graph = (byte*)Marshal.AllocHGlobal(graph.Length);
+            Marshal.Copy(graph, 8, (IntPtr)this.graph, graph.Length-8);
+            graph = null;
+            this.attrib = (byte*)Marshal.AllocHGlobal(attrib.Length);
+            Marshal.Copy(attrib, 0, (IntPtr)this.attrib, attrib.Length);
+            attrib = null;
             this.geom = geometry;
             this.weight = weighting;
-            this.traffic = new TrafficTable(new int[edges.Count()]);
+            this.traffic = new TrafficTable(new int[edgecount]);
+            
         }
 
-        public int getOtherNode(int edge, int node)
+        public int getOtherNode(int edge, int node, out Direction direction)
         {
-            Edge e = edges[edge];
-            if (node == e.nodeA)
+            Edge* e = (Edge*)(this.graph + NODESIZE * nodecount + EDGESIZE * edge);
+            if (node == e->nodeA)
             {
-                return e.nodeB;
+                direction = Direction.forward;
+                return e->nodeB;
             }
-            if (node == e.nodeB)
+            if (node == e->nodeB)
             {
-                return e.nodeA;
+                direction = Direction.backward;
+                return e->nodeA;
             }
+            direction = 0;
             return 0;
-        }
-
-        public ref Node getNode(int node)
-        {
-            return ref this.nodes[node];
-        }
-
-        public ref Edge getEdge(int edge)
-        {
-            return ref this.edges[edge];
         }
 
         public bool isNode(int node)
         {
-            if (node < this.nodes.Length)
+            if (node < this.nodecount)
             {
                 return true;
             }
@@ -60,15 +68,40 @@ namespace Simple.Routing.Graph
             }
         }
 
+        public byte getEdgeIndex(int edge, int node)
+        {
+            return 0;
+        }
+
+        public ref NodeAttributes getNode(int node)
+        {
+            return ref *(NodeAttributes*)(this.attrib + NODEATTRIBSIZE * node);
+        }
+
+        public ref EdgeAttributes getEdge(int edge)
+        {
+            return ref *(EdgeAttributes*)(this.attrib + NODEATTRIBSIZE * nodecount + EDGEATTRIBSIZE * edge);
+        }
+
         public int edgeCount()
-        { return this.edges.Length; }
+        { return this.edgecount; }
 
         public int nodeCount()
-        { return this.nodes.Length; }
+        { return this.nodecount; }
 
-        public int[] getAdjacentEdges(int node)
+        public IEdgeRefStore getAdjacentEdges(int node)
         {
-            return nodes[node].edges;
+            Node* n = (Node*)(this.graph + NODESIZE * node);
+            return new EdgeRefPointer((int*)(this.graph + NODESIZE * nodecount + EDGESIZE * edgecount + n->offset), n->edgecount);
+        }
+
+        public void forEachEdge(int node, Action<int> func)
+        {
+            Node* n = (Node*)(this.graph + NODESIZE * node);
+            for (int i = 0; i < n->edgecount; i++)
+            {
+                func(*(int*)(this.graph + NODESIZE * nodecount + EDGESIZE * edgecount + n->offset));
+            }
         }
 
         public IGeometry getGeometry()
@@ -86,50 +119,52 @@ namespace Simple.Routing.Graph
             return this.traffic;
         }
 
-        /// <summary>
-        /// creates an edge between two nodes
-        /// </summary>
-        /// <param name="nodeA">from</param>
-        /// <param name="nodeB">to</param>
-        /// <param name="oneway">true if oneway</param>
-        /// <param name="type">byte-flag for edge-type</param>
-        /// <param name="line">geometry</param>
-        /// <param name="weight">weight of edge (e.g. sec to travel)</param>
-        /// <returns>id if successfull, else -1</returns>
-        public int addEdge(int nodeA, int nodeB, bool oneway, byte type, LineD line, int weight)
+        private bool disposed = false;
+
+        ~BaseGraph()
         {
-            if ((nodeA >= this.nodes.Length) || (nodeB >= this.nodes.Length))
-            {
-                return -1;
-            }
-            int i = this.edges.Length;
-            this.nodes[nodeA].edges.Append(i);
-            this.nodes[nodeB].edges.Append(i);
-            this.edges.Append(new Edge(nodeA, nodeB, oneway, type));
-            this.geom.getAllEdges().Append(line);
-            //this.weight.edgeweight.Append(weight);
-            return i;
+            Dispose(false);
         }
 
-        /// <summary>
-        /// adds Node to graph (without edge references)
-        /// </summary>
-        /// <param name="type">type of node</param>
-        /// <param name="point">location</param>
-        /// <returns>id if successful, else -1</returns>
-        public int addNode(byte type, PointD point)
+        public void Dispose()
         {
-            try
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
             {
-                int i = this.nodes.Length;
-                this.nodes.Append(new Node(type, new int[0]));
-                this.geom.getAllNodes().Append(point);
-                return i;
+                this.disposed = true;
+                if (this.graph != (byte*)IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal((IntPtr)this.graph);
+                    this.graph = (byte*)IntPtr.Zero;
+                }
+                if (this.attrib != (byte*)IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal((IntPtr)this.attrib);
+                    this.attrib = (byte*)IntPtr.Zero;
+                }
             }
-            catch (Exception)
-            {
-                return -1;
-            }
+        }
+    }
+
+    public unsafe struct EdgeRefPointer : IEdgeRefStore
+    {
+        public int* ptr { get; set; }
+        public int length { get; set; }
+
+        public EdgeRefPointer(int* ptr, int length)
+        {
+            this.ptr = ptr;
+            this.length = length;
+        }
+
+        public int this[int a]
+        {
+            get { return *(ptr + a); }
         }
     }
 }

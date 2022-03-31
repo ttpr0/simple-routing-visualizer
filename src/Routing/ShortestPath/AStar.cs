@@ -15,7 +15,7 @@ namespace Simple.Routing.ShortestPath
         private Flag[] flags;
         private int startid;
         private int endid;
-        private PointD endpoint;
+        private Point endpoint;
         private IGeometry geom;
         private IWeighting weight;
 
@@ -87,32 +87,28 @@ namespace Simple.Routing.ShortestPath
                 {
                     return true;
                 }
-                Node curr = this.graph.getNode(currid);
+                ref NodeAttributes curr = ref this.graph.getNode(currid);
                 ref Flag currflag = ref this.flags[currid];
                 if (currflag.visited) continue;
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjacentEdges(currid);
-                int from = Array.IndexOf(edges, currflag.prevEdge);
-                for (int i = 0; i < edges.Length; i++)
+                IEdgeRefStore edges = this.graph.getAdjacentEdges(currid);
+                for (int i = 0; i < edges.length; i++)
                 {
                     int edgeid = edges[i];
-                    Edge edge = this.graph.getEdge(edgeid);
-                    int otherid = this.graph.getOtherNode(edgeid, currid);
-                    Node other = this.graph.getNode(otherid);
+                    ref EdgeAttributes edge = ref this.graph.getEdge(edgeid);
+                    int otherid = this.graph.getOtherNode(edgeid, currid, out Direction dir);
+                    ref NodeAttributes other = ref this.graph.getNode(otherid);
                     ref Flag otherflag = ref this.flags[otherid];
                     if (otherflag.visited)
                     {
                         continue;
                     }
-                    if (edge.oneway)
+                    if (edge.oneway && dir == Direction.backward)
                     {
-                        if (edge.nodeB == currid)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
                     otherflag.distance = Distance.haversineDistance(this.geom.getNode(otherid), endpoint);
-                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edgeid) + otherflag.distance + this.weight.getTurnCost(from, currid, i);
+                    double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edgeid) + otherflag.distance;
                     if (otherflag.pathlength > newlength)
                     {
                         otherflag.prevEdge = edgeid;
@@ -123,7 +119,7 @@ namespace Simple.Routing.ShortestPath
             }
         }
 
-        public bool steps(int count, List<LineD> visitededges)
+        public bool steps(int count, List<Line> visitededges)
         {
             for (int c = 0; c < count; c++)
             {
@@ -132,33 +128,29 @@ namespace Simple.Routing.ShortestPath
                 {
                     return false;
                 }
-                Node curr = this.graph.getNode(currid);
+                ref NodeAttributes curr = ref this.graph.getNode(currid);
                 ref Flag currflag = ref this.flags[currid];
                 if (currflag.visited) continue;
                 currflag.visited = true;
-                int[] edges = this.graph.getAdjacentEdges(currid);
-                int from = Array.IndexOf(edges, currflag.prevEdge);
-                for (int i = 0; i < edges.Length; i++)
+                IEdgeRefStore edges = this.graph.getAdjacentEdges(currid);
+                for (int i = 0; i < edges.length; i++)
                 {
                     int edgeid = edges[i];
-                    Edge edge = this.graph.getEdge(edgeid);
-                    int otherid = this.graph.getOtherNode(edgeid, currid);
-                    Node other = this.graph.getNode(otherid);
+                    ref EdgeAttributes edge = ref this.graph.getEdge(edgeid);
+                    int otherid = this.graph.getOtherNode(edgeid, currid, out Direction dir);
+                    ref NodeAttributes other = ref this.graph.getNode(otherid);
                     ref Flag otherflag = ref this.flags[otherid];
                     if (otherflag.visited)
                     {
                         continue;
                     }
-                    if (edge.oneway)
+                    if (edge.oneway && dir == Direction.backward)
                     {
-                        if (edge.nodeB == currid)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
                     visitededges.Add(this.geom.getEdge(edgeid));
                     otherflag.distance = Distance.haversineDistance(this.geom.getNode(otherid), endpoint);
-                    double newlength = currflag.pathlength - currflag.distance + otherflag.distance + this.weight.getEdgeWeight(edgeid) + this.weight.getTurnCost(from, currid, i);
+                    double newlength = currflag.pathlength - currflag.distance + otherflag.distance + this.weight.getEdgeWeight(edgeid);
                     if (otherflag.pathlength > newlength)
                     {
                         otherflag.prevEdge = edgeid;
@@ -192,7 +184,7 @@ namespace Simple.Routing.ShortestPath
                 }
                 edge = this.flags[currid].prevEdge;
                 path.Add(edge);
-                currid = this.graph.getOtherNode(edge, currid);
+                currid = this.graph.getOtherNode(edge, currid, out Direction _);
             }
             path.Reverse();
             return new Path(this.graph, path);
@@ -210,7 +202,7 @@ namespace Simple.Routing.ShortestPath
                     break;
                 }
                 edge = this.flags[currid].prevEdge;
-                currid = this.graph.getOtherNode(edge, currid);
+                currid = this.graph.getOtherNode(edge, currid, out Direction _);
             }
             return edge;
         }

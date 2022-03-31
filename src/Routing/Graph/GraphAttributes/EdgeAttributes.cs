@@ -17,5 +17,13 @@ namespace Simple.Routing.Graph
         [FieldOffset(5)] public byte maxspeed;
 
         [FieldOffset(6)] public bool oneway;
+
+        public EdgeAttributes(RoadType type, float length, byte maxspeed, bool oneway)
+        {
+            this.type = type;
+            this.length = length;
+            this.maxspeed = maxspeed;
+            this. oneway = oneway;
+        }
     }
 }

@@ -9,8 +9,8 @@ namespace Simple.Routing.IsoRaster
 {
     interface IProjection
     {
-        void proj(ref PointD point);
+        void proj(ref Point point);
 
-        void reproj(ref PointD point);
+        void reproj(ref Point point);
     }
 }

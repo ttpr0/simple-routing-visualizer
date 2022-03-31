@@ -11,22 +11,22 @@ namespace Simple.Routing.IsoRaster
     {
         private IProjection projection;
 
-        private double factor;
+        private float factor;
         public DefaultRasterizer(float precession)
         {
             this.factor = 1 / precession;
             this.projection = new WebMercatorProjection();
         }
 
-        public (int, int) pointToIndex(PointD point)
+        public (int, int) pointToIndex(Point point)
         {
             this.projection.proj(ref point);
-            return ((int)(point.lon * factor), (int)(point.lat * factor));
+            return ((int)(point[0] * factor), (int)(point[1] * factor));
         }
 
-        public PointD indexToPoint(int x, int y)
+        public Point indexToPoint(int x, int y)
         {   
-            PointD point = new PointD(x/factor, y/factor);
+            Point point = new Point(x/factor, y/factor);
             this.projection.reproj(ref point);
             return point;
         }

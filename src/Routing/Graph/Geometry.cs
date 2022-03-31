@@ -9,31 +9,31 @@ namespace Simple.Routing.Graph
 {
     class Geometry : IGeometry
     {
-        public PointD[] nodegeometry;
-        public LineD[] edgegeometry;
+        public Point[] nodegeometry;
+        public Line[] edgegeometry;
 
-        public Geometry(PointD[] points, LineD[] lines)
+        public Geometry(Point[] points, Line[] lines)
         {
             this.nodegeometry = points;
             this.edgegeometry = lines;
         }
 
-        public PointD getNode(int node)
+        public Point getNode(int node)
         {
             return nodegeometry[node];
         }
 
-        public LineD getEdge(int edge)
+        public Line getEdge(int edge)
         {
             return edgegeometry[edge];
         }
 
-        public LineD[] getAllEdges()
+        public Line[] getAllEdges()
         {
             return this.edgegeometry;    
         }
 
-        public PointD[] getAllNodes()
+        public Point[] getAllNodes()
         {
             return this.nodegeometry;
         }

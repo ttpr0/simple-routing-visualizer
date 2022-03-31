@@ -58,4 +58,10 @@ namespace Simple.Routing.Graph
         crossing,
         trafficsignal,
     }
+
+    enum Direction : byte
+    {
+        backward = 0,
+        forward = 1,
+    }
 }
