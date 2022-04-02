@@ -12,7 +12,7 @@ namespace Simple.WebApi
 {
     static class IsoRasterController
     {
-        static int getClosestNode(Point startpoint)
+        static int getClosestNode(Coord startpoint)
         {
             double distance = -1;
             int id = 0;
@@ -20,7 +20,7 @@ namespace Simple.WebApi
             IGeometry geom = Application.graph.getGeometry();
             for (int i = 0; i < geom.getAllNodes().Length; i++)
             {
-                Point point = geom.getNode(i);
+                ICoord point = geom.getNode(i);
                 newdistance = Math.Sqrt(Math.Pow(startpoint[0] - point[0], 2) + Math.Pow(startpoint[1] - point[1], 2));
                 if (distance == -1)
                 {
@@ -36,7 +36,7 @@ namespace Simple.WebApi
             return id;
         }
 
-        static GeoJsonPolygon[] runIsoRaster(Point start, int distance, int precession)
+        static GeoJsonPolygon[] runIsoRaster(Coord start, int distance, int precession)
         {
             ShortestPathTree mg = new ShortestPathTree(Application.graph, getClosestNode(start), distance, new DefaultRasterizer(precession));
 
@@ -47,7 +47,7 @@ namespace Simple.WebApi
 
         public static IsoRasterResponse handleMultiGraphRequest(IsoRasterRequest request)
         {
-            Point start = new Point(request.locations[0][0], request.locations[0][1]);
+            Coord start = new Coord(request.locations[0][0], request.locations[0][1]);
             GeoJsonPolygon[] pc = runIsoRaster(start, request.range, request.precession);
             IsoRasterResponse response = new IsoRasterResponse(pc);
             return response;

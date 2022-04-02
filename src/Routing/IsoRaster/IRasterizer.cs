@@ -9,7 +9,7 @@ namespace Simple.Routing.IsoRaster
 {
     interface IRasterizer
     {
-        public (int, int) pointToIndex(Point point);
-        public Point indexToPoint(int x, int y);
+        public (int, int) pointToIndex(ICoord point);
+        public ICoord indexToPoint(int x, int y);
     }
 }

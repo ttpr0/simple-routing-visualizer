@@ -41,7 +41,7 @@ namespace RoutingVisualizer
         private GraphMap graphmap;
         private UtilityMap utilitymap;
         private IGraph graph;
-        private Simple.GeoData.Point upperleft = new Simple.GeoData.Point(1314905, 6716660);
+        private ICoord upperleft = new Coord(1314905, 6716660);
         private int zoom = 12;
         private GeometryContainer container = new GeometryContainer();
         private Bitmap screen = new Bitmap(1000, 600);
@@ -88,7 +88,7 @@ namespace RoutingVisualizer
         /// <param name="point"></param>
         /// <param name="tilesize"></param>
         /// <returns>converted point</returns>
-        private System.Drawing.Point realToScreen(Simple.GeoData.Point point, double tilesize)
+        private System.Drawing.Point realToScreen(Simple.GeoData.Coord point, double tilesize)
         {
             double x = (point[0] - upperleft[0]) * 256 / tilesize;
             double y = -(point[1] - upperleft[1]) * 256 / tilesize;
@@ -101,11 +101,11 @@ namespace RoutingVisualizer
         /// <param name="point"></param>
         /// <param name="tilesize"></param>
         /// <returns>converted point</returns>
-        private Simple.GeoData.Point screenToReal(System.Drawing.Point point, float tilesize)
+        private Simple.GeoData.Coord screenToReal(System.Drawing.Point point, float tilesize)
         {
             float x = upperleft[0] + point.X * tilesize / 256;
             float y = upperleft[1] - point.Y * tilesize / 256;
-            return new Simple.GeoData.Point(x, y);
+            return new Simple.GeoData.Coord(x, y);
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace RoutingVisualizer
             {
                 this.drawrouting = true;
                 int j = 500;
-                List<Line> lines = new List<Line>();
+                List<ICoordArray> lines = new List<ICoordArray>();
                 while (algorithm.steps(j, lines))
                 {
                     if (draw)
@@ -344,8 +344,8 @@ namespace RoutingVisualizer
         private bool mousedown = false;
         private int mousex = 0;
         private int mousey = 0;
-        private Simple.GeoData.Point ul = new Simple.GeoData.Point(0, 0);
-        private Simple.GeoData.Point clickpoint = new Simple.GeoData.Point(0, 0);
+        private ICoord ul = new Coord(0, 0);
+        private ICoord clickpoint = new Coord(0, 0);
         private void pbxout_MouseDown(object sender, MouseEventArgs e)
         {
             mousedown = true;
@@ -404,7 +404,7 @@ namespace RoutingVisualizer
             IGeometry geom = graph.getGeometry();
             for (int i = 0; i < geom.getAllNodes().Length; i++)
             {
-                Simple.GeoData.Point point = geom.getNode(i);
+                ICoord point = geom.getNode(i);
                 newdistance = Math.Sqrt(Math.Pow(clickpoint[0] - point[0], 2) + Math.Pow(clickpoint[1] - point[1], 2));
                 if (distance == -1)
                 {
@@ -432,7 +432,7 @@ namespace RoutingVisualizer
             IGeometry geom = graph.getGeometry();
             for (int i = 0; i < geom.getAllNodes().Length; i++)
             {
-                Simple.GeoData.Point point = geom.getNode(i);
+                ICoord point = geom.getNode(i);
                 newdistance = Math.Sqrt(Math.Pow(clickpoint[0] - point[0], 2) + Math.Pow(clickpoint[1] - point[1], 2));
                 if (distance == -1)
                 { 

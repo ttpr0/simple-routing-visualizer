@@ -46,7 +46,7 @@ namespace Simple.WebApi
         IShortestPath? alg = null;
         bool draw;
 
-        static int getClosestNode(Point startpoint)
+        static int getClosestNode(Coord startpoint)
         {
             double distance = -1;
             int id = 0;
@@ -54,7 +54,7 @@ namespace Simple.WebApi
             IGeometry geom = Application.graph.getGeometry();
             for (int i = 0; i < geom.getAllNodes().Length; i++)
             {
-                Point point = geom.getNode(i);
+                ICoord point = geom.getNode(i);
                 newdistance = Math.Sqrt(Math.Pow(startpoint[0] - point[0], 2) + Math.Pow(startpoint[1] - point[1], 2));
                 if (distance == -1)
                 {
@@ -74,8 +74,8 @@ namespace Simple.WebApi
         {
             if (alg == null)
             {
-                Point start = new Point(request.start[0], request.start[1]);
-                Point end = new Point(request.end[0], request.end[1]);
+                Coord start = new Coord(request.start[0], request.start[1]);
+                Coord end = new Coord(request.end[0], request.end[1]);
                 switch (request.algorithm)
                 {
                     case "Dijkstra":
@@ -104,7 +104,7 @@ namespace Simple.WebApi
             }
             else
             {
-                List<Line> lines = new List<Line>();
+                List<ICoordArray> lines = new List<ICoordArray>();
                 bool finished = !alg.steps(request.stepcount, lines);
                 if (finished)
                 {
@@ -133,13 +133,13 @@ namespace Simple.WebApi
         public List<GeoJsonLineString> features { get; set; }
         public int key { get; set; }
 
-        public RoutingResponse(List<Line> lines, bool finished, int key)
+        public RoutingResponse(List<ICoordArray> lines, bool finished, int key)
         {
             this.type = "FeatureCollection";
             this.finished = finished;
             this.key = key;
             this.features = new List<GeoJsonLineString>();
-            foreach (Line line in lines)
+            foreach (CoordArray line in lines)
             {
                 this.features.Add(new GeoJsonLineString(line, 0));
             }

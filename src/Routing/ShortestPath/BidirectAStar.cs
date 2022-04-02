@@ -19,8 +19,8 @@ namespace Simple.Routing.ShortestPath
         private IGeometry geom;
         private IWeighting weight;
         private Flag[] flags;
-        private Point endpoint;
-        private Point startpoint;
+        private ICoord endpoint;
+        private ICoord startpoint;
 
         private struct Flag
         {
@@ -105,7 +105,7 @@ namespace Simple.Routing.ShortestPath
                     {
                         continue;
                     }
-                    otherflag.distance = Distance.haversineDistance(this.geom.getNode(otherid), endpoint);
+                    otherflag.distance = Distance.haversineDistance(this.geom.getNode(otherid), endpoint) * 3.6 / 130;
                     double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edgeid) + otherflag.distance;
                     if (otherflag.pathlength > newlength)
                     {
@@ -152,7 +152,7 @@ namespace Simple.Routing.ShortestPath
                     {
                         continue;
                     }
-                    otherflag.distance2 = Distance.haversineDistance(this.geom.getNode(otherid), startpoint);
+                    otherflag.distance2 = Distance.haversineDistance(this.geom.getNode(otherid), startpoint) * 3.6 / 130;
                     double newlength = currflag.pathlength2 - currflag.distance2 + this.weight.getEdgeWeight(edgeid) + otherflag.distance2;
                     if (otherflag.pathlength2 > newlength)
                     {
@@ -165,7 +165,7 @@ namespace Simple.Routing.ShortestPath
         }
 
         private int currid;
-        public bool steps(int count, List<Line> visitededges)
+        public bool steps(int count, List<ICoordArray> visitededges)
         {
             for (int c = 0; c < count; c++)
             {
@@ -199,7 +199,7 @@ namespace Simple.Routing.ShortestPath
                         continue;
                     }
                     visitededges.Add(this.geom.getEdge(edgeid));
-                    otherflag.distance = Distance.haversineDistance(this.geom.getNode(otherid), endpoint);
+                    otherflag.distance = Distance.haversineDistance(this.geom.getNode(otherid), endpoint) * 3.6 / 130;
                     double newlength = currflag.pathlength - currflag.distance + this.weight.getEdgeWeight(edgeid) + otherflag.distance;
                     if (otherflag.pathlength > newlength)
                     {
@@ -238,7 +238,7 @@ namespace Simple.Routing.ShortestPath
                         continue;
                     }
                     visitededges.Add(this.geom.getEdge(edgeid));
-                    otherflag.distance2 = Distance.haversineDistance(this.geom.getNode(otherid), startpoint);
+                    otherflag.distance2 = Distance.haversineDistance(this.geom.getNode(otherid), startpoint) * 3.6 / 130;
                     double newlength = currflag.pathlength2 - currflag.distance2 + this.weight.getEdgeWeight(edgeid) + otherflag.distance2;
                     if (otherflag.pathlength2 > newlength)
                     {

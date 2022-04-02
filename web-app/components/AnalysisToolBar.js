@@ -1,5 +1,6 @@
 import { computed, ref, reactive, watch, toRef} from 'vue'
 import { VectorLayer } from '/map/VectorLayer.js'
+import { VectorImageLayer } from '/map/VectorImageLayer.js'
 import { useStore } from 'vuex';
 import { getMap } from '/map/maps.js';
 import { getMultiGraph, getRouting } from '../routing/api.js';
@@ -57,7 +58,7 @@ const analysistoolbar = {
                 multigraphlayer.delete();
             }
             var features = new ol.format.GeoJSON().readFeatures(geojson);
-            multigraphlayer = new VectorLayer(features, 'Polygon', 'multigraphlayer');
+            multigraphlayer = new VectorImageLayer(features, 'Polygon', 'multigraphlayer');
             multigraphlayer.setStyle(accessibilityStyleFunction);
             map.addVectorLayer(multigraphlayer);
             updateLayerTree();

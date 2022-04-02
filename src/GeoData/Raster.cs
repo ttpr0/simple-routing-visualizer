@@ -9,13 +9,13 @@ namespace Simple.GeoData
 {
     class Raster
     {
-        public Point upperleft;
+        public ICoord upperleft;
         public int cellsize;
         public int rows;
         public int cols;
         public int[,] values;
 
-        public Raster(Point upperleft, int rows, int columns, int cellsize)
+        public Raster(ICoord upperleft, int rows, int columns, int cellsize)
         {
             this.upperleft = upperleft;
             this.values = new int[columns,rows];

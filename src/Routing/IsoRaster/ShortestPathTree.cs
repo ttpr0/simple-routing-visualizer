@@ -68,7 +68,7 @@ namespace Simple.Routing.IsoRaster
                 }
                 ref NodeAttributes curr = ref this.graph.getNode(currid);
                 ref Flag currflag = ref this.flags[currid];
-                if (currflag.pathlength/36 > maxvalue)
+                if (currflag.pathlength > maxvalue)
                 {
                     return;
                 }
@@ -77,7 +77,7 @@ namespace Simple.Routing.IsoRaster
                     continue;
                 }
                 (int x, int y) = rasterizer.pointToIndex(this.geom.getNode(currid));
-                points.insert(x, y, (int)(currflag.pathlength/36));
+                points.insert(x, y, (int)(currflag.pathlength));
                 currflag.visited = true;
                 IEdgeRefStore edges = this.graph.getAdjacentEdges(currid);
                 for (int i = 0; i < edges.length; i++)
@@ -126,21 +126,20 @@ namespace Simple.Routing.IsoRaster
             GeoJsonPolygon[] poly = new GeoJsonPolygon[nodes.Count];
             for (int i = 0; i < nodes.Count; i++)
             {
-                Point ul = this.rasterizer.indexToPoint(nodes[i].x, nodes[i].y);
-                Point lr = this.rasterizer.indexToPoint(nodes[i].x + 1, nodes[i].y + 1);
-                Line line = new Line(new Point[5]);
-                line[0][0] = ul[0];
-                line[0][1] = ul[1];
-                line[1][0] = lr[0];
-                line[1][1] = ul[1];
-                line[2][0] = lr[0];
-                line[2][1] = lr[1];
-                line[3][0] = ul[0];
-                line[3][1] = lr[1];
-                line[4][0] = ul[0];
-                line[4][1] = ul[1];
-                line[0] = new Point(1, 0);
-                poly[i] = new GeoJsonPolygon(new Polygon(new Line[1] { line }), nodes[i].value);
+                ICoord ul = this.rasterizer.indexToPoint(nodes[i].x, nodes[i].y);
+                ICoord lr = this.rasterizer.indexToPoint(nodes[i].x + 1, nodes[i].y + 1);
+                ICoordArray line = new CoordArray(new Coord[5]);
+                line[0,0] = ul[0];
+                line[0,1] = ul[1];
+                line[1,0] = lr[0];
+                line[1,1] = ul[1];
+                line[2,0] = lr[0];
+                line[2,1] = lr[1];
+                line[3,0] = ul[0];
+                line[3,1] = lr[1];
+                line[4,0] = ul[0];
+                line[4,1] = ul[1];
+                poly[i] = new GeoJsonPolygon(new ICoordArray[1] { line }, nodes[i].value);
             }
             return poly;
         }

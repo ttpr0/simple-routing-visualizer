@@ -9,12 +9,12 @@ namespace Simple.Routing.Graph
 {
     interface IGeometry
     {
-        public Point getNode(int node);
+        public ICoord getNode(int node);
 
-        public Line getEdge(int edge);
+        public ICoordArray getEdge(int edge);
 
-        public Point[] getAllNodes();
+        public ICoord[] getAllNodes();
 
-        public Line[] getAllEdges();
+        public ICoordArray[] getAllEdges();
     }
 }

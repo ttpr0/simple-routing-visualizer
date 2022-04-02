@@ -52,25 +52,25 @@ namespace Simple.Routing.Graph
             BinaryReader geomreader = new BinaryReader(geomstream);
             MemoryStream linestream = new MemoryStream(geomdata, startindex, geomdata.Length - startindex);
             BinaryReader linereader = new BinaryReader(linestream);
-            Point[] pointarr = new Point[nodecount];
+            ICoord[] pointarr = new ICoord[nodecount];
             for (int i = 0; i < nodecount; i++)
             {
                 float lon = geomreader.ReadSingle();
                 float lat = geomreader.ReadSingle();
-                pointarr[i] = new Point(lon, lat);
+                pointarr[i] = new Coord(lon, lat);
             }
-            Line[] linearr = new Line[edgecount];
+            ICoordArray[] linearr = new ICoordArray[edgecount];
             for (int i = 0; i < edgecount; i++)
             {
                 int s = geomreader.ReadInt32();
                 byte c = geomreader.ReadByte();
-                Point[] points = new Point[c];
+                Coord[] points = new Coord[c];
                 for (int j = 0; j < c; j++)
                 {
                     points[j][0] = linereader.ReadSingle();
                     points[j][1] = linereader.ReadSingle();
                 }
-                linearr[i] = new Line(points);
+                linearr[i] = new CoordArray(points);
             }
             geomreader.Close();
             linereader.Close();
@@ -154,25 +154,25 @@ namespace Simple.Routing.Graph
             BinaryReader geomreader = new BinaryReader(geomstream);
             MemoryStream linestream = new MemoryStream(geomdata, startindex, geomdata.Length - startindex);
             BinaryReader linereader = new BinaryReader(linestream);
-            Point[] pointarr = new Point[nodecount];
+            ICoord[] pointarr = new ICoord[nodecount];
             for (int i = 0; i < nodecount; i++)
             {
                 float lon = geomreader.ReadSingle();
                 float lat = geomreader.ReadSingle();
-                pointarr[i] = new Point(lon, lat);
+                pointarr[i] = new Coord(lon, lat);
             }
-            Line[] linearr = new Line[edgecount];
+            ICoordArray[] linearr = new ICoordArray[edgecount];
             for (int i = 0; i < edgecount; i++)
             {
                 int s = geomreader.ReadInt32();
                 byte c = geomreader.ReadByte();
-                Point[] points = new Point[c];
+                Coord[] points = new Coord[c];
                 for (int j = 0; j < c; j++)
                 {
                     points[j][0] = linereader.ReadSingle();
                     points[j][1] = linereader.ReadSingle();
                 }
-                linearr[i] = new Line(points);
+                linearr[i] = new CoordArray(points);
             }
             geomreader.Close();
             linereader.Close();

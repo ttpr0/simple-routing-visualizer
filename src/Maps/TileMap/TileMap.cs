@@ -45,7 +45,7 @@ namespace Simple.Maps.TileMap
         /// <param name="upperleft">upperleft of Bitmap, real-world coordinates (web-mercator, x from Greenwich / y from equator)</param>
         /// <param name="z">zoom level (for tile-map)</param>
         /// <returns>drawn Bitmap</returns>
-        public Bitmap createMap(Simple.GeoData.Point upperleft, int z)
+        public Bitmap createMap(ICoord upperleft, int z)
         {
             g.Clear(Color.Transparent);
             double tilesize = 40075016.69 / Math.Pow(2, z);

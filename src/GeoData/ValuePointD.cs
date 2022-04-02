@@ -9,9 +9,9 @@ namespace Simple.GeoData
     struct ValuePointD
     {
         public int value;
-        public Point point;
+        public ICoord point;
 
-        public ValuePointD(Point point, int value)
+        public ValuePointD(ICoord point, int value)
         {
             this.point = point;
             this.value = value;

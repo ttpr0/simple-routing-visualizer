@@ -19,7 +19,7 @@ namespace Simple.Maps.TileMap
         public int z { get; }
         private static int size = 256;
         private float tilesize;
-        public Simple.GeoData.Point upperleft { get; }
+        public ICoord upperleft { get; }
 
         /// <summary>
         /// Constructor using raster-tile (Bitmap)
@@ -34,7 +34,7 @@ namespace Simple.Maps.TileMap
             this.y = y;
             this.z = z;
             this.tilesize = (float)(40075016.69 / Math.Pow(2, this.z));
-            this.upperleft = new Simple.GeoData.Point(tilesize * this.x, tilesize * this.y + tilesize);
+            this.upperleft = new Simple.GeoData.Coord(tilesize * this.x, tilesize * this.y + tilesize);
             this.maptile = map;
         }
     }

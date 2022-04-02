@@ -8,7 +8,7 @@ namespace Simple.GeoData
 {
     static class Distance
     {
-        public static double haversineDistance(Point from, Point to)
+        public static double haversineDistance(ICoord from, ICoord to)
         {
             double r = 6365000;
             double lat1 = from[1] * Math.PI / 180;
@@ -20,7 +20,7 @@ namespace Simple.GeoData
             return 2 * r * Math.Asin(Math.Sqrt(a + Math.Cos(lat1) * Math.Cos(lat2) * b));
         }
 
-        public static double euclideanDistance(Point a, Point b)
+        public static double euclideanDistance(ICoord a, ICoord b)
         {
             return Math.Sqrt(Math.Pow(a[0] - b[0], 2) + Math.Pow(a[1] - b[1], 2));
         }

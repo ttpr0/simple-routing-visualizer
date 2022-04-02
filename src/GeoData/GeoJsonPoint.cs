@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace Simple.GeoData
 {
-    class GeoJsonLineString
+    class GeoJsonPoint
     {
         public string type { get; set; }
         public object geometry { get; }
         public object properties { get; set; }
-        public GeoJsonLineString(ICoordArray line, double value = 0)
+        public GeoJsonPoint(ICoord coord, double value = 0)
         {
             this.type = "Feature";
-            this.geometry = new { type = "LineString", coordinates = line };
+            this.geometry = new { type = "LineString", coordinates = coord };
             this.properties = new { value = value };
         }
     }

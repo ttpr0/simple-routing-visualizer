@@ -12,7 +12,7 @@ namespace Simple.GeoData
         public Bitmap image;
         public int height;
         public int width;
-        public Point upperleft;
+        public ICoord upperleft;
 
         public RasterImage(Raster raster, ColorFactory colorfactory)
         {

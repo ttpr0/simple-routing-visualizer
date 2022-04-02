@@ -102,7 +102,7 @@ namespace Simple.Routing.ShortestPath
             }
         }
 
-        public bool steps(int count, List<Line> visitededges)
+        public bool steps(int count, List<ICoordArray> visitededges)
         {
             for (int c = 0; c < count; c++)
             {

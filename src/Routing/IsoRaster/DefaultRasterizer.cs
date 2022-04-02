@@ -18,17 +18,16 @@ namespace Simple.Routing.IsoRaster
             this.projection = new WebMercatorProjection();
         }
 
-        public (int, int) pointToIndex(Point point)
+        public (int, int) pointToIndex(ICoord point)
         {
-            this.projection.proj(ref point);
-            return ((int)(point[0] * factor), (int)(point[1] * factor));
+            ICoord c = this.projection.proj(point);
+            return ((int)(c[0] * factor), (int)(c[1] * factor));
         }
 
-        public Point indexToPoint(int x, int y)
+        public ICoord indexToPoint(int x, int y)
         {   
-            Point point = new Point(x/factor, y/factor);
-            this.projection.reproj(ref point);
-            return point;
+            ICoord point = new Coord(x/factor, y/factor);
+            return this.projection.reproj(point);
         }
     }
 }

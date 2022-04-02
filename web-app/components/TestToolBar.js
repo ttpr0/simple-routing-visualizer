@@ -509,6 +509,7 @@ const testtoolbar = {
             <label for="isoraster">IsoRaster</label><br>
         </div>
       </toolbarcomp>
+      <div id="txttime">Calculation Time: {{ time }}</div>
     </div>
     `
 } 

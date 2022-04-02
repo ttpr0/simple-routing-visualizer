@@ -10,6 +10,6 @@ namespace Simple.Maps
 {
     interface IMap
     {
-        public Bitmap createMap(GeoData.Point upperleft, int zoom);
+        public Bitmap createMap(ICoord upperleft, int zoom);
     }
 }

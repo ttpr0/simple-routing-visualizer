@@ -11,7 +11,7 @@ namespace Simple.Routing.ShortestPath
     class Path
     {
         private List<int> path;
-        private List<Line> lines;
+        private List<ICoordArray> lines;
         private IGraph graph;
         private IGeometry geometry;
         private IWeighting weighting;
@@ -28,11 +28,11 @@ namespace Simple.Routing.ShortestPath
             this.curr = 1;
         }
 
-        public List<Line> getGeometry()
+        public List<ICoordArray> getGeometry()
         {
             if (lines == null || changed)
             {
-                this.lines = new List<Line>();
+                this.lines = new List<ICoordArray>();
                 for (int i = curr; i < this.path.Count; i = i + 2)
                 {
                     lines.Add(this.geometry.getEdge(path[i]));

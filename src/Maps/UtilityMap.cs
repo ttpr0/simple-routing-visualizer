@@ -53,7 +53,7 @@ namespace Simple.Maps
         private Pen trafficpen = new Pen(Color.Green, 3);
         private SolidBrush multibrush = new SolidBrush(Color.Transparent);
         private IEnumerable<Color> multicolors;
-        private Simple.GeoData.Point upperleft;
+        private ICoord upperleft;
         private double tilesize;
         /// <summary>
         /// draws GeometryContainer
@@ -61,19 +61,19 @@ namespace Simple.Maps
         /// <param name="upperleft">upperleft of Bitmap, real-world coordinates (web-mercator, x from Greenwich / y from equator)</param>
         /// <param name="zoom">zoom level (for tile-map)</param>
         /// <returns>drawn Bitmap</returns>
-        public Bitmap createMap(Simple.GeoData.Point upperleft, int zoom)
+        public Bitmap createMap(ICoord upperleft, int zoom)
         {
             g.Clear(Color.Transparent);
             this.tilesize = 40075016.69 / Math.Pow(2, zoom);
             this.upperleft = upperleft;
             if (container.path != null)
             {
-                foreach (Line line in container.path.getGeometry())
+                foreach (ICoordArray line in container.path.getGeometry())
                 {
-                    System.Drawing.Point[] points = new System.Drawing.Point[line.points.Length];
-                    for (int j = 0; j < line.points.Length; j++)
+                    System.Drawing.Point[] points = new System.Drawing.Point[line.length];
+                    for (int j = 0; j < line.length; j++)
                     {
-                        points[j] = realToScreen(line.points[j]);
+                        points[j] = realToScreen(line[j]);
                     }
                     g.DrawLines(pathpen, points);
                 }
@@ -118,11 +118,11 @@ namespace Simple.Maps
                     int t = container.traffic.edgetraffic[i];
                     if (t > 0)
                     {
-                        Line line = container.geom.getEdge(i);
-                        System.Drawing.Point[] points = new System.Drawing.Point[line.points.Length];
-                        for (int j = 0; j < line.points.Length; j++)
+                        ICoordArray line = container.geom.getEdge(i);
+                        System.Drawing.Point[] points = new System.Drawing.Point[line.length];
+                        for (int j = 0; j < line.length; j++)
                         {
-                            points[j] = realToScreen(line.points[j]);
+                            points[j] = realToScreen(line[j]);
                         }
                         if (t > 11)
                         {
@@ -140,7 +140,7 @@ namespace Simple.Maps
             return this.map;
         }
 
-        private System.Drawing.Point realToScreen(Simple.GeoData.Point point)
+        private System.Drawing.Point realToScreen(ICoord point)
         {
             double x = (point[0] - upperleft[0]) * 256 / tilesize;
             double y = -(point[1] - upperleft[1]) * 256 / tilesize;
