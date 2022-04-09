@@ -16,6 +16,26 @@
 
 #define PI 3.14159265358979323846
 typedef unsigned int uint;
+typedef unsigned char uchar;
+
+enum streettype
+{
+    motorway = 1,
+    motorway_link = 2,
+    trunk = 3,
+    trunk_link = 4,
+    primary = 5,
+    primary_link = 6,
+    secondary = 7,
+    secondary_link = 8,
+    tertiary = 9,
+    tertiary_link = 10,
+    residential = 11,
+    living_street = 12,
+    unclassified = 13,
+    road = 14,
+    track = 15,
+};
 
 struct Node;
 struct Edge;
@@ -26,15 +46,14 @@ void parseOsm(std::vector<Node>* nodes, std::vector<Edge>* edges, std::unordered
 void calcEdgeWeights(std::vector<Edge>& edges);
 double haversineLength(std::vector<Point>& points);
 void createGraphFile(std::vector<Node>& nodes, std::vector<Edge>& edges);
-Point transformMercator(double lon, double lat);
-bool isOneway(bool oneway, char strtype);
+bool isOneway(std::string& oneway, char strtype);
 char getType(std::string type);
 short getTemplimit(std::string& templimit, std::string& type);
 
 struct Point
 {
-    double lon;
-    double lat;
+    float lon;
+    float lat;
 };
 
 struct OsmNode
@@ -45,19 +64,20 @@ struct OsmNode
 
 struct Edge
 {
-    std::vector<Point> nodes;
-    double weight;
     int nodeA;
     int nodeB;
     bool oneway;
     char type;
-    short templimit;
+    uchar templimit;
+    float length;
+    uchar weight;
+    std::vector<Point> nodes;
 };
 
 struct Node
 {
-    double lon;
-    double lat;
+    Point point;
+    char type;
     std::vector<int> edges;
 };
 
@@ -67,7 +87,7 @@ public:
     std::unordered_map<int64_t, OsmNode>* osmnodes;
     std::set<std::string> types = { "motorway","motorway_link","trunk","trunk_link",
         "primary","primary_link","secondary","secondary_link","tertiary","tertiary_link",
-        "residential","living_street" };
+        "residential","living_street","service","track", "unclassified", "road" };
 
     InitWayHandler(std::unordered_map<int64_t, OsmNode>* osmnodes)
     {
@@ -86,7 +106,7 @@ public:
         }
         for (const osmium::NodeRef& ndref : way.nodes())
         {
-            int c = (*this->osmnodes)[ndref.ref()].count;
+            (*this->osmnodes)[ndref.ref()].count += 1;
         }
         (*this->osmnodes)[way.nodes().front().ref()].count += 1;
         (*this->osmnodes)[way.nodes().back().ref()].count += 1;
@@ -119,11 +139,11 @@ public:
             std::cout << c << std::endl;
         }
         OsmNode& on = (*this->osmnodes)[node.id()];
-        if (on.count > 0)
+        if (on.count > 1)
         {
             Node n;
-            n.lon = node.location().lon();
-            n.lat = node.location().lat();
+            n.point.lon = node.location().lon();
+            n.point.lat = node.location().lat();
             (*this->nodes)[i] = n;
             (*this->indexmapping)[node.id()] = i;
             i++;
@@ -138,14 +158,16 @@ class WayHandler : public osmium::handler::Handler
 public:
     std::vector<Edge>* edges;
     std::unordered_map<int64_t, OsmNode>* osmnodes;
+    std::unordered_map<int64_t, int>* indexmapping;
     std::set<std::string> types = { "motorway","motorway_link","trunk","trunk_link",
-            "primary","primary_link","secondary","secondary_link","tertiary","tertiary_link",
-            "residential","living_street" };
+        "primary","primary_link","secondary","secondary_link","tertiary","tertiary_link",
+        "residential","living_street","service","track", "unclassified", "road" };
 
-    WayHandler(std::vector<Edge>* edges, std::unordered_map<int64_t,OsmNode>* osmnodes)
+    WayHandler(std::vector<Edge>* edges, std::unordered_map<int64_t,OsmNode>* osmnodes, std::unordered_map<int64_t, int>* indexmapping)
     {
         this->edges = edges;
         this->osmnodes = osmnodes;
+        this->indexmapping = indexmapping;
     }
     int c = 0;
     int i = 0;
@@ -173,23 +195,16 @@ public:
             curr = nd.ref();
             OsmNode on = (*this->osmnodes)[curr];
             e.nodes.push_back(on.point);
-            if (on.count > 0 && curr != start)
+            if (on.count > 1 && curr != start)
             {
                 std::string templimit = way.tags().get_value_by_key("maxspeed", "");
                 std::string strtype = way.tags().get_value_by_key("highway");
+                std::string oneway = way.tags().get_value_by_key("oneway", "");
                 e.templimit = getTemplimit(templimit, strtype);
                 e.type = getType(strtype);
-                if (way.tags().get_value_by_key("oneway") == "yes")
-                {
-                    e.oneway = true;
-                }
-                else
-                {
-                    e.oneway = false;
-                }
-                e.weight = start;
-                e.nodeA = curr >> 32;
-                e.nodeB = curr;
+                e.oneway = isOneway(oneway, e.type);
+                e.nodeA = this->indexmapping->at(start);
+                e.nodeB = this->indexmapping->at(curr);
                 this->edges->push_back(e);
                 i++;
                 start = curr;
@@ -230,41 +245,34 @@ int main()
 
 void parseOsm(std::vector<Node>* nodes, std::vector<Edge>* edges, std::unordered_map<int64_t, int>* indexmapping)
 {
+    std::string pbffile = "data/niedersachsen.pbf";
     std::unordered_map<int64_t, OsmNode> osmnodes;
     auto otypes = osmium::osm_entity_bits::way;
-    osmium::io::Reader iwreader{ "data/default.pbf", otypes};
+    osmium::io::Reader iwreader{ pbffile, otypes};
     InitWayHandler iwhandler(&osmnodes);
     osmium::apply(iwreader, iwhandler);
     iwreader.close();
     int nodecounter = 0;
     for (auto& n : osmnodes)
     {
-        if (n.second.count > 0)
+        if (n.second.count > 1)
         {
             nodecounter++;
         }
     }
-    nodes->resize(nodecounter+2);
+    nodes->resize(nodecounter);
     otypes = osmium::osm_entity_bits::node;
-    osmium::io::Reader nreader{ "data/default.pbf", otypes};
+    osmium::io::Reader nreader{ pbffile, otypes};
     NodeHandler nhandler(&osmnodes, nodes, indexmapping);
     osmium::apply(nreader, nhandler);
     nreader.close();
     otypes = osmium::osm_entity_bits::way;
-    osmium::io::Reader wreader{ "data/default.pbf", otypes };
-    WayHandler whandler(edges, &osmnodes);
+    osmium::io::Reader wreader{ pbffile, otypes };
+    WayHandler whandler(edges, &osmnodes, indexmapping);
     osmium::apply(wreader, whandler);
     wreader.close();
     osmnodes.clear();
     edges->shrink_to_fit();
-    for (int i = 0; i < edges->size(); i++)
-    {
-        Edge& e = (*edges)[i];
-        int64_t start = e.weight;
-        int64_t end = ((int64_t)e.nodeA << 32) | e.nodeB & 0xFFFFFFFFL;
-        e.nodeA = (*indexmapping)[start];
-        e.nodeB = (*indexmapping)[end];
-    }
     for (int i = 0; i < edges->size(); i++)
     {
         Edge& e = (*edges)[i];
@@ -275,6 +283,21 @@ void parseOsm(std::vector<Node>* nodes, std::vector<Edge>* edges, std::unordered
 
 char getType(std::string type)
 {
+    if (type == "motorway") return streettype::motorway;
+    if (type == "motorway_link") return streettype::motorway_link;
+    if (type == "trunk") return streettype::trunk;
+    if (type == "trunk_link") return streettype::trunk_link;
+    if (type == "primary") return streettype::primary;
+    if (type == "primary_link") return streettype::primary_link;
+    if (type == "secondary") return streettype::secondary;
+    if (type == "secondary_link") return streettype::secondary_link;
+    if (type == "tertiary") return streettype::tertiary;
+    if (type == "tertiary_link") return streettype::tertiary_link;
+    if (type == "residential") return streettype::residential; 
+    if (type == "living_street") return streettype::living_street;
+    if (type == "unclassified") return streettype::unclassified;
+    if (type == "road") return streettype::road;
+    if (type == "track") return streettype::track;
     return 0;
 }
 
@@ -284,21 +307,21 @@ short getTemplimit(std::string& templimit, std::string& strtype)
     if (templimit == "")
     {
         if (strtype == "motorway" || strtype == "trunk")
-            w = 120;
+            w = 130;
         else if (strtype == "motorway_link" || strtype == "trunk_link")
-            w = 90;
+            w = 80;
         else if (strtype == "primary" || strtype == "secondary")
-            w = 90;
+            w = 100;
         else if (strtype == "tertiary")
-            w = 70;
+            w = 80;
         else if (strtype == "primary_link" || strtype == "secondary_link" || strtype == "tertiary_link")
             w = 30;
         else if (strtype == "residential")
-            w = 40;
+            w = 50;
         else if (strtype == "living_street")
-            w = 40;
+            w = 20;
         else
-            w = 25;
+            w = 30;
     }
     else if (templimit == "walk")
         w = 10;
@@ -312,7 +335,7 @@ short getTemplimit(std::string& templimit, std::string& strtype)
         }
         catch (const std::exception&)
         {
-            w = 20;
+            w = 50;
         }
     }
     if (w == 0)
@@ -326,7 +349,8 @@ void calcEdgeWeights(std::vector<Edge>& edges)
 {
     for (Edge& e : edges)
     {
-        e.weight = haversineLength(e.nodes) * 130 / e.templimit;
+        e.length = haversineLength(e.nodes);
+        e.weight = (uchar)(e.length * 3.6 / e.templimit);
     }
 }
 
@@ -354,57 +378,78 @@ double haversineLength(std::vector<Point>& points)
     return length;
 }
 
-Point transformMercator(double lon, double lat)
+bool isOneway(std::string& oneway, char strtype)
 {
-    int a = 6378137;
-    double x = a * lon * PI / 180;
-    double y = a * log(tan(PI / 4 + lat * PI / 360));
-    return { x,y };
-}
-
-bool isOneway(bool oneway, char strtype)
-{
-    return oneway;
+    if (strtype == streettype::motorway || strtype == streettype::trunk || strtype == streettype::motorway_link || strtype == streettype::trunk_link)
+    {
+        return true;
+    }
+    if (oneway == "yes")
+    {
+        return true;
+    }
+    return false;
 }
 
 void createGraphFile(std::vector<Node>& nodes, std::vector<Edge>& edges)
 {
-    std::ofstream file("default.graph", std::ios::binary);
+    std::ofstream graphfile("default.graph", std::ios::binary);
+    std::ofstream geomfile("default-geom", std::ios::binary);
+    std::ofstream attribfile("default-attrib", std::ios::binary);
+    std::ofstream weightfile("default-weight", std::ios::binary);
     int nodecount = nodes.size();
-    file.write(reinterpret_cast<char*>(&nodecount), 4);
+    graphfile.write(reinterpret_cast<char*>(&nodecount), 4);
+    int edgecount = edges.size();
+    graphfile.write(reinterpret_cast<char*>(&edgecount), 4);
+    int c = 0;
     for (int i = 0; i < nodecount; i++)
     {
         Node n = nodes[i];
-        Point coords = transformMercator(n.lon, n.lat);
-        file.write(reinterpret_cast<char*>(&coords.lon), 8);
-        file.write(reinterpret_cast<char*>(&coords.lat), 8);
-        int edgecount = n.edges.size();
-        file.write(reinterpret_cast<char*>(&edgecount), 4);
-        for (int e : n.edges)
-        {
-            file.write(reinterpret_cast<char*>(&e), 4);
-        }
+        attribfile.write(reinterpret_cast<char*>(&n.type), 1);
+        geomfile.write(reinterpret_cast<char*>(&n.point.lon), 4);
+        geomfile.write(reinterpret_cast<char*>(&n.point.lat), 4);
+        char edges = n.edges.size();
+        graphfile.write(reinterpret_cast<char*>(&c), 4);
+        graphfile.write(reinterpret_cast<char*>(&edges), 1);
+        c += edges * 4;
     }
-    int edgecount = edges.size();
-    file.write(reinterpret_cast<char*>(&edgecount), 4);
+    c = 0;
     for (int i = 0; i < edgecount; i++)
     {
         Edge e = edges[i];
-        file.write(reinterpret_cast<char*>(&e.nodeA), 4);
-        file.write(reinterpret_cast<char*>(&e.nodeB), 4);
-        file.write(reinterpret_cast<char*>(&e.weight), 8);
-        bool oneway = isOneway(e.oneway, e.type);
-        file.write(reinterpret_cast<char*>(&oneway), 1);
-        int nodecount = e.nodes.size();
-        file.write(reinterpret_cast<char*>(&nodecount), 4);
-        for (Point p : e.nodes)
+        graphfile.write(reinterpret_cast<char*>(&e.nodeA), 4);
+        graphfile.write(reinterpret_cast<char*>(&e.nodeB), 4);
+        weightfile.write(reinterpret_cast<char*>(&e.weight), 1);
+        attribfile.write(reinterpret_cast<char*>(&e.type), 1);
+        attribfile.write(reinterpret_cast<char*>(&e.length), 4);
+        attribfile.write(reinterpret_cast<char*>(&e.templimit), 1);
+        attribfile.write(reinterpret_cast<char*>(&e.oneway), 1);
+        uchar nodes = e.nodes.size();
+        geomfile.write(reinterpret_cast<char*>(&c), 4);
+        geomfile.write(reinterpret_cast<char*>(&nodes), 1);
+        c += nodes * 8;
+    }
+    for (int i = 0; i < nodecount; i++)
+    {
+        Node n = nodes[i];
+        for (int j = 0; j < n.edges.size(); j++)
         {
-            Point coords = transformMercator(p.lon, p.lat);
-            file.write(reinterpret_cast<char*>(&coords.lon), 8);
-            file.write(reinterpret_cast<char*>(&coords.lat), 8);
+            graphfile.write(reinterpret_cast<char*>(&n.edges[j]), 4);
         }
     }
-    file.close();
+    for (int i = 0; i < edgecount; i++)
+    {
+        Edge e = edges[i];
+        for (int j = 0; j < e.nodes.size(); j++)
+        {
+            geomfile.write(reinterpret_cast<char*>(&e.nodes[j].lon), 4);
+            geomfile.write(reinterpret_cast<char*>(&e.nodes[j].lat), 4);
+        }
+    }
+    graphfile.close();
+    attribfile.close();
+    weightfile.close();
+    geomfile.close();
 }
 
 
