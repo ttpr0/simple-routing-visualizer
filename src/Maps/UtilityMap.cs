@@ -53,7 +53,7 @@ namespace Simple.Maps
         private Pen trafficpen = new Pen(Color.Green, 3);
         private SolidBrush multibrush = new SolidBrush(Color.Transparent);
         private IEnumerable<Color> multicolors;
-        private ICoord upperleft;
+        private Coord upperleft;
         private double tilesize;
         /// <summary>
         /// draws GeometryContainer
@@ -61,7 +61,7 @@ namespace Simple.Maps
         /// <param name="upperleft">upperleft of Bitmap, real-world coordinates (web-mercator, x from Greenwich / y from equator)</param>
         /// <param name="zoom">zoom level (for tile-map)</param>
         /// <returns>drawn Bitmap</returns>
-        public Bitmap createMap(ICoord upperleft, int zoom)
+        public Bitmap createMap(Coord upperleft, int zoom)
         {
             g.Clear(Color.Transparent);
             this.tilesize = 40075016.69 / Math.Pow(2, zoom);
@@ -104,13 +104,13 @@ namespace Simple.Maps
                     g.FillEllipse(multibrush, curr.X, curr.Y, 5, 5);
                 }
             }
-            if (container.mgimg != null)
-            {
-                System.Drawing.Point ul = realToScreen(container.mgimg.upperleft);
-                double width = container.mgimg.width * 256 / tilesize;
-                double height = container.mgimg.height * 256 / tilesize;
-                g.DrawImage(container.mgimg.image, ul.X, ul.Y, (int)width, (int)height);
-            }
+            //if (container.mgimg != null)
+            //{
+            //    System.Drawing.Point ul = realToScreen(container.mgimg.upperleft);
+            //    double width = container.mgimg.width * 256 / tilesize;
+            //    double height = container.mgimg.height * 256 / tilesize;
+            //    g.DrawImage(container.mgimg.image, ul.X, ul.Y, (int)width, (int)height);
+            //}
             if (container.traffic != null)
             {
                 for (int i = 0; i < container.traffic.edgetraffic.Length; i++)
@@ -140,7 +140,7 @@ namespace Simple.Maps
             return this.map;
         }
 
-        private System.Drawing.Point realToScreen(ICoord point)
+        private System.Drawing.Point realToScreen(Coord point)
         {
             double x = (point[0] - upperleft[0]) * 256 / tilesize;
             double y = -(point[1] - upperleft[1]) * 256 / tilesize;

@@ -34,7 +34,7 @@ namespace Simple.Maps
         }
 
         private Pen visitedpen = new Pen(Color.MediumVioletRed, 2);
-        private ICoord upperleft;
+        private Coord upperleft;
         /// <summary>
         /// draws map, only GraphEdges marked visited and !drawn are used
         /// Map should not be moved while using this function, before moving re-init Graph
@@ -42,7 +42,7 @@ namespace Simple.Maps
         /// <param name="upperleft">upperleft of Bitmap, real-world coordinates (web-mercator, x from Greenwich / y from equator)</param>
         /// <param name="zoom">zoom level (for tile-map)</param>
         /// <returns>drawn Bitmap</returns>
-        public Bitmap createMap(ICoord upperleft, int zoom)
+        public Bitmap createMap(Coord upperleft, int zoom)
         {
             double tilesize = 40075016.69 / Math.Pow(2, zoom);
             this.upperleft = upperleft;
@@ -67,7 +67,7 @@ namespace Simple.Maps
             g.Clear(Color.Transparent);
         }
 
-        private System.Drawing.Point realToScreen(ICoord point, double tilesize)
+        private System.Drawing.Point realToScreen(Coord point, double tilesize)
         {
             double x = (point[0] - upperleft[0]) * 256 / tilesize;
             double y = -(point[0] - upperleft[1]) * 256 / tilesize;

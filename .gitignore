@@ -8,8 +8,9 @@ data
 lib
 include
 datalayers
+external
 assets
-tests
+.vs
 
 # Logs
 logs

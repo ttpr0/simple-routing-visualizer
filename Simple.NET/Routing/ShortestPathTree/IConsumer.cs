@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
 using Simple.GeoData;
 
-namespace Simple.Maps
+namespace Simple.Routing.ShortestPathTree
 {
-    interface IMap
+    public  interface IConsumer
     {
-        public Bitmap createMap(Coord upperleft, int zoom);
+        public void consumePoint(Coord point, int value);
     }
 }

@@ -19,7 +19,7 @@ namespace Simple.Maps.TileMap
         public int z { get; }
         private static int size = 256;
         private float tilesize;
-        public ICoord upperleft { get; }
+        public Coord upperleft { get; }
 
         /// <summary>
         /// Constructor using raster-tile (Bitmap)
