@@ -1,6 +1,6 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer.js'
-import { useStore } from 'vuex';
+import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
 import { toolbarcomp } from './ToolBarComp.js';
 
@@ -8,11 +8,13 @@ const selecttoolbar = {
     components: { toolbarcomp },
     props: [ ],
     setup(props) {
-      const store = useStore();
+      const state = getState();
       const map = getMap();
 
       function setFeatureInfo(feature, pos, display) {
-        store.commit('setFeatureInfo', {feature, pos, display});
+        if (feature != null) state.featureinfo.feature = feature;
+        if (pos != null) state.featureinfo.pos = pos;
+        if (display != null) state.featureinfo.display = display;
       }
 
       function selectListener(e)

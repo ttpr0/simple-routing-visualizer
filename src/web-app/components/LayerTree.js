@@ -1,7 +1,7 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { layertreeitem } from './LayerTreeItem.js';
 import { VectorLayer } from '/map/VectorLayer.js';
-import { useStore } from 'vuex';
+import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
 
 const layertree = {
@@ -9,11 +9,11 @@ const layertree = {
     props: [ ],
     setup(props) {
         const filedialog = ref(null);
-        const store = useStore();
+        const state = getState();
         const map = getMap();
 
         const layers = computed(() => {
-            var test = store.state.layertree.update;
+            var test = state.layertree.update;
             return map.vectorlayers;
         })
 

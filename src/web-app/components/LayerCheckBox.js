@@ -1,15 +1,15 @@
 import { computed, ref, reactive, onMounted, defineExpose} from '/lib/vue.js'
 import { layerbar } from '/components/LayerBar.js';
-import { useStore } from '/lib/vuex.js';
+import { getState } from '/store/state.js';
 
 const layercheckbox = {
     components: {  },
     props: ["layer"],
     setup(props) {
-        const store = useStore();
+        const state = getState();
 
         function update() {
-            store.commit('updateLayerTree');
+            state.layertree.update = !state.layertree.update;
         }
 
         function handleChange()
@@ -32,11 +32,11 @@ const layercheckbox = {
 
         function handleBoxClick()
         {
-            store.commit('setFocusLayer', props.layer.name);
+            state.layertree.focuslayer = props.layer.name;
         }
 
         const isFocus = computed(() => {
-            return props.layer.name === store.state.layertree.focuslayer
+            return props.layer.name === state.layertree.focuslayer
         });
 
         return { handleChange, handleIconClick, handleBoxClick, isFocus }

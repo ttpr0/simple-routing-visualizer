@@ -1,7 +1,7 @@
 import { createApp, ref, reactive, onMounted} from 'vue'
 import { Map2D } from '/map/Map2D.js';
 import { VectorLayer } from './map/VectorLayer.js';
-import { store } from './store/store.js';
+import { getState } from './store/state.js';
 import { mapregion } from './components/MapRegion.js';
 import { sidebar } from '/components/SideBar.js';
 import { toolbar } from './components/ToolBar.js';
@@ -11,9 +11,14 @@ const app = createApp({
   components: { sidebar, toolbar, mapregion },
   setup() {
     const map = getMap();
+    const state = getState();
 
     function updateLayerTree() {
-      store.commit('updateLayerTree');
+      state.layertree.update = !state.layertree.update;
+    }
+    function setFocusLayer(layer)
+    {
+      state.layertree.focuslayer = layer;
     }
 
     fetch(window.location.origin + '/datalayers/hospitals.geojson')
@@ -22,7 +27,7 @@ const app = createApp({
         var points = new ol.format.GeoJSON().readFeatures(response);
         var layer = new VectorLayer(points, 'Point', 'hospitals');
         map.addVectorLayer(layer);
-        store.commit('setFocusLayer', layer.name);
+        setFocusLayer(layer.name);
         updateLayerTree();
     });
 
@@ -37,8 +42,6 @@ const app = createApp({
   </div>
   `
 })
-
-app.use(store);
   
 app.mount('#app');
 

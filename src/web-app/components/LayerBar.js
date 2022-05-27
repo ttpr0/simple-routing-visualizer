@@ -2,7 +2,7 @@ import { computed, ref, reactive, watch, toRef} from '/lib/vue.js'
 import { layercheckbox } from '/components/LayerCheckBox.js'
 import { pointstyle } from '/map/styles.js'
 import { VectorLayer } from '/map/VectorLayer.js'
-import { useStore } from '/lib/vuex.js';
+import { getState } from '/store/state.js';
 import { getMap } from '../app.js'
 
 const layerbar = {
@@ -10,15 +10,15 @@ const layerbar = {
     props: [ ],
     setup(props) {
         const filedialog = ref(null);
-        const store = useStore();
+        const state = getState();
         const map = getMap();
 
         function update() {
-            store.commit('updateLayerTree');
+            state.layertree.update = !state.layertree.update;
         }
 
         const layers = computed(() => {
-            var test = store.state.layertree.update;
+            var test = state.layertree.update;
             return map.vectorlayers;
         })
 

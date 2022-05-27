@@ -1,25 +1,25 @@
 import { computed, ref, reactive, onMounted, watch} from 'vue';
 import { dragablewindow } from './DragableWindow.js';
-import { useStore } from 'vuex';
+import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
 
 const mapregion = {
     components: { dragablewindow },
     props: [],
     setup() {
-        const store = useStore();
+        const state = getState();
         const map = getMap();
 
-        const showDialog = computed(() => { return store.state.featureinfo.display; });
-        const pos = computed(() => { return store.state.featureinfo.pos; });
+        const showDialog = computed(() => { return state.featureinfo.display; });
+        const pos = computed(() => { return state.featureinfo.pos; });
         const text = computed(() => {
             var t = "";
             t += "Feature: \n";
-            if (store.state.featureinfo.feature == null)
+            if (state.featureinfo.feature == null)
             {
                 return t;
             }
-            var properties = store.state.featureinfo.feature.getProperties();
+            var properties = state.featureinfo.feature.getProperties();
             for (var p in properties)
             {
               t += p + ": " + properties[p] + "\n";
@@ -28,14 +28,14 @@ const mapregion = {
         })
 
         function setShow(bool) {
-            store.commit('setFeatureInfo', { display: bool });
+            if (bool != null) state.featureinfo.display = bool;
         }
 
         onMounted(() => {
             map.olmap.setTarget("mapregion")
         })
 
-        return {text, store, pos, showDialog, setShow}
+        return {text, state, pos, showDialog, setShow}
     },
     template: `
     <div id="mapregion"></div>

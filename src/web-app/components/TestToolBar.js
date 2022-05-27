@@ -1,7 +1,7 @@
 import { computed, ref, reactive, watch, toRef} from 'vue'
 import { VectorLayer } from '/map/VectorLayer.js'
 import { VectorImageLayer } from '/map/VectorImageLayer.js'
-import { useStore } from 'vuex';
+import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
 import { getMultiGraph, getRouting } from '../routing/api.js';
 import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_style, targamo_style } from '../map/styles.js';
@@ -12,11 +12,11 @@ const testtoolbar = {
     components: { toolbarcomp },
     props: [ ],
     setup(props) {
-        const store = useStore();
+        const state = getState();
         const map  = getMap();
 
         function updateLayerTree() {
-            store.commit('updateLayerTree');
+          state.layertree.update = !state.layertree.update;
         }
 
         const range1 = ref(1800);
@@ -87,7 +87,7 @@ const testtoolbar = {
 
         async function drawCompareIsolines()
         {
-            const layer = map.getVectorLayerByName(store.state.layertree.focuslayer);
+            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -135,7 +135,7 @@ const testtoolbar = {
 
         async function drawORSPolygon()
         {
-            const layer = map.getVectorLayerByName(store.state.layertree.focuslayer);
+            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -174,7 +174,7 @@ const testtoolbar = {
 
         async function drawDockerPolygon() 
         {
-            const layer = map.getVectorLayerByName(store.state.layertree.focuslayer);
+            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -213,7 +213,7 @@ const testtoolbar = {
 
         async function drawIsoRaster()
         {
-            const layer = map.getVectorLayerByName(store.state.layertree.focuslayer);
+            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -265,7 +265,7 @@ const testtoolbar = {
 
         async function featurecountTest() 
         {
-            const layer = map.getVectorLayerByName(store.state.layertree.focuslayer);
+            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -309,7 +309,7 @@ const testtoolbar = {
 
         async function isolinesTest()
         {
-            const layer = map.getVectorLayerByName(store.state.layertree.focuslayer);
+            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -352,7 +352,7 @@ const testtoolbar = {
 
         async function rangediffTest()
         {
-            const layer = map.getVectorLayerByName(store.state.layertree.focuslayer);
+            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -397,7 +397,7 @@ const testtoolbar = {
 
         async function rangesTest()
         {
-            const layer = map.getVectorLayerByName(store.state.layertree.focuslayer);
+            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");

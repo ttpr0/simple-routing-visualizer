@@ -1,6 +1,6 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer.js'
-import { useStore } from 'vuex';
+import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
 import { toolbarcomp } from './ToolBarComp.js';
 
@@ -8,13 +8,13 @@ const layertoolbar = {
     components: { toolbarcomp },
     props: [ ],
     setup(props) {
-      const store = useStore();
+      const state = getState();
       const map = getMap();
 
       const filedialog = ref(null);
 
       function updateLayerTree() {
-          store.commit('updateLayerTree');
+        state.layertree.update = !state.layertree.update;
       }
 
       function openfiledialog() {
@@ -27,6 +27,7 @@ const layertoolbar = {
           var reader = new FileReader();
           reader.onloadend = () => {
               var points = new ol.format.GeoJSON().readFeatures(reader.result);
+              console.log(points[0].geometry.type)
               var layer = new VectorLayer(points, 'Point', files[0].name.split(".")[0]);
               map.addVectorLayer(layer);
               updateLayerTree();

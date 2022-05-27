@@ -1,14 +1,14 @@
 import { computed, ref, reactive, onMounted, defineExpose} from 'vue'
-import { useStore } from 'vuex';
+import { getState } from '/store/state.js';
 
 const layertreeitem = {
     components: {  },
     props: ["layer"],
     setup(props) {
-        const store = useStore();
+        const state = getState();
 
         function update() {
-            store.commit('updateLayerTree');
+            state.layertree.update = !state.layertree.update;
         }
 
         function handleChange()
@@ -31,11 +31,11 @@ const layertreeitem = {
 
         function handleBoxClick()
         {
-            store.commit('setFocusLayer', props.layer.name);
+            state.layertree.focuslayer = props.layer.name;
         }
 
         const isFocus = computed(() => {
-            return props.layer.name === store.state.layertree.focuslayer
+            return props.layer.name === state.layertree.focuslayer
         });
 
         return { handleChange, handleIconClick, handleBoxClick, isFocus }

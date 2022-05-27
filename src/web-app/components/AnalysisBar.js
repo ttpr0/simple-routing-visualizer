@@ -2,7 +2,7 @@ import { computed, ref, reactive, watch, toRef} from '/lib/vue.js'
 import { layercheckbox } from '/components/LayerCheckBox.js'
 import { pointstyle } from '/map/styles.js'
 import { VectorLayer } from '/map/VectorLayer.js'
-import { useStore } from '/lib/vuex.js';
+import { getState } from '/store/state.js';
 import { getMap } from '../app.js'
 import { getMultiGraph, getRouting } from '../routing/api.js';
 import { accessibilityStyleFunction, lineStyle } from '../map/styles.js';
@@ -11,11 +11,11 @@ const analysisbar = {
     components: { layercheckbox },
     props: [ ],
     setup(props) {
-        const store = useStore();
+        const state = getState();
         const map  = getMap();
 
         function updateLayerTree() {
-            store.commit('updateLayerTree');
+          state.layertree.update = !state.layertree.update;
         }
 
         const routingtype = ref("Dijktra");

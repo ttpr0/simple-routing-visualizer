@@ -1,7 +1,7 @@
 import { computed, ref, reactive, watch, toRef} from 'vue'
 import { VectorLayer } from '/map/VectorLayer.js'
 import { VectorImageLayer } from '/map/VectorImageLayer.js'
-import { useStore } from 'vuex';
+import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
 import { getMultiGraph, getRouting } from '../routing/api.js';
 import { accessibilityStyleFunction, lineStyle } from '../map/styles.js';
@@ -11,11 +11,11 @@ const analysistoolbar = {
     components: { toolbarcomp },
     props: [ ],
     setup(props) {
-        const store = useStore();
+        const state = getState();
         const map  = getMap();
 
         function updateLayerTree() {
-            store.commit('updateLayerTree');
+          state.layertree.update = !state.layertree.update;
         }
 
         const routingtype = ref("Dijktra");
@@ -28,7 +28,7 @@ const analysistoolbar = {
 
         async function multigraph()
         {
-            const layer = map.getVectorLayerByName(store.state.layertree.focuslayer);
+            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -66,7 +66,7 @@ const analysistoolbar = {
 
         async function routing()
         {
-            const layer = map.getVectorLayerByName(store.state.layertree.focuslayer);
+            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");

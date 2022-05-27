@@ -9,6 +9,8 @@ class VectorLayer extends ol.layer.Vector
             features: features,
         });
         super({source: source});
+        var feat = source.getFeatureById(1);
+        console.log(feat.getGeometry())
         this.type = type;
         this.name = name;
         this.map = null;
