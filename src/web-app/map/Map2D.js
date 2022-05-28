@@ -18,7 +18,11 @@ class Map2D
         view: new ol.View({
           center: [9.7320104,52.3758916],
           zoom: 12
-        })
+        }),
+        controls : ol.control.defaults({
+          attribution : false,
+          zoom : false,
+        }),
       });
     }
 

@@ -1,0 +1,21 @@
+.footerbaritem {
+    height: 24px;
+    width: max-content;
+    padding: 4px;
+    margin-left: 5px;
+    margin-right: 5px;
+    background-color: rgb(65, 163, 170);
+    cursor: pointer;
+}
+
+.footerbaritem:hover {
+    background-color: rgb(82, 198, 206);
+}
+
+.footerbaritem div {
+    font-size: 12;
+    font-weight: 500;
+    color: white;
+    display: inline-block;
+    margin-left: 5px;
+}

@@ -3,12 +3,12 @@ import { layertreeitem } from './LayerTreeItem.js';
 import { VectorLayer } from '/map/VectorLayer.js';
 import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
+import './LayerBar.css'
 
-const layertree = {
+const layerbar = {
     components: { layertreeitem },
     props: [ ],
     setup(props) {
-        const filedialog = ref(null);
         const state = getState();
         const map = getMap();
 
@@ -17,7 +17,7 @@ const layertree = {
             return map.vectorlayers;
         })
 
-        return { layers}
+        return { layers }
     },
     template: `
     <div class="layerbar">
@@ -26,4 +26,4 @@ const layertree = {
     `
 } 
 
-export { layertree }
+export { layerbar}

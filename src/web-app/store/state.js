@@ -10,6 +10,9 @@ const state = reactive({
         update: false,
         focuslayer: null,
     },
+    map: {
+        moved: false,
+    },
 })
 
 function getState()

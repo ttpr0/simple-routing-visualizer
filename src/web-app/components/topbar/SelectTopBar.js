@@ -1,18 +1,20 @@
-import { createApp, ref, reactive, computed, watch, onMounted } from '/lib/vue.js'
-import { layercheckbox } from '/components/LayerCheckBox.js'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer.js'
-import { useStore } from '/lib/vuex.js';
-import { getMap } from '../app.js';
+import { getState } from '/store/state.js';
+import { getMap } from '/map/maps.js';
+import { topbarcomp } from './TopBarComp.js';
 
-const selectbar = {
-    components: { },
+const selecttopbar = {
+    components: { topbarcomp },
     props: [ ],
     setup(props) {
-      const store = useStore();
+      const state = getState();
       const map = getMap();
 
       function setFeatureInfo(feature, pos, display) {
-        store.commit('setFeatureInfo', {feature, pos, display});
+        if (feature != null) state.featureinfo.feature = feature;
+        if (pos != null) state.featureinfo.pos = pos;
+        if (display != null) state.featureinfo.display = display;
       }
 
       function selectListener(e)
@@ -51,7 +53,7 @@ const selectbar = {
 
       function addpointListener(e)
       {
-        var layer = map.getVectorLayerByName(store.state.layertree.focuslayer);
+        var layer = map.getVectorLayerByName(state.layertree.focuslayer);
         if (layer == null)
         {
           alert("pls select a layer to add point to!");
@@ -68,7 +70,7 @@ const selectbar = {
       {
         map.olmap.forEachFeatureAtPixel(e.pixel, function (feature, layer) 
         {
-          if (layer.name === store.state.layertree.focuslayer)
+          if (layer.name === state.layertree.focuslayer)
           {
             layer.removeFeature(feature);
           }
@@ -169,27 +171,39 @@ const selectbar = {
         }
       }
 
-      return { activateDragBox, activateFeatureInfo, activateSelect, activateAddPoint, activateDelPoint, dragboxActive, featureinfoActive, selectActive, addpointActive, delpointActive }
+      return { activateDragBox, activateFeatureInfo, activateSelect, activateAddPoint, activateDelPoint, dragboxActive, selectActive, addpointActive, delpointActive, featureinfoActive }
     },
     template: `
-    <div class="selectbar">
-      <div class="topbar-bodyitem">
-        <button :class="[{highlightbutton: featureinfoActive}, {normalbutton: true}]" type="button" @click="activateFeatureInfo()">Feature-Info</button>
+    <topbarcomp name="Selection">
+      <div class="container">
+        <button :class="[{highlight:featureinfoActive},{bigbutton:true}]" @click="activateFeatureInfo()">
+          Feature<br>Info
+        </button>
       </div>
-      <div class="topbar-bodyitem">
-        <button :class="[{highlightbutton: selectActive}, {normalbutton: true}]" type="button" @click="activateSelect()">Features auswählen</button>
+      <div class="container">
+        <button :class="[{highlight:selectActive},{bigbutton:true}]" @click="activateSelect()">
+          Features<br>auswählen
+        </button>
       </div>
-      <div class="topbar-bodyitem">
-        <button :class="[{highlightbutton: dragboxActive}, {normalbutton: true}]" type="button" @click="activateDragBox()">im Rechteck auswählen</button>
+      <div class="container">
+        <button :class="[{highlight:dragboxActive},{bigbutton:true}]" @click="activateDragBox()">
+          im Rechteck<br>auswählen
+        </button>
       </div>
-      <div class="topbar-bodyitem">
-        <button :class="[{highlightbutton: addpointActive}, {normalbutton: true}]" type="button" @click="activateAddPoint()">Add Point</button>
-      </div>  
-      <div class="topbar-bodyitem">
-        <button :class="[{highlightbutton: delpointActive}, {normalbutton: true}]" type="button" @click="activateDelPoint()">Delete Point</button> 
+    </topbarcomp>
+    <topbarcomp name="Modify">
+      <div class="container">
+        <button :class="[{highlight:addpointActive},{bigbutton:true}]" @click="activateAddPoint()">
+          Add<br> Point
+        </button>
       </div>
-    </div>
+      <div class="container">
+        <button :class="[{highlight:delpointActive},{bigbutton:true}]" @click="activateDelPoint()">
+          Delete<br> Point
+        </button>
+      </div>
+    </topbarcomp>
     `
 } 
 
-export { selectbar }
+export { selecttopbar }

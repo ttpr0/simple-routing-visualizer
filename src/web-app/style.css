@@ -1,6 +1,7 @@
 body {
   margin: 0;
   padding: 0;
+  background-color: white;
 }
 
 .appcontainer {
@@ -11,156 +12,10 @@ body {
   grid-template-rows: 150px 1fr;
 }
 
-.toolbar {
-  grid-column: 1 / 3;
-  background-color: lightcyan;
-  display: grid;
-  grid-template-rows: 30px 120px;
-}
-
-.toolbar-tabs {
-  overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
-}
-.toolbar-tabs button {
-  background-color: inherit;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  transition: 0.3s;
-}
-.toolbar-tabs button:hover {
-  background-color: #ddd;
-}
-.toolbar-tabs button.active {
-  background-color: #ccc;
-}
-
-.toolbarcomp {
-  height: 110px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  width: fit-content;
-  border-right: 1px solid;
-  float: left;
-  display: grid;
-  grid-template-rows: 95px 15px;
-  transition: 0.3s;
-}
-.toolbarcomp .footer {
-  width: 100%;
-  height: 20px;
-  font-size: 13;
-  text-align: center;
-  bottom: 0;
-}
-.toolbarcomp .content {
-  width: fit-content;
-  height: 90px;
-  margin: 5px;
-}
-.toolbarcomp .bigbutton {
-  width: auto;
-  height: 90px;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  border-radius: 10px;
-  background-color: #ccc;
-}
-.toolbarcomp .smallbutton {
-  width: auto;
-  height: 30px;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  border-radius: 5px;
-  background-color: #ccc;
-}
-.toolbarcomp .bigbutton:hover {
-  background-color: lightblue;  
-}
-.toolbarcomp .smallbutton:hover {
-  background-color: lightblue;  
-}
-.toolbarcomp .highlight {
-  background-color: lightseagreen;
-  transition: 0.1;
-}
-.toolbarcomp .container {
-  height: 90px;
-  width: fit-content;
-  padding-left: 5px;
-  padding-right: 5px;
-  float: left;
-}
-
-.selecttoolbar {
-  height: 120px;
-  width: 100%;
-  background-color: #ccc;
-  display: flex;
-  align-items: row;
-  transition: 1s;
-}
-
-.layertoolbar {
-  height: 120px;
-  width: 100%;
-  background-color: #ccc;
-}
-
-.analysistoolbar {
-  height: 120px;
-  width: 100%;
-  background-color: #ccc;
-}
-
-.sidebar {
-  height: 100%;
-  width: 100%;
-}
-
-.sidebar-menuitem {
-  background-color: gray; 
-  height: 30px;
-  width: 100%;
-  padding: 15px;
-  font-size: 20px;   
-  color: white; 
-}
-
-.sidebar-menuitem:hover {
-  background-color: lightgray;  
-}
-
-.layerbar {
-  margin: 20px;
-}
-
 .featuretext {
   width: 90%;
   height: 90%;
   margin: 10px;
-}
-
-.layercheckbox {
-  padding: 10px;
-  width: 80%;
-  height: 25px;
-  background-color: lightgrey;
-  border-radius: 10px;
-}
-
-.highlightlayercheckbox {
-  background-color: grey;
-}
-
-.layercheckbox-closeicon {
-  float: right;
 }
 
 .dragablewindow {
@@ -204,4 +59,13 @@ body {
 .hide {
   transition: 0.01s;
   transform: translateX(-9999px);
+}
+
+.mapregion {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index:0;
 }

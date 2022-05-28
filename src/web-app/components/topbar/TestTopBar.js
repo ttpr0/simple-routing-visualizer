@@ -3,13 +3,13 @@ import { VectorLayer } from '/map/VectorLayer.js'
 import { VectorImageLayer } from '/map/VectorImageLayer.js'
 import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
-import { getMultiGraph, getRouting } from '../routing/api.js';
-import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_style, targamo_style } from '../map/styles.js';
-import { toolbarcomp } from './ToolBarComp.js';
+import { getMultiGraph, getRouting } from '/routing/api.js';
+import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_style, targamo_style } from '/map/styles.js';
+import { topbarcomp } from './TopBarComp.js';
 import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api.js'
 
-const testtoolbar = {
-    components: { toolbarcomp },
+const testtopbar = {
+    components: { topbarcomp },
     props: [ ],
     setup(props) {
         const state = getState();
@@ -167,7 +167,7 @@ const testtoolbar = {
                 orslayer.delete();
             }
             orslayer = new VectorLayer(features, 'Polygon', 'orslayer');
-            orslayer.setStyle(ors_style);
+            //orslayer.setStyle(ors_style);
             map.addVectorLayer(orslayer);
             updateLayerTree();
         }
@@ -446,72 +446,70 @@ const testtoolbar = {
         return { range1, count1, range2, count2, smoothing, useWebMercator, time, testmode, drawCompareIsolines, drawORSPolygon, drawDockerPolygon, drawIsoRaster, featurecountTest, rangesTest, isolinesTest, rangediffTest }
     },
     template: `
-    <div class="analysistoolbar">
-      <toolbarcomp name="Isochronen">
-        <div class="container">
-            <button class="bigbutton" @click="drawORSPolygon()">ORS-<br>API</button>
-        </div>
-        <div class="container">
-            <button class="bigbutton" @click="drawDockerPolygon()">Docker-<br>API</button>
-        </div>
-        <div class="container">
-            <button class="bigbutton" @click="drawCompareIsolines()">Compare<br>Isolines</button>
-        </div>
-        <div class="container">
-            <input type="range" id="range" v-model="range1" min="0" max="3600">
-            <label for="range">{{ range1 }}</label><br>
-            <input type="range" id="rangecount" v-model="count1" min="1" max="10">
-            <label for="rangecount">{{ count1 }}</label><br>
-            <input type="range" id="smoothing" v-model="smoothing" min="1" max="100">
-            <label for="smoothing">{{ smoothing/10 }}</label><br>
-        </div>
-      </toolbarcomp>
-      <toolbarcomp name="IsoRaster">
-        <div class="container">
-          <button class="bigbutton" @click="drawIsoRaster()">Run<br>IsoRaster</button>
-        </div>
-        <div class="container">
-          <input type="range" id="range" v-model="range2" min="0" max="5400">
-          <label for="range">{{ range2 }}</label><br>
-          <input type="range" id="rangecount" v-model="count2" min="1" max="100">
-          <label for="rangecount">{{ count2*10 }}</label><br>
-          <input type="checkbox" id="webmercator" v-model="useWebMercator">
-          <label for="webmercator">use Web-Mercator?</label>
-        </div>
-      </toolbarcomp>
-      <toolbarcomp name="Featurecount-Test">
-        <div class="container">
-            <button class="bigbutton" @click="featurecountTest()">Test<br>Featurecount</button>
-        </div>
-        <div class="container">
-            <input type="radio" id="isochrone" name="test" value="Isochrone" v-model="testmode">
-            <label for="isochrone">Isochrones</label><br>
-            <input type="radio" id="isoraster" name="test" value="Isoraster" v-model="testmode">
-            <label for="isoraster">IsoRaster</label><br>
-        </div>
-      </toolbarcomp>
-      <toolbarcomp name="Isolines-Test">
-        <div class="container">
-            <button class="bigbutton" @click="isolinesTest()">Test<br>Isolinecount</button>
-        </div>
-        <div class="container">
-            <button class="bigbutton" @click="rangediffTest()">Test<br>Rangediff</button>
-        </div>
-      </toolbarcomp>
-      <toolbarcomp name="Ranges-Test">
-        <div class="container">
-            <button class="bigbutton" @click="rangesTest()">Test<br>Ranges</button>
-        </div>
-        <div class="container">
-            <input type="radio" id="isochrone" name="test2" value="Isochrone" v-model="testmode">
-            <label for="isochrone">Isochrones</label><br>
-            <input type="radio" id="isoraster" name="test2" value="Isoraster" v-model="testmode">
-            <label for="isoraster">IsoRaster</label><br>
-        </div>
-      </toolbarcomp>
-      <div id="txttime">Calculation Time: {{ time }}</div>
-    </div>
+    <topbarcomp name="Isochronen">
+      <div class="container">
+          <button class="bigbutton" @click="drawORSPolygon()">ORS-<br>API</button>
+      </div>
+      <div class="container">
+          <button class="bigbutton" @click="drawDockerPolygon()">Docker-<br>API</button>
+      </div>
+      <div class="container">
+          <button class="bigbutton" @click="drawCompareIsolines()">Compare<br>Isolines</button>
+      </div>
+      <div class="container">
+          <input type="range" id="range" v-model="range1" min="0" max="3600">
+          <label for="range">{{ range1 }}</label><br>
+          <input type="range" id="rangecount" v-model="count1" min="1" max="10">
+          <label for="rangecount">{{ count1 }}</label><br>
+          <input type="range" id="smoothing" v-model="smoothing" min="1" max="100">
+          <label for="smoothing">{{ smoothing/10 }}</label><br>
+      </div>
+    </topbarcomp>
+    <topbarcomp name="IsoRaster">
+      <div class="container">
+        <button class="bigbutton" @click="drawIsoRaster()">Run<br>IsoRaster</button>
+      </div>
+      <div class="container">
+        <input type="range" id="range" v-model="range2" min="0" max="5400">
+        <label for="range">{{ range2 }}</label><br>
+        <input type="range" id="rangecount" v-model="count2" min="1" max="100">
+        <label for="rangecount">{{ count2*10 }}</label><br>
+        <input type="checkbox" id="webmercator" v-model="useWebMercator">
+        <label for="webmercator">use Web-Mercator?</label>
+      </div>
+    </topbarcomp>
+    <topbarcomp name="Featurecount-Test">
+      <div class="container">
+          <button class="bigbutton" @click="featurecountTest()">Test<br>Featurecount</button>
+      </div>
+      <div class="container">
+          <input type="radio" id="isochrone" name="test" value="Isochrone" v-model="testmode">
+          <label for="isochrone">Isochrones</label><br>
+          <input type="radio" id="isoraster" name="test" value="Isoraster" v-model="testmode">
+          <label for="isoraster">IsoRaster</label><br>
+      </div>
+    </topbarcomp>
+    <topbarcomp name="Isolines-Test">
+      <div class="container">
+          <button class="bigbutton" @click="isolinesTest()">Test<br>Isolinecount</button>
+      </div>
+      <div class="container">
+          <button class="bigbutton" @click="rangediffTest()">Test<br>Rangediff</button>
+      </div>
+    </topbarcomp>
+    <topbarcomp name="Ranges-Test">
+      <div class="container">
+          <button class="bigbutton" @click="rangesTest()">Test<br>Ranges</button>
+      </div>
+      <div class="container">
+          <input type="radio" id="isochrone" name="test2" value="Isochrone" v-model="testmode">
+          <label for="isochrone">Isochrones</label><br>
+          <input type="radio" id="isoraster" name="test2" value="Isoraster" v-model="testmode">
+          <label for="isoraster">IsoRaster</label><br>
+      </div>
+    </topbarcomp>
+    <div id="txttime">Calculation Time: {{ time }}</div>
     `
 } 
 
-export { testtoolbar }
+export { testtopbar }

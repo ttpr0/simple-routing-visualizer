@@ -1,4 +1,4 @@
-import { defaultStyle, highlightDefaultStyle } from "./styles.js";
+import { defaultStyle, defaultHighlightStyle } from "./styles.js";
 
 class VectorLayer extends ol.layer.Vector 
 {
@@ -9,15 +9,13 @@ class VectorLayer extends ol.layer.Vector
             features: features,
         });
         super({source: source});
-        var feat = source.getFeatureById(1);
-        console.log(feat.getGeometry())
         this.type = type;
         this.name = name;
         this.map = null;
         this.display = true;
         this.selectedfeatures = [];
         this.style = defaultStyle[type];
-        this.highlightstyle = highlightDefaultStyle[type];
+        this.highlightstyle = defaultHighlightStyle[type];
         this.styleFunction = (feature, resolution) => {
             if (feature.get('selected'))
             {

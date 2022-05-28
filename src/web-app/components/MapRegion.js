@@ -10,6 +10,10 @@ const mapregion = {
         const state = getState();
         const map = getMap();
 
+        map.on('moveend', () => {
+            state.map.moved = !state.map.moved;
+        })
+
         const showDialog = computed(() => { return state.featureinfo.display; });
         const pos = computed(() => { return state.featureinfo.pos; });
         const text = computed(() => {
@@ -38,7 +42,7 @@ const mapregion = {
         return {text, state, pos, showDialog, setShow}
     },
     template: `
-    <div id="mapregion"></div>
+    <div id="mapregion" class="mapregion"></div>
     <dragablewindow v-if="showDialog" :pos="pos" name="Feature-Info" @onclose="setShow(false)">
         <textarea class="featuretext">{{ text }}</textarea>
     </dragablewindow>

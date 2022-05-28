@@ -1,0 +1,8 @@
+.footerbar {
+    height: 24px;
+    width: 100%;
+    padding: 0px;
+    position: absolute;
+    bottom: 0px;
+    background-color: rgb(65, 163, 170);
+}

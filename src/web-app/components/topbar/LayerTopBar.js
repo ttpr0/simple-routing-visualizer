@@ -2,10 +2,10 @@ import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer.js'
 import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
-import { toolbarcomp } from './ToolBarComp.js';
+import { topbarcomp } from './TopBarComp.js';
 
-const layertoolbar = {
-    components: { toolbarcomp },
+const layertopbar = {
+    components: { topbarcomp },
     props: [ ],
     setup(props) {
       const state = getState();
@@ -27,7 +27,6 @@ const layertoolbar = {
           var reader = new FileReader();
           reader.onloadend = () => {
               var points = new ol.format.GeoJSON().readFeatures(reader.result);
-              console.log(points[0].geometry.type)
               var layer = new VectorLayer(points, 'Point', files[0].name.split(".")[0]);
               map.addVectorLayer(layer);
               updateLayerTree();
@@ -53,18 +52,16 @@ const layertoolbar = {
       return { filedialog, openfiledialog, onFileDialogChange, addVectorLayer}
     },
     template: `
-    <div class="layertoolbar">
-        <input type="file" ref="filedialog" style="display:none" @change="onFileDialogChange">
-        <toolbarcomp name="Add Layers">
-            <div class="container">
-                <button class="bigbutton" @click="openfiledialog">Open<br> File</button>
-            </div>
-            <div class="container">
-                <button class="bigbutton" @click="addVectorLayer">Add empty<br> PointLayer</button>
-            </div>
-        </toolbarcomp>
-    </div>
+    <input type="file" ref="filedialog" style="display:none" @change="onFileDialogChange">
+    <topbarcomp name="Add Layers">
+        <div class="container">
+            <button class="bigbutton" @click="openfiledialog">Open<br> File</button>
+        </div>
+        <div class="container">
+            <button class="bigbutton" @click="addVectorLayer">Add empty<br> PointLayer</button>
+        </div>
+    </topbarcomp>
     `
 } 
 
-export { layertoolbar }
+export { layertopbar }

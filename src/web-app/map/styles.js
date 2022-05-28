@@ -21,7 +21,7 @@ const defaultStyle = {
     })
   }),
 };
-const highlightDefaultStyle = {
+const defaultHighlightStyle = {
   'Point': new ol.style.Style({
     image: new ol.style.RegularShape({
       fill: new ol.style.Fill({color: 'lightseagreen'}),
@@ -163,4 +163,4 @@ const lineStyle = (final) => {
   }
 }
 
-export { defaultStyle, highlightDefaultStyle, accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, targamo_style, bing_style }
+export { defaultStyle, defaultHighlightStyle, accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, targamo_style, bing_style }

@@ -1,4 +1,4 @@
-import { defaultStyle, highlightDefaultStyle } from "./styles.js";
+import { defaultStyle, defaultHighlightStyle } from "./styles.js";
 
 class VectorImageLayer extends ol.layer.VectorImage 
 {
@@ -15,7 +15,7 @@ class VectorImageLayer extends ol.layer.VectorImage
         this.display = true;
         this.selectedfeatures = [];
         this.style = defaultStyle[type];
-        this.highlightstyle = highlightDefaultStyle[type];
+        this.highlightstyle = defaultHighlightStyle[type];
         this.styleFunction = (feature, resolution) => {
             if (feature.get('selected'))
             {
