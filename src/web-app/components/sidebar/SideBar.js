@@ -31,7 +31,8 @@ const sidebar = {
         <div :class="['sidebar-tab', {active: show_tools}]" @click="if (show_tools===true) {show_tools=false;} else {setAllFalse(); show_tools=true}"><v-icon size=40 color="gray">mdi-toolbox</v-icon></div>
         <div :class="['sidebar-tab', {active: show_files}]" @click="if (show_files===true) {show_files=false;} else {setAllFalse(); show_files=true}"><v-icon size=40 color="gray">mdi-attachment</v-icon></div>
         <div class="sidebar-item">
-            <div v-if="show_layers"><layerbar></layerbar></div>
+            <div v-show="show_layers"><layerbar></layerbar></div>
+            <div v-show="show_tools"><toolbar></toolbar></div>
         </div>
     </div>
     `
