@@ -1,7 +1,8 @@
 import { computed, ref, reactive, onMounted, watch} from 'vue';
-import { dragablewindow } from './DragableWindow.js';
+import { dragablewindow } from '/components/util/DragableWindow.js';
 import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
+import "./MapRegion.css"
 
 const mapregion = {
     components: { dragablewindow },
@@ -43,8 +44,8 @@ const mapregion = {
     },
     template: `
     <div id="mapregion" class="mapregion"></div>
-    <dragablewindow v-if="showDialog" :pos="pos" name="Feature-Info" @onclose="setShow(false)">
-        <textarea class="featuretext">{{ text }}</textarea>
+    <dragablewindow v-if="showDialog" :pos="pos" name="Feature-Info" icon="mdi-information-outline" @onclose="setShow(false)">
+        <textarea class="featuretext" readonly>{{ text }}</textarea>
     </dragablewindow>
     `
 } 
