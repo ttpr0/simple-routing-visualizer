@@ -34,7 +34,7 @@ const tool = {
 
 async function run(obj)
 {
-    const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+    const layer = map.getLayerByName(state.layertree.focuslayer);
     if (layer == null || layer.type != "Point")
     {
       alert("pls select a pointlayer!");
@@ -67,15 +67,10 @@ async function run(obj)
     var start = new Date().getTime();
     var geojson = await getIsoRaster(locations, [obj.range], precession, crs);
     var end = new Date().getTime();
-    var multigraphlayer = map.getVectorLayerByName("multigraphrasterlayer");
-    if (multigraphlayer != null)
-    {
-        multigraphlayer.delete();
-    }
     var features = new ol.format.GeoJSON().readFeatures(geojson);
-    multigraphlayer = new VectorImageLayer(features, 'Polygon', 'multigraphrasterlayer');
+    let multigraphlayer = new VectorImageLayer(features, 'Polygon', 'multigraphrasterlayer');
     multigraphlayer.setStyle(accessibilityStyleFunction);
-    map.addVectorLayer(multigraphlayer);
+    map.addLayer(multigraphlayer);
     updateLayerTree();
 }
 

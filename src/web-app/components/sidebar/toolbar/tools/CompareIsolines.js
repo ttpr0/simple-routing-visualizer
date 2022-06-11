@@ -30,7 +30,7 @@ const tool = {
 
 async function run(obj)
 {
-    const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+    const layer = map.getLayerByName(state.layertree.focuslayer);
     if (layer == null || layer.type != "Point")
     {
       alert("pls select a pointlayer!");
@@ -49,30 +49,15 @@ async function run(obj)
     var mapboxfeature = new ol.format.GeoJSON().readFeatures(await mapbox);
     var targamofeature = new ol.format.GeoJSON().readFeatures(await targamo);
     var bingfeature = new ol.format.GeoJSON().readFeatures(await bing);
-    var binglayer = map.getVectorLayerByName("binglayer");
-    if (binglayer != null)
-    {
-        binglayer.delete();
-    }
-    binglayer = new VectorLayer(bingfeature, 'Polygon', 'binglayer');
+    let binglayer = new VectorLayer(bingfeature, 'Polygon', 'binglayer');
     binglayer.setStyle(bing_style);
     map.addVectorLayer(binglayer);
-    var mapboxlayer = map.getVectorLayerByName("mapboxlayer");
-    if (mapboxlayer != null)
-    {
-        mapboxlayer.delete();
-    }
-    mapboxlayer = new VectorLayer(mapboxfeature, 'Polygon', 'mapboxlayer');
+    let mapboxlayer = new VectorLayer(mapboxfeature, 'Polygon', 'mapboxlayer');
     mapboxlayer.setStyle(mapbox_style);
     map.addVectorLayer(mapboxlayer);
-    var targamolayer = map.getVectorLayerByName("targamolayer");
-    if (targamolayer != null)
-    {
-        targamolayer.delete();
-    }
-    targamolayer = new VectorLayer(targamofeature, 'Polygon', 'targamolayer');
+    let targamolayer = new VectorLayer(targamofeature, 'Polygon', 'targamolayer');
     targamolayer.setStyle(targamo_style);
-    map.addVectorLayer(targamolayer);
+    map.addLayer(targamolayer);
     updateLayerTree();
 }
 

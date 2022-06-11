@@ -11,8 +11,6 @@ class VectorImageLayer extends ol.layer.VectorImage
         super({source: source});
         this.type = type;
         this.name = name;
-        this.map = null;
-        this.display = true;
         this.selectedfeatures = [];
         this.style = defaultStyle[type];
         this.highlightstyle = defaultHighlightStyle[type];
@@ -27,16 +25,6 @@ class VectorImageLayer extends ol.layer.VectorImage
             }
         }
         super.setStyle(this.styleFunction);
-    }
-
-    setMap(map)
-    {
-        this.map = map;
-    }
-
-    getMap()
-    {
-        return this.map;
     }
 
     setStyle(style)
@@ -77,30 +65,6 @@ class VectorImageLayer extends ol.layer.VectorImage
         this.selectedfeatures = [];
     }
 
-    displayOn()
-    {
-        if (!this.display)
-        {
-            this.display = true;
-            if (this.map != null)
-            {
-                this.map.showLayer(this);
-            }
-        }
-    }
-
-    displayOff()
-    {
-        if (this.display)
-        {
-            this.display = false;
-            if (this.map != null)
-            {
-                this.map.hideLayer(this);
-            }
-        }
-    }
-
     addFeature(feature)
     {
         if (feature.getGeometry().getType()  === this.type || feature.getGeometry().getType() === "Multi" + this.type)
@@ -112,14 +76,6 @@ class VectorImageLayer extends ol.layer.VectorImage
     removeFeature(feature)
     {
         super.getSource().removeFeature(feature);
-    }
-
-    delete()
-    {
-        if (this.map != null)
-        {
-            this.map.removeVectorLayer(this);
-        }
     }
 }
 

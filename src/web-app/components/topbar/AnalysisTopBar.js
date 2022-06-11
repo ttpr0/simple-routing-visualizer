@@ -4,7 +4,7 @@ import { VectorImageLayer } from '/map/VectorImageLayer.js'
 import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
 import { getMultiGraph, getRouting } from '../../routing/api.js';
-import { accessibilityStyleFunction, lineStyle } from '../../map/styles.js';
+import { accessibilityStyleFunction, lineStyle } from '/map/styles.js';
 import { topbarcomp } from './TopBarComp.js';
 
 const analysistopbar = {
@@ -28,7 +28,7 @@ const analysistopbar = {
 
         async function multigraph()
         {
-            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+            const layer = map.getLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -52,7 +52,7 @@ const analysistopbar = {
             var geojson = await getMultiGraph(locations, range.value, count.value);
             var end = new Date().getTime();
             time.value = end - start;
-            var multigraphlayer = map.getVectorLayerByName("multigraphlayer");
+            var multigraphlayer = map.getLayerByName("multigraphlayer");
             if (multigraphlayer != null)
             {
                 multigraphlayer.delete();
@@ -60,13 +60,13 @@ const analysistopbar = {
             var features = new ol.format.GeoJSON().readFeatures(geojson);
             multigraphlayer = new VectorImageLayer(features, 'Polygon', 'multigraphlayer');
             multigraphlayer.setStyle(accessibilityStyleFunction);
-            map.addVectorLayer(multigraphlayer);
+            map.addLayer(multigraphlayer);
             updateLayerTree();
         }
 
         async function routing()
         {
-            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+            const layer = map.getLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -96,7 +96,7 @@ const analysistopbar = {
             var geojson = await getRouting(startpoint, endpoint, key, false, 1, alg);
             var end = new Date().getTime();
             time.value = end - start;
-            var routinglayer = map.getVectorLayerByName("routinglayer");
+            var routinglayer = map.getLayerByName("routinglayer");
             if (routinglayer != null)
             {
                 routinglayer.delete();
@@ -105,7 +105,7 @@ const analysistopbar = {
             var features = new ol.format.GeoJSON().readFeatures(geojson);
             routinglayer = new VectorLayer(features, 'LineString', 'routinglayer');
             routinglayer.setStyle(lineStyle(true));
-            map.addVectorLayer(routinglayer);
+            map.addLayer(routinglayer);
             updateLayerTree();
         }
 
@@ -114,14 +114,14 @@ const analysistopbar = {
             var key = -1;
             var finished = false;
             var geojson = null;
-            var routinglayer = map.getVectorLayerByName("routinglayer");
+            var routinglayer = map.getLayerByName("routinglayer");
             if (routinglayer != null)
             {
                 routinglayer.delete();
             }
             routinglayer = new VectorLayer([], 'LineString', "routinglayer");
             routinglayer.setStyle(lineStyle(false));
-            map.addVectorLayer(routinglayer);
+            map.addLayer(routinglayer);
             updateLayerTree();
             var start = new Date().getTime();
             do
@@ -138,7 +138,7 @@ const analysistopbar = {
             features = new ol.format.GeoJSON().readFeatures(geojson);
             routinglayer = new VectorLayer(features, 'LineString', 'routinglayer');
             routinglayer.setStyle(lineStyle(true));
-            map.addVectorLayer(routinglayer);
+            map.addLayer(routinglayer);
             updateLayerTree();
         }
 

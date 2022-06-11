@@ -5,9 +5,10 @@ import { VIcon } from 'vuetify/components';
 import './SideBar.css'
 import { layerbar } from './layerbar/LayerBar.js';
 import { toolbar } from './toolbar/ToolBar.js';
+import { filesbar } from './filebar/FilesBar.js';
 
 const sidebar = {
-    components: { VIcon, layerbar, toolbar },
+    components: { VIcon, layerbar, toolbar, filesbar },
     props: [],
     setup() {
         const show_layers = ref(false);

@@ -34,7 +34,7 @@ const tool = {
 
 async function run(obj)
 {
-    const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+    const layer = map.getLayerByName(state.layertree.focuslayer);
     if (layer == null || layer.type != "Point")
     {
       alert("pls select a pointlayer!");
@@ -60,14 +60,9 @@ async function run(obj)
     polygons.forEach(polygon => {
       features = features.concat(new ol.format.GeoJSON().readFeatures(polygon));
     });
-    var orslayer = map.getVectorLayerByName("orslayer");
-    if (orslayer != null)
-    {
-        orslayer.delete();
-    }
-    orslayer = new VectorLayer(features, 'Polygon', 'orslayer');
+    let orslayer = new VectorLayer(features, 'Polygon', 'orslayer');
     //orslayer.setStyle(ors_style);
-    map.addVectorLayer(orslayer);
+    map.addLayer(orslayer);
     updateLayerTree();
 }
 

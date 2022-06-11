@@ -34,8 +34,8 @@ const selecttopbar = {
         });
         if (count == 0)
         {
-          map.vectorlayers.forEach(layer => {
-            if (layer.display)
+          map.layers.forEach(layer => {
+            if (map.isVisibile(layer.name))
             {
               layer.unselectAll();
             }
@@ -53,7 +53,7 @@ const selecttopbar = {
 
       function addpointListener(e)
       {
-        var layer = map.getVectorLayerByName(state.layertree.focuslayer);
+        var layer = map.getLayerByName(state.layertree.focuslayer);
         if (layer == null)
         {
           alert("pls select a layer to add point to!");
@@ -79,8 +79,8 @@ const selecttopbar = {
 
       const dragBox = new ol.interaction.DragBox();
       dragBox.on(['boxend'], function(e) {
-          map.vectorlayers.forEach(layer => {
-              if (layer.display)
+          map.layers.forEach(layer => {
+              if (map.isVisibile(layer.name))
               {
                   layer.unselectAll();
                   var box = dragBox.getGeometry().getExtent();

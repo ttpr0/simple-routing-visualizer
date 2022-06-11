@@ -87,7 +87,7 @@ const testtopbar = {
 
         async function drawCompareIsolines()
         {
-            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+            const layer = map.getLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -106,36 +106,21 @@ const testtopbar = {
             var mapboxfeature = new ol.format.GeoJSON().readFeatures(await mapbox);
             var targamofeature = new ol.format.GeoJSON().readFeatures(await targamo);
             var bingfeature = new ol.format.GeoJSON().readFeatures(await bing);
-            var binglayer = map.getVectorLayerByName("binglayer");
-            if (binglayer != null)
-            {
-                binglayer.delete();
-            }
-            binglayer = new VectorLayer(bingfeature, 'Polygon', 'binglayer');
+            let binglayer = new VectorLayer(bingfeature, 'Polygon', 'binglayer');
             binglayer.setStyle(bing_style);
-            map.addVectorLayer(binglayer);
-            var mapboxlayer = map.getVectorLayerByName("mapboxlayer");
-            if (mapboxlayer != null)
-            {
-                mapboxlayer.delete();
-            }
-            mapboxlayer = new VectorLayer(mapboxfeature, 'Polygon', 'mapboxlayer');
+            map.addLayer(binglayer);
+            let mapboxlayer = new VectorLayer(mapboxfeature, 'Polygon', 'mapboxlayer');
             mapboxlayer.setStyle(mapbox_style);
-            map.addVectorLayer(mapboxlayer);
-            var targamolayer = map.getVectorLayerByName("targamolayer");
-            if (targamolayer != null)
-            {
-                targamolayer.delete();
-            }
-            targamolayer = new VectorLayer(targamofeature, 'Polygon', 'targamolayer');
+            map.addLayer(mapboxlayer);
+            let targamolayer = new VectorLayer(targamofeature, 'Polygon', 'targamolayer');
             targamolayer.setStyle(targamo_style);
-            map.addVectorLayer(targamolayer);
+            map.addLayer(targamolayer);
             updateLayerTree();
         }
 
         async function drawORSPolygon()
         {
-            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+            const layer = map.getLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -161,20 +146,15 @@ const testtopbar = {
             polygons.forEach(polygon => {
               features = features.concat(new ol.format.GeoJSON().readFeatures(polygon));
             });
-            var orslayer = map.getVectorLayerByName("orslayer");
-            if (orslayer != null)
-            {
-                orslayer.delete();
-            }
-            orslayer = new VectorLayer(features, 'Polygon', 'orslayer');
+            let orslayer = new VectorLayer(features, 'Polygon', 'orslayer');
             //orslayer.setStyle(ors_style);
-            map.addVectorLayer(orslayer);
+            map.addLayer(orslayer);
             updateLayerTree();
         }
 
         async function drawDockerPolygon() 
         {
-            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+            const layer = map.getLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -200,20 +180,15 @@ const testtopbar = {
             polygons.forEach(polygon => {
               features = features.concat(new ol.format.GeoJSON().readFeatures(polygon));
             });
-            var dockerlayer = map.getVectorLayerByName("dockerlayer");
-            if (dockerlayer != null)
-            {
-                dockerlayer.delete();
-            }
-            dockerlayer = new VectorLayer(features, 'Polygon', 'dockerlayer');
+            let dockerlayer = new VectorLayer(features, 'Polygon', 'dockerlayer');
             dockerlayer.setStyle(ors_style);
-            map.addVectorLayer(dockerlayer);
+            map.addLayer(dockerlayer);
             updateLayerTree();
         }
 
         async function drawIsoRaster()
         {
-            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+            const layer = map.getLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -247,15 +222,10 @@ const testtopbar = {
             var geojson = await getIsoRaster(locations, [range2.value], precession, crs);
             var end = new Date().getTime();
             time.value = end - start;
-            var multigraphlayer = map.getVectorLayerByName("multigraphrasterlayer");
-            if (multigraphlayer != null)
-            {
-                multigraphlayer.delete();
-            }
             var features = new ol.format.GeoJSON().readFeatures(geojson);
-            multigraphlayer = new VectorImageLayer(features, 'Polygon', 'multigraphrasterlayer');
+            let multigraphlayer = new VectorImageLayer(features, 'Polygon', 'multigraphrasterlayer');
             multigraphlayer.setStyle(accessibilityStyleFunction);
-            map.addVectorLayer(multigraphlayer);
+            map.addLayer(multigraphlayer);
             updateLayerTree();
         }
 
@@ -265,7 +235,7 @@ const testtopbar = {
 
         async function featurecountTest() 
         {
-            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+            const layer = map.getLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -309,7 +279,7 @@ const testtopbar = {
 
         async function isolinesTest()
         {
-            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+            const layer = map.getLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -352,7 +322,7 @@ const testtopbar = {
 
         async function rangediffTest()
         {
-            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+            const layer = map.getLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");
@@ -397,7 +367,7 @@ const testtopbar = {
 
         async function rangesTest()
         {
-            const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+            const layer = map.getLayerByName(state.layertree.focuslayer);
             if (layer == null || layer.type != "Point")
             {
               alert("pls select a pointlayer!");

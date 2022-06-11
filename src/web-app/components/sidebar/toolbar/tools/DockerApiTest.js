@@ -34,7 +34,7 @@ const tool = {
 
 async function run(obj) 
 {
-    const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+    const layer = map.getLayerByName(state.layertree.focuslayer);
     if (layer == null || layer.type != "Point")
     {
       alert("pls select a pointlayer!");
@@ -59,14 +59,9 @@ async function run(obj)
     polygons.forEach(polygon => {
       features = features.concat(new ol.format.GeoJSON().readFeatures(polygon));
     });
-    var dockerlayer = map.getVectorLayerByName("dockerlayer");
-    if (dockerlayer != null)
-    {
-        dockerlayer.delete();
-    }
-    dockerlayer = new VectorLayer(features, 'Polygon', 'dockerlayer');
+    let dockerlayer = new VectorLayer(features, 'Polygon', 'dockerlayer');
     dockerlayer.setStyle(ors_style);
-    map.addVectorLayer(dockerlayer);
+    map.addLayer(dockerlayer);
     updateLayerTree();
 }
 

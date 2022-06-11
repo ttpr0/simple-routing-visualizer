@@ -1,6 +1,5 @@
 import { VectorLayer } from "/map/VectorLayer.js";
 
-
 class Map2D 
 {
     constructor()
@@ -9,7 +8,7 @@ class Map2D
 
       this.baselayer = new ol.layer.Tile({source: new ol.source.OSM()});
 
-      this.vectorlayers = [];
+      this.layers = [];
 
       this.focusfeature = {layer: null, feature: null, changed: false, pos: [0,0]};
 
@@ -26,35 +25,76 @@ class Map2D
       });
     }
 
-    getVectorLayerByName(name)
+    getLayerByName(layername)
     {
-      return this.vectorlayers.find(layer => layer.name == name);
+      return this.layers.find(layer => layer.name == layername);
     }
 
-    addVectorLayer(layer)
+    addLayer(layer)
     {
-      layer.setMap(this);
-      this.vectorlayers.push(layer);
-      if (layer.display)
+      let l = this.layers.find(l => l.name == layer.name);
+      if (l)
       {
-        this.showLayer(layer);
+        this.removeLayer(layer.name);
       }
-    }
-
-    removeVectorLayer(layer)
-    {
-      this.hideLayer(layer);
-      this.vectorlayers = this.vectorlayers.filter(element => { return element != layer; })
-    }
-
-    showLayer(layer)
-    {
+      this.layers.push(layer);
       this.olmap.addLayer(layer);
     }
 
-    hideLayer(layer)
+    removeLayer(layername)
     {
-      this.olmap.removeLayer(layer);
+      this.hideLayer(layername);
+      this.layers = this.layers.filter(element => { return element.name != layername; })
+    }
+
+    showLayer(layername)
+    {
+      let layer = this.layers.find(layer => layer.name == layername);
+      if (layer)
+      {
+        this.olmap.addLayer(layer);
+      }
+    }
+
+    hideLayer(layername)
+    {
+      let layer = this.layers.find(layer => layer.name == layername);
+      if (layer)
+      {
+        this.olmap.removeLayer(layer);
+      }
+    }
+
+    toggleLayer(layername)
+    {
+      let layer = this.layers.find(layer => layer.name == layername);
+      if (layer)
+      {
+        let c = true;
+        this.olmap.getLayers().forEach(element => {
+          if (element == layer)
+          {
+            this.olmap.removeLayer(layer);
+            c = false; 
+          }
+        });
+        if (c)
+        {
+          this.olmap.addLayer(layer);
+        }
+      }
+    }
+
+    isVisibile(layername)
+    {
+      let c = false;
+      this.olmap.getLayers().forEach(element => {
+        if (element.name === layername)
+        {
+          c = true; 
+        }
+      });
+      return c;
     }
 
     addInteraction(interaction)

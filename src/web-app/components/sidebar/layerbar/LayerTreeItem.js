@@ -1,12 +1,14 @@
 import { computed, ref, reactive, onMounted, defineExpose} from 'vue'
 import { getState } from '/store/state.js';
 import { VIcon } from 'vuetify/components';
+import { getMap } from '/map/maps.js';
 
 const layertreeitem = {
     components: { VIcon },
     props: ["layer"],
     setup(props) {
         const state = getState();
+        const map = getMap();
 
         const icons = {
             'Polygon': 'mdi-vector-polygon',
@@ -20,19 +22,12 @@ const layertreeitem = {
 
         function handleDisplay()
         {
-            if (props.layer.display)
-            {
-                props.layer.displayOff();
-            }
-            else
-            {
-                props.layer.displayOn();
-            }
+            map.toggleLayer(props.layer.name);
         }
 
         function handleClose()
         {
-            props.layer.delete();
+            map.removeLayer(props.layer.name);
             update();
         }
 
@@ -45,11 +40,11 @@ const layertreeitem = {
             return props.layer.name === state.layertree.focuslayer
         });
 
-        return { handleDisplay, handleClose, handleClick, isFocus, icons }
+        return { handleDisplay, handleClose, handleClick, isFocus, icons, map }
     },
     template: `
     <div class="layertreeitem">
-        <input type="checkbox" :checked="layer.display" @change="handleDisplay()">
+        <input type="checkbox" :checked="map.isVisibile(layer.name)" @change="handleDisplay()">
         <div :class="[{layer:true}, {highlightlayer: isFocus}]" @click="handleClick()">
             <v-icon>{{ icons[layer.type] }}</v-icon>
             <label>{{"  "+layer.name}}</label>

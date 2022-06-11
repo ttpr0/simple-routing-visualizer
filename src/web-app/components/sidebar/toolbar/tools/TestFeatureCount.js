@@ -31,7 +31,7 @@ const tool = {
 
 async function run(obj) 
 {
-    const layer = map.getVectorLayerByName(state.layertree.focuslayer);
+    const layer = map.getLayerByName(state.layertree.focuslayer);
     if (layer == null || layer.type != "Point")
     {
       alert("pls select a pointlayer!");

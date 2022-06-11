@@ -40,7 +40,7 @@ const topbar = {
             <div :class="['topbar-tabs-item', {active: show_layer}]" @click="if (show_layer===true) {show_layer=false;} else {setAllFalse(); show_layer=true}">Layer-Tools</div>
             <div :class="['topbar-tabs-item', {active: show_tests}]" @click="if (show_tests===true) {show_tests=false;} else {setAllFalse(); show_tests=true}">Tests</div>
         </div>
-        <div class="topbar-items" v-if="showItems">
+        <div class="topbar-items" v-show="showItems">
             <div v-show="show_select"><selecttopbar></selecttopbar></div>
             <div v-show="show_analysis"><analysistopbar></analysistopbar></div>
             <div v-show="show_tests"><testtopbar></testtopbar></div>

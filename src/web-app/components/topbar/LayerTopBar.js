@@ -3,6 +3,7 @@ import { VectorLayer } from '/map/VectorLayer.js'
 import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
 import { topbarcomp } from './TopBarComp.js';
+import { openDirectory } from '/util/fileapi.js'
 
 const layertopbar = {
     components: { topbarcomp },
@@ -28,7 +29,7 @@ const layertopbar = {
           reader.onloadend = () => {
               var points = new ol.format.GeoJSON().readFeatures(reader.result);
               var layer = new VectorLayer(points, 'Point', files[0].name.split(".")[0]);
-              map.addVectorLayer(layer);
+              map.addLayer(layer);
               updateLayerTree();
           };
           reader.readAsText(files[0]); 
@@ -45,11 +46,16 @@ const layertopbar = {
               }
           }
           var layer = new VectorLayer([], 'Point', layername);
-          map.addVectorLayer(layer);
+          map.addLayer(layer);
           updateLayerTree();
       }
 
-      return { filedialog, openfiledialog, onFileDialogChange, addVectorLayer}
+      async function openFolder() {
+        var dir = await openDirectory();
+        state.filetree.connections.push(dir);
+      }
+
+      return { filedialog, openfiledialog, onFileDialogChange, addVectorLayer, openFolder}
     },
     template: `
     <input type="file" ref="filedialog" style="display:none" @change="onFileDialogChange">
@@ -59,6 +65,9 @@ const layertopbar = {
         </div>
         <div class="container">
             <button class="bigbutton" @click="addVectorLayer">Add empty<br> PointLayer</button>
+        </div>
+        <div class="container">
+            <button class="bigbutton" @click="openFolder">Open<br> Directory</button>
         </div>
     </topbarcomp>
     `

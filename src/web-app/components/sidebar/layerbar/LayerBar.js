@@ -13,8 +13,8 @@ const layerbar = {
         const map = getMap();
 
         const layers = computed(() => {
-            var test = state.layertree.update;
-            return map.vectorlayers;
+            let test = state.layertree.update;
+            return map.layers;
         })
 
         return { layers }
