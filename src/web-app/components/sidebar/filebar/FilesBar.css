@@ -1,0 +1,54 @@
+.filesbar {
+    height: 500px;
+    width: 250px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 1em lightgray;
+    padding: 20px;
+    overflow: scroll;
+    font-size: 16;
+}
+
+.filesbar .divider {
+    height: 1px;
+    width: 200px;
+    background-color: darkgray;
+    margin: 15px 0px;
+}
+
+.filetree {
+    width: fit-content;
+    height: fit-content;
+    position: relative;
+}
+
+.filetree .children {
+    position: relative;
+    left: 20px;
+}
+
+.filetreeitem {
+    padding: 0px 20px 0px 0px;
+    height: 35px;
+    width: max-content;
+}
+
+.filetreeitem:hover {
+    background-color: lightgray;
+}
+
+.filetreeitem .icon1 {
+    width: 20px;
+    display: inline-block;
+}
+
+.filetreeitem .icon2 {
+    width: 20px;
+    display: inline-block;
+}
+
+.filetreeitem .text {
+    width: fit-content;
+    display: inline-block;
+    cursor: pointer;
+}
