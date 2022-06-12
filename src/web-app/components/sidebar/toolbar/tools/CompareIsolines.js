@@ -12,7 +12,8 @@ const map = getMap();
 const state = getState();
 
 const param = [
-  {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,5400,100], text:"check?"}
+  {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
+  {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,5400,100], text:"check?", default: 900}
 ]
 
 const out = [
@@ -23,16 +24,14 @@ const out = [
 
 async function run(param, out, addMessage)
 {
-    const layer = map.getLayerByName(state.layertree.focuslayer);
+    const layer = map.getLayerByName(param.layer);
     if (layer == null || layer.type != "Point")
     {
-      alert("pls select a pointlayer!");
-      return;
+      throw new Error("pls select a pointlayer!");
     }
     if (layer.selectedfeatures.length != 1)
     {
-      alert("pls select exactly one feature!");
-      return;
+      throw new Error("pls select exactly one feature!");
     }
     var location = layer.selectedfeatures[0].getGeometry().getCoordinates();
     var ranges = [param.range];

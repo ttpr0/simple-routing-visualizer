@@ -11,7 +11,8 @@ const map = getMap();
 const state = getState();
 
 const param = [
-  {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", options: ['Isochrone', 'IsoRaster'], text:"Test-Mode"},
+  {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
+  {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", options: ['Isochrone', 'IsoRaster'], text:"Test-Mode", default: 'Isochrone'},
 ]
 
 const out = [
@@ -19,16 +20,14 @@ const out = [
 
 async function run(param, out, addMessage)
 {
-    const layer = map.getLayerByName(state.layertree.focuslayer);
+    const layer = map.getLayerByName(param.layer);
     if (layer == null || layer.type != "Point")
     {
-      alert("pls select a pointlayer!");
-      return;
+      throw new Error("pls select a pointlayer!");
     }
     if (layer.selectedfeatures.length != 1)
     {
-        alert("pls select only one feature");
-        return;
+      throw new Error("pls select only one feature");
     }
     if (param.testmode === "Isochrone")
         var alg = getDockerPolygon;
@@ -39,7 +38,7 @@ async function run(param, out, addMessage)
     for (var j = 0; j < ranges.length; j++)
     {
       var range = ranges[j];
-      console.log(range);
+      addMessage(range);
       times[range] = [];
       for (var c=0; c<5; c++)
       {
@@ -55,14 +54,14 @@ async function run(param, out, addMessage)
       }
     }
     var l = [];
-    console.log(times);
+    addMessage(times);
     for (var k in times)
     {
       var mean = calcMean(times[k]);
       var std = calcStd(times[k], mean);
       l.push(k+", "+mean+", "+std);
     }
-    console.log(l.join('\n'))
+    addMessage(l.join('\n'))
 }
 
 export { run, param, out }

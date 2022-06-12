@@ -13,8 +13,8 @@ const state = getState();
 
 const param = [
   {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
-  {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,3600,100], text:"check?"},
-  {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?"}
+  {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,3600,100], text:"check?", default: 900},
+  {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?", default: 1}
 ]
 
 const out = [
@@ -23,21 +23,19 @@ const out = [
 
 async function run(param, out, addMessage)
 {
-    const layer = map.getLayerByName(state.layertree.focuslayer);
+    const layer = map.getLayerByName(param.layer);
     if (layer == null || layer.type != "Point")
     {
-      alert("pls select a pointlayer!");
-      return;
+      throw new Error("pls select a pointlayer!");
     }
     if (layer.selectedfeatures.length > 20 || layer.selectedfeatures.length == 0)
     {
-      alert("pls select less then 20 features!");
-      return;
+      throw new Error("pls select less then 20 features!");
     }
     var ranges = randomRanges(param.count, param.range);
     var polygons = [];
     var start = new Date().getTime();
-    console.log(ranges);
+    addMessage(ranges);
     await Promise.all(layer.selectedfeatures.map(async element => {
       var location = element.getGeometry().getCoordinates();
       var geojson = await getORSPolygon([location], ranges);

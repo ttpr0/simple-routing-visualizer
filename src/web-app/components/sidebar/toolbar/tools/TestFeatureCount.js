@@ -11,7 +11,8 @@ const map = getMap();
 const state = getState();
 
 const param = [
-    {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", options: ['Isochrone', 'IsoRaster'], text:"Test-Mode"},
+    {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
+    {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", options: ['Isochrone', 'IsoRaster'], text:"Test-Mode", default: 'Isochrone'},
 ]
 
 const out = [
@@ -19,24 +20,24 @@ const out = [
 
 async function run(param, out, addMessage) 
 {
-    const layer = map.getLayerByName(state.layertree.focuslayer);
+    const layer = map.getLayerByName(param.layer);
     if (layer == null || layer.type != "Point")
     {
-      alert("pls select a pointlayer!");
-      return;
+      throw new Error("pls select a pointlayer!");
     }
     if (param.testmode === "Isochrone")
         var alg = getDockerPolygon;
     else
         alg = getIsoRaster;
     var ranges = randomRanges(1, 1800);
-    var counts = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,40,50];
+    //var counts = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,40,50];
+    var counts = [1,2,3,4,5];
     var times = {};
     for (var i = 0; i < counts.length; i++)
     {
         var k = counts[i];
         times[k] = [];
-        console.log(k);
+        addMessage(k);
         for (var c=0; c<10; c++)
         {
             var points = selectRandomPoints(layer, k);
@@ -51,14 +52,14 @@ async function run(param, out, addMessage)
         }
     }
     var l = [];
-    console.log(times);
+    addMessage(times);
     for (var k in times)
     {
         var mean = calcMean(times[k]);
         var std = calcStd(times[k], mean);
         l.push(k+", "+mean+", "+std);
     }
-    console.log(l.join('\n'));
+    addMessage(l.join('\n'));
 }
 
 export { run, param, out }

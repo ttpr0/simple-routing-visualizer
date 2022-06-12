@@ -12,9 +12,10 @@ const map = getMap();
 const state = getState();
 
 const param = [
-  {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [1,3600,1], text:"check?"},
-  {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?"},
-  {name: "useWebMercator", title: "WebMercator", info: "CRS", type: "check", values: [1,10], text:"Web-Mercator?"}
+  {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
+  {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [1,3600,1], text:"check?", default: 900},
+  {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?", default: 1},
+  {name: "useWebMercator", title: "WebMercator", info: "CRS", type: "check", values: [1,10], text:"Web-Mercator?", default: false}
 ]
 
 const out = [
@@ -23,21 +24,18 @@ const out = [
 
 async function run(param, out, addMessage)
 {
-    const layer = map.getLayerByName(state.layertree.focuslayer);
+    const layer = map.getLayerByName(param.layer);
     if (layer == null || layer.type != "Point")
     {
-      alert("pls select a pointlayer!");
-      return;
+      throw new Error("pls select a pointlayer!");
     }
     if (layer.selectedfeatures.length > 100)
     {
-      alert("pls mark less than 100 features!");
-      return;
+      throw new Error("pls mark less than 100 features!");
     }
     if (layer.selectedfeatures.length == 0)
     {
-      alert("you have to mark at least one feature!");
-      return;
+      throw new Error("you have to mark at least one feature!");
     }
     if (param.useWebMercator)
     {
