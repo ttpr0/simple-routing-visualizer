@@ -12,6 +12,11 @@ const toolbar = {
     props: [ ],
     setup(props) {
         const state = getState();
+        const map = getMap();
+
+        function updateLayerTree() {
+            state.layertree.update = !state.layertree.update;
+        }
 
         const showSearch = ref(true);
         const toolname = ref(null);
@@ -36,9 +41,10 @@ const toolbar = {
         const Tool = {};
 
         const loadTool = async () => {
-            let { run, param } = await import(/* @vite-ignore */tools[toolname.value]);
+            let { run, param, out } = await import(/* @vite-ignore */tools[toolname.value]);
             Tool.run = run;
             Tool.params = param;
+            Tool.output = out;
             showSearch.value = false;
         }
 
@@ -58,9 +64,17 @@ const toolbar = {
             state.tools.currtool = toolname.value;
             state.tools.running = true;
             state.tools.toolinfo.text = "";
+            const out = {};
             addMessage("Started " + toolname.value + ":", 'green');
             try {
-                await Tool.run(obj, addMessage);
+                await Tool.run(obj, out, addMessage);
+                Tool.output.forEach(element => {
+                    if (element.type==='layer') 
+                    {
+                        map.addLayer(out[element.name]);
+                    }                    
+                });
+                updateLayerTree();
                 addMessage("Succesfully finished", 'green');
             }
             catch (e) {

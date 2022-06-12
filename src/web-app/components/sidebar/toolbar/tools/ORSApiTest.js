@@ -11,18 +11,17 @@ import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util.
 const map = getMap();
 const state = getState();
 
-function updateLayerTree() {
-  state.layertree.update = !state.layertree.update;
-}
-
 const param = [
   {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
   {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,3600,100], text:"check?"},
   {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?"}
 ]
 
+const out = [
+  {name: 'orslayer', type: 'layer'},
+]
 
-async function run(obj)
+async function run(param, out, addMessage)
 {
     const layer = map.getLayerByName(state.layertree.focuslayer);
     if (layer == null || layer.type != "Point")
@@ -35,7 +34,7 @@ async function run(obj)
       alert("pls select less then 20 features!");
       return;
     }
-    var ranges = randomRanges(obj.count, obj.range);
+    var ranges = randomRanges(param.count, param.range);
     var polygons = [];
     var start = new Date().getTime();
     console.log(ranges);
@@ -50,10 +49,8 @@ async function run(obj)
     polygons.forEach(polygon => {
       features = features.concat(new ol.format.GeoJSON().readFeatures(polygon));
     });
-    let orslayer = new VectorLayer(features, 'Polygon', 'orslayer');
-    //orslayer.setStyle(ors_style);
-    map.addLayer(orslayer);
-    updateLayerTree();
+    out.orslayer = new VectorLayer(features, 'Polygon', 'orslayer');
+    //out.orslayer.setStyle(ors_style);
 }
 
-export { run, param }
+export { run, param, out }

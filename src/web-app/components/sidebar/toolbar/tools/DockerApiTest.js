@@ -11,34 +11,17 @@ import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util.
 const map = getMap();
 const state = getState();
 
-function updateLayerTree() {
-  state.layertree.update = !state.layertree.update;
-}
-
-const tool = {
-    components: {  },
-    props: [ 'obj' ],
-    setup(props, ctx) {
-      
-        return { }
-    },
-    template: `
-    <input type="range" id="range" v-model="obj.range" min="0" max="3600">
-    <label for="range">{{ obj.range }}</label><br>
-    <input type="range" id="rangecount" v-model="obj.count" min="1" max="10">
-    <label for="rangecount">{{ obj.count }}</label><br>
-    <input type="range" id="smoothing" v-model="obj.smoothing" min="1" max="100">
-    <label for="smoothing">{{ obj.smoothing/10 }}</label><br>
-    `,
-} 
-
 const param = [
   {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,3600,100], text:"check?"},
   {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?"},
   {name: "smoothing", title: "Smoothing", info: "Smoothing", type: "range", values: [1,10,0.1], text:"check?"}
 ]
 
-async function run(obj) 
+const out = [
+  {name: 'dockerlayer', type: 'layer'},
+]
+
+async function run(param, out, addMessage) 
 {
     const layer = map.getLayerByName(state.layertree.focuslayer);
     if (layer == null || layer.type != "Point")
@@ -51,12 +34,12 @@ async function run(obj)
       alert("pls select less then 100 features!");
       return;
     }
-    var ranges = randomRanges(obj.count, obj.range);
+    var ranges = randomRanges(param.count, param.range);
     var polygons = [];
     var start = new Date().getTime();
     await Promise.all(layer.selectedfeatures.map(async element => {
       var location = element.getGeometry().getCoordinates();
-      var geojson = await getDockerPolygon([location], ranges, obj.smoothing/10);
+      var geojson = await getDockerPolygon([location], ranges, param.smoothing/10);
       //geojson = calcDifferences(geojson);
       polygons.push(geojson);
     }));
@@ -65,10 +48,8 @@ async function run(obj)
     polygons.forEach(polygon => {
       features = features.concat(new ol.format.GeoJSON().readFeatures(polygon));
     });
-    let dockerlayer = new VectorLayer(features, 'Polygon', 'dockerlayer');
-    dockerlayer.setStyle(ors_style);
-    map.addLayer(dockerlayer);
-    updateLayerTree();
+    out.dockerlayer = new VectorLayer(features, 'Polygon', 'dockerlayer');
+    out.dockerlayer.setStyle(ors_style);
 }
 
-export { run, param }
+export { run, param, out }

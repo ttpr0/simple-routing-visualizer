@@ -11,17 +11,17 @@ import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util.
 const map = getMap();
 const state = getState();
 
-function updateLayerTree() {
-  state.layertree.update = !state.layertree.update;
-}
-
 const param = [
   {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [1,3600,1], text:"check?"},
   {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?"},
   {name: "useWebMercator", title: "WebMercator", info: "CRS", type: "check", values: [1,10], text:"Web-Mercator?"}
 ]
 
-async function run(obj)
+const out = [
+  {name: 'multigraphlayer', type: 'layer'},
+]
+
+async function run(param, out, addMessage)
 {
     const layer = map.getLayerByName(state.layertree.focuslayer);
     if (layer == null || layer.type != "Point")
@@ -39,14 +39,14 @@ async function run(obj)
       alert("you have to mark at least one feature!");
       return;
     }
-    if (obj.useWebMercator)
+    if (param.useWebMercator)
     {
         var precession = obj.count * 10;
         var crs = "3857";
     }
     else
     {
-        var precession = 1 / (obj.count * 10);
+        var precession = 1 / (param.count * 10);
         var crs = "4326";
     }
     var locations = [];
@@ -54,13 +54,11 @@ async function run(obj)
         locations.push(element.getGeometry().getCoordinates());
     })
     var start = new Date().getTime();
-    var geojson = await getIsoRaster(locations, [obj.range], precession, crs);
+    var geojson = await getIsoRaster(locations, [param.range], precession, crs);
     var end = new Date().getTime();
     var features = new ol.format.GeoJSON().readFeatures(geojson);
-    let multigraphlayer = new VectorImageLayer(features, 'Polygon', 'multigraphrasterlayer');
-    multigraphlayer.setStyle(accessibilityStyleFunction);
-    map.addLayer(multigraphlayer);
-    updateLayerTree();
+    out.multigraphlayer = new VectorImageLayer(features, 'Polygon', 'multigraphrasterlayer');
+    out.multigraphlayer.setStyle(accessibilityStyleFunction);
 }
 
-export { run, param }
+export { run, param, out }

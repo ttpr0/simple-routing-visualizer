@@ -10,15 +10,14 @@ import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util.
 const map = getMap();
 const state = getState();
 
-function updateLayerTree() {
-    state.layertree.update = !state.layertree.update;
-}
-
 const param = [
     {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", options: ['Isochrone', 'IsoRaster'], text:"Test-Mode"},
 ]
 
-async function run(obj) 
+const out = [
+]
+
+async function run(param, out, addMessage) 
 {
     const layer = map.getLayerByName(state.layertree.focuslayer);
     if (layer == null || layer.type != "Point")
@@ -26,7 +25,7 @@ async function run(obj)
       alert("pls select a pointlayer!");
       return;
     }
-    if (obj.testmode === "Isochrone")
+    if (param.testmode === "Isochrone")
         var alg = getDockerPolygon;
     else
         alg = getIsoRaster;
@@ -62,4 +61,4 @@ async function run(obj)
     console.log(l.join('\n'));
 }
 
-export { run, param }
+export { run, param, out }

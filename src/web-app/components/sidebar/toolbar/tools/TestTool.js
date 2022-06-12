@@ -9,16 +9,19 @@ const param = [
   {name: "test", title: "Test", info: "das ist ein Testfeld", type: "list", values: [1,100], text:"check?"},
 ]
 
+const out = [
+]
+
 function sleep(ms) {
     return new Promise((resolve) => {
       setTimeout(resolve, ms);
     });
   }
 
-const run = async (obj, addMessage) => {
+async function run(param, out, addMessage) {
     addMessage("started");
     await sleep(5000);
-    addMessage(obj.select);
+    addMessage(param.select);
 }
 
-export { run, param }
+export { run, param, out }

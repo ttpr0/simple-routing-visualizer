@@ -11,15 +11,17 @@ import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util.
 const map = getMap();
 const state = getState();
 
-function updateLayerTree() {
-  state.layertree.update = !state.layertree.update;
-}
-
 const param = [
   {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,5400,100], text:"check?"}
 ]
 
-async function run(obj)
+const out = [
+  {name: 'binglayer', type: 'layer'},
+  {name: 'mapboxlayer', type: 'layer'},
+  {name: 'targamolayer', type: 'layer'},
+]
+
+async function run(param, out, addMessage)
 {
     const layer = map.getLayerByName(state.layertree.focuslayer);
     if (layer == null || layer.type != "Point")
@@ -33,23 +35,19 @@ async function run(obj)
       return;
     }
     var location = layer.selectedfeatures[0].getGeometry().getCoordinates();
-    var ranges = [obj.range];
+    var ranges = [param.range];
     var mapbox = getMapBoxPolygon(location, ranges);
     var targamo = getTargamoPolygon(location, ranges);
     var bing = getBingPolygon(location, ranges);
     var mapboxfeature = new ol.format.GeoJSON().readFeatures(await mapbox);
     var targamofeature = new ol.format.GeoJSON().readFeatures(await targamo);
     var bingfeature = new ol.format.GeoJSON().readFeatures(await bing);
-    let binglayer = new VectorLayer(bingfeature, 'Polygon', 'binglayer');
-    binglayer.setStyle(bing_style);
-    map.addVectorLayer(binglayer);
-    let mapboxlayer = new VectorLayer(mapboxfeature, 'Polygon', 'mapboxlayer');
-    mapboxlayer.setStyle(mapbox_style);
-    map.addVectorLayer(mapboxlayer);
-    let targamolayer = new VectorLayer(targamofeature, 'Polygon', 'targamolayer');
-    targamolayer.setStyle(targamo_style);
-    map.addLayer(targamolayer);
-    updateLayerTree();
+    out.binglayer = new VectorLayer(bingfeature, 'Polygon', 'binglayer');
+    out.binglayer.setStyle(bing_style);
+    out.mapboxlayer = new VectorLayer(mapboxfeature, 'Polygon', 'mapboxlayer');
+    out.mapboxlayer.setStyle(mapbox_style);
+    out.targamolayer = new VectorLayer(targamofeature, 'Polygon', 'targamolayer');
+    out.targamolayer.setStyle(targamo_style);
 }
 
-export { run, param }
+export { run, param, out }
