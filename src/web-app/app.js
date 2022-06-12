@@ -11,9 +11,10 @@ import 'vuetify/styles'
 import { VSystemBar, VSpacer, VIcon, VApp, VFooter } from 'vuetify/components';
 import { Splitpanes, Pane } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css'
+import { dragablewindow } from '/components/util/DragableWindow.js';
 
 const app = createApp({
-  components: { sidebar, toolbar, mapregion, topbar, VSystemBar, VSpacer, VIcon, VApp, VFooter, Splitpanes, Pane, footerbar },
+  components: { sidebar, toolbar, mapregion, topbar, footerbar, dragablewindow },
   setup() {
     const map = getMap();
     const state = getState();
@@ -36,7 +37,7 @@ const app = createApp({
         updateLayerTree();
     });
 
-    return {  }
+    return { state }
   },
 
   template: `
@@ -45,6 +46,9 @@ const app = createApp({
     <sidebar></sidebar>
     <mapregion></mapregion>
     <footerbar></footerbar>
+    <dragablewindow v-if="state.tools.toolinfo.show" :pos="state.tools.toolinfo.pos" name="Tool-Info" icon="mdi-information-outline" @onclose="state.tools.toolinfo.show=false">
+      <div class="tooltext"><span v-html="state.tools.toolinfo.text"></span></div>
+    </dragablewindow>
   </div>
   `
 })

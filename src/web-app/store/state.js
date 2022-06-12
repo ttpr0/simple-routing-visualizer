@@ -13,6 +13,18 @@ const state = reactive({
     map: {
         moved: false,
     },
+    filetree: {
+        connections: []
+    },
+    tools: {
+        toolinfo: {
+            show: false,
+            text: "",
+            pos: [0,0]
+        },
+        currtool: "",
+        running: false,
+    }
 })
 
 function getState()

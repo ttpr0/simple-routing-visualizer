@@ -5,14 +5,17 @@ import { getMap } from '/map/maps.js';
 import './ToolBar.css'
 import { VAutocomplete, VList } from 'vuetify/components';
 import { toolcontainer } from './ToolContainer.js';
+import { toolparam } from './ToolParam.js';
 
 const toolbar = {
-    components: { VAutocomplete, VList, toolcontainer },
+    components: { VAutocomplete, VList, toolcontainer, toolparam },
     props: [ ],
     setup(props) {
+        const state = getState();
+
         const showSearch = ref(true);
-        const running = ref(false);
         const toolname = ref(null);
+
         const tools = { 
             'TestTool': './tools/TestTool.js', 
             'TestRanges': './tools/TestRanges.js', 
@@ -33,22 +36,40 @@ const toolbar = {
         const Tool = {};
 
         const loadTool = async () => {
-            let { tool, run } = await import(/* @vite-ignore */tools[toolname.value]);
-            Tool.comp = tool;
+            let { run, param } = await import(/* @vite-ignore */tools[toolname.value]);
             Tool.run = run;
+            Tool.params = param;
             showSearch.value = false;
         }
 
         var obj = {};
         const reactiveObj = reactive(obj);
 
-        const runTool = async () => {
-            running.value = true;
-            await Tool.run(obj);
-            running.value = false;
+        function setToolInfo() {
+            state.tools.toolinfo.show = true; 
+            state.tools.toolinfo.pos = [400, 400];          
         }
 
-        return { toolname, tools, onToolClick, loadTool, showSearch, runTool, reactiveObj, Tool, running }
+        function addMessage(message, color="black") {
+            state.tools.toolinfo.text += "<span style='color:" + color + "'>" + message + "</span><br>";
+        }
+
+        const runTool = async () => {
+            state.tools.currtool = toolname.value;
+            state.tools.running = true;
+            state.tools.toolinfo.text = "";
+            addMessage("Started " + toolname.value + ":", 'green');
+            try {
+                await Tool.run(obj, addMessage);
+                addMessage("Succesfully finished", 'green');
+            }
+            catch (e) {
+                addMessage(e, 'red');
+            }
+            state.tools.running = false;
+        }
+
+        return { toolname, tools, onToolClick, loadTool, showSearch, runTool, reactiveObj, Tool, setToolInfo }
     },
     template: `
     <div class="toolbar">
@@ -65,8 +86,8 @@ const toolbar = {
             </v-list>
         </div>
         <div v-if="!showSearch">
-            <toolcontainer :toolname="toolname" @close="showSearch=true" @run="runTool()" :running="running">
-                <component :is="Tool.comp" :obj="reactiveObj"></component>
+            <toolcontainer :toolname="toolname" @close="showSearch=true" @run="runTool()" @info="setToolInfo()">
+                <toolparam v-for="param in Tool.params" v-model="reactiveObj[param.name]" :param="param"></toolparam>
             </toolcontainer>
         </div>
     </div>
