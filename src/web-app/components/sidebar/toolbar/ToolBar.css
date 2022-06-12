@@ -22,10 +22,45 @@
     height: 10%;
 }
 
-.toolcontainer .footer button {
+.toolcontainer .footer .run {
+    border-radius: 5px;
+    background-color: lightblue;
+    color: white;
+    margin-top: 15px;
+    padding: 5px;
+    float: right;
+    cursor: pointer;
+}
+
+.toolcontainer .footer .run:disabled {
+    background-color: lightgray;
+}
+
+.toolcontainer .footer .info {
     border-radius: 5px;
     background-color: lightblue;
     margin-top: 15px;
     padding: 5px;
-    float: right;
+    float: left;
+    cursor: pointer;
+}
+
+.toolcontainer .footer .info:disabled {
+    background-color: lightgray;
+}
+
+.toolparam {
+    width: 100%;
+    height: max-content;
+    padding: 10px;
+}
+
+.toolparam .header {
+    height: 15px;
+}
+
+.toolparam .body {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: fit-content;
 }

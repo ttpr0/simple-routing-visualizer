@@ -14,17 +14,8 @@ function updateLayerTree() {
   state.layertree.update = !state.layertree.update;
 }
 
-const tool = {
-    components: {  },
-    props: [ 'obj' ],
-    setup(props, ctx) {
-
-        return { }
-    },
-    template: `
-
-    `,
-} 
+const param = [
+]
 
 async function run(obj)
 {
@@ -69,4 +60,4 @@ async function run(obj)
     console.log(l.join('\n'))
 }
 
-export { tool, run }
+export { run, param }

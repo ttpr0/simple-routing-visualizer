@@ -15,18 +15,9 @@ function updateLayerTree() {
   state.layertree.update = !state.layertree.update;
 }
 
-const tool = {
-    components: {  },
-    props: [ 'obj' ],
-    setup(props, ctx) {
-
-        return { }
-    },
-    template: `
-    <input type="range" id="range" v-model="obj.range" min="0" max="5400">
-    <label for="range">{{ obj.range }}</label><br>
-    `,
-} 
+const param = [
+  {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,5400,100], text:"check?"}
+]
 
 async function run(obj)
 {
@@ -61,4 +52,4 @@ async function run(obj)
     updateLayerTree();
 }
 
-export { tool, run }
+export { run, param }

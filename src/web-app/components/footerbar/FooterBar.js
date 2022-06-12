@@ -38,7 +38,6 @@ const footerbar = {
         <footerbaritem icon="mdi-bookmark-multiple" :text="focuslayer"></footerbaritem>
         <footerbaritem icon="mdi-axis-arrow" :text="position[0]"></footerbaritem>
         <footerbaritem icon="mdi-contrast-box" :text="position[1]"></footerbaritem>
-        <footerbaritem text="{ }  Javascript"></footerbaritem>
     </div>
     `
 } 

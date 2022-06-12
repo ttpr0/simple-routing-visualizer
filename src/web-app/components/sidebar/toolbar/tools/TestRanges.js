@@ -14,20 +14,9 @@ function updateLayerTree() {
   state.layertree.update = !state.layertree.update;
 }
 
-const tool = {
-    components: {  },
-    props: [ 'obj' ],
-    setup(props, ctx) {
-
-        return { }
-    },
-    template: `
-    <input type="radio" id="isochrone" name="test2" value="Isochrone" v-model="obj.testmode">
-    <label for="isochrone">Isochrones</label><br>
-    <input type="radio" id="isoraster" name="test2" value="Isoraster" v-model="obj.testmode">
-    <label for="isoraster">IsoRaster</label><br>
-    `,
-} 
+const param = [
+  {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", options: ['Isochrone', 'IsoRaster'], text:"Test-Mode"},
+]
 
 async function run(obj)
 {
@@ -77,4 +66,4 @@ async function run(obj)
     console.log(l.join('\n'))
 }
 
-export { tool, run }
+export { run, param }

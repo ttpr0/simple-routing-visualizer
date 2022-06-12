@@ -52,7 +52,7 @@ const dragablewindow = {
         return { window, windowheader }
     },
     template: `
-    <div class="dragablewindow" draggable="true" ref="window">
+    <div class="dragablewindow" ref="window">
         <div class="dragablewindow-header" ref="windowheader">
             <div class="dragablewindow-header-name"><v-icon size=20 color="white">{{ icon }}</v-icon>  {{ name }}</div>
             <div class="dragablewindow-header-close" @click="$emit('onclose')"><v-icon size=24 color="white">mdi-close</v-icon></div>

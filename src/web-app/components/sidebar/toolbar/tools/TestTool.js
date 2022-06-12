@@ -4,19 +4,10 @@ import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
 import { VAutocomplete, VList, VProgressLinear } from 'vuetify/components';
 
-
-const tool = {
-    components: {  },
-    props: [ 'obj' ],
-    setup(props, ctx) {
-
-        return { }
-    },
-    template: `
-    <input type="range" id="smoothing" v-model="obj.select" min="1" max="100">
-    <label for="smoothing">{{ 10 }}</label><br>
-    `,
-} 
+const param = [
+  {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [10,100, 10], text:"check?"},
+  {name: "test", title: "Test", info: "das ist ein Testfeld", type: "list", values: [1,100], text:"check?"},
+]
 
 function sleep(ms) {
     return new Promise((resolve) => {
@@ -24,9 +15,10 @@ function sleep(ms) {
     });
   }
 
-const run = async (obj) => {
-    await sleep(2000);
-    alert(obj.select);
+const run = async (obj, addMessage) => {
+    addMessage("started");
+    await sleep(5000);
+    addMessage(obj.select);
 }
 
-export { tool, run }
+export { run, param }

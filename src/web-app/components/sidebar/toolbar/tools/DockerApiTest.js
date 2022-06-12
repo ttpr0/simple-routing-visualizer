@@ -32,6 +32,12 @@ const tool = {
     `,
 } 
 
+const param = [
+  {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,3600,100], text:"check?"},
+  {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?"},
+  {name: "smoothing", title: "Smoothing", info: "Smoothing", type: "range", values: [1,10,0.1], text:"check?"}
+]
+
 async function run(obj) 
 {
     const layer = map.getLayerByName(state.layertree.focuslayer);
@@ -65,4 +71,4 @@ async function run(obj)
     updateLayerTree();
 }
 
-export { tool, run }
+export { run, param }

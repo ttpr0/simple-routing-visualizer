@@ -3,13 +3,14 @@ import { VectorLayer } from '/map/VectorLayer.js';
 import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
 import './ToolBar.css'
-import { VAutocomplete, VList, VProgressLinear } from 'vuetify/components';
+import { VAutocomplete, VList, VProgressLinear, VIcon } from 'vuetify/components';
 
 const toolcontainer = {
-    components: { VProgressLinear },
-    emits: ['close', 'run' ],
-    props: [ 'toolname', 'running' ],
+    components: { VProgressLinear, VIcon },
+    emits: ['close', 'run', 'info' ],
+    props: [ 'toolname' ],
     setup(props, ctx) {
+        const state = getState();
 
         const onclose = () => {
             ctx.emit('close');
@@ -19,7 +20,31 @@ const toolcontainer = {
             ctx.emit('run');
         }
 
-        return { onclose, onrun }
+        const oninfo = () => {
+            ctx.emit('info');
+        }
+
+        const running = computed(() => {
+            if (state.tools.currtool === props.toolname)
+            {
+                return state.tools.running; 
+            }
+            else
+            { return false; }
+        });
+
+        const disableinfo = computed(() => {
+            if (state.tools.currtool !== props.toolname)
+            { return true; }
+            else 
+            { return false; }
+        });
+
+        const disablerun = computed(() => {
+            return state.tools.running;
+        });
+
+        return { onclose, onrun, oninfo, running, disablerun, disableinfo }
     },
     template: `
     <div class="toolcontainer">
@@ -27,12 +52,13 @@ const toolcontainer = {
             <v-icon @click="onclose()">mdi-arrow-left</v-icon>
             <p style="display: inline-block; width: 70%; text-align: center;">{{ toolname }}</p>
         </div>
-        <div class="body">
+        <div class="body" style="overflow-y: auto;">
             <slot></slot>
         </div>
         <div class="footer">
             <v-progress-linear :active="running" indeterminate color="rgb(65, 163, 170)"></v-progress-linear>
-            <button @click="onrun()">Run Tool</button>
+            <button class="info" @click="oninfo()" style="float= left;" :disabled="disableinfo"><v-icon size=20 color="white">mdi-information</v-icon></button>
+            <button class="run" @click="onrun()" :disabled="disablerun">Run Tool</button>
         </div>
     </div>
     `

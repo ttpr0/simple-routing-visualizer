@@ -15,22 +15,12 @@ function updateLayerTree() {
   state.layertree.update = !state.layertree.update;
 }
 
-const tool = {
-    components: {  },
-    props: [ 'obj' ],
-    setup(props, ctx) {
-      props.obj.range = 900;
-      props.obj.count = 1;
-      
-      return { }
-    },
-    template: `
-    <input type="range" id="range" v-model="obj.range" min="0" max="3600">
-    <label for="range">{{ obj.range }}</label><br>
-    <input type="range" id="rangecount" v-model="obj.count" min="1" max="10">
-    <label for="rangecount">{{ obj.count }}</label><br>
-    `,
-} 
+const param = [
+  {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
+  {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,3600,100], text:"check?"},
+  {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?"}
+]
+
 
 async function run(obj)
 {
@@ -66,4 +56,4 @@ async function run(obj)
     updateLayerTree();
 }
 
-export { tool, run }
+export { run, param }

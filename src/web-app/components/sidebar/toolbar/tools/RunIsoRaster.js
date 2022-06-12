@@ -15,22 +15,11 @@ function updateLayerTree() {
   state.layertree.update = !state.layertree.update;
 }
 
-const tool = {
-    components: {  },
-    props: [ 'obj' ],
-    setup(props, ctx) {
-
-        return { }
-    },
-    template: `
-    <input type="range" id="range" v-model="obj.range" min="0" max="5400">
-    <label for="range">{{ obj.range }}</label><br>
-    <input type="range" id="rangecount" v-model="obj.count" min="1" max="100">
-    <label for="rangecount">{{ obj.count*10 }}</label><br>
-    <input type="checkbox" id="webmercator" v-model="obj.useWebMercator">
-    <label for="webmercator">use Web-Mercator?</label>
-    `,
-} 
+const param = [
+  {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [1,3600,1], text:"check?"},
+  {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?"},
+  {name: "useWebMercator", title: "WebMercator", info: "CRS", type: "check", values: [1,10], text:"Web-Mercator?"}
+]
 
 async function run(obj)
 {
@@ -74,4 +63,4 @@ async function run(obj)
     updateLayerTree();
 }
 
-export { tool, run }
+export { run, param }
