@@ -44,6 +44,10 @@ const toolbar = {
             let { run, param, out } = await import(/* @vite-ignore */tools[toolname.value]);
             Tool.run = run;
             Tool.params = param;
+            for (let p of Tool.params)
+            {
+                reactiveObj[p.name] = p.default;
+            }
             Tool.output = out;
             showSearch.value = false;
         }
@@ -62,7 +66,7 @@ const toolbar = {
 
         const runTool = async () => {
             state.tools.currtool = toolname.value;
-            state.tools.running = true;
+            state.tools.state = 'running';
             state.tools.toolinfo.text = "";
             const out = {};
             addMessage("Started " + toolname.value + ":", 'green');
@@ -76,11 +80,12 @@ const toolbar = {
                 });
                 updateLayerTree();
                 addMessage("Succesfully finished", 'green');
+                state.tools.state = 'finished';
             }
             catch (e) {
                 addMessage(e, 'red');
+                state.tools.state = 'error';
             }
-            state.tools.running = false;
         }
 
         return { toolname, tools, onToolClick, loadTool, showSearch, runTool, reactiveObj, Tool, setToolInfo }

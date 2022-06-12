@@ -23,7 +23,7 @@ const state = reactive({
             pos: [0,0]
         },
         currtool: "",
-        running: false,
+        state: null,
     }
 })
 

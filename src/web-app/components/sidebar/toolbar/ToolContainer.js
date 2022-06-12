@@ -27,11 +27,29 @@ const toolcontainer = {
         const running = computed(() => {
             if (state.tools.currtool === props.toolname)
             {
-                return state.tools.running; 
+                return state.tools.state === 'running'; 
             }
             else
             { return false; }
         });
+
+        const error = computed(() => {
+            if (state.tools.currtool === props.toolname)
+            {
+                return state.tools.state === 'error'; 
+            }
+            else
+            { return false; }
+        });
+
+        const finished = computed(() => {
+            if (state.tools.currtool === props.toolname)
+            {
+                return state.tools.state === 'finished'; 
+            }
+            else
+            { return false; }
+        })
 
         const disableinfo = computed(() => {
             if (state.tools.currtool !== props.toolname)
@@ -41,10 +59,10 @@ const toolcontainer = {
         });
 
         const disablerun = computed(() => {
-            return state.tools.running;
+            return state.tools.running === 'running';
         });
 
-        return { onclose, onrun, oninfo, running, disablerun, disableinfo }
+        return { onclose, onrun, oninfo, running, disablerun, disableinfo, error, finished }
     },
     template: `
     <div class="toolcontainer">
@@ -56,7 +74,7 @@ const toolcontainer = {
             <slot></slot>
         </div>
         <div class="footer">
-            <v-progress-linear :active="running" indeterminate color="rgb(65, 163, 170)"></v-progress-linear>
+            <v-progress-linear model-value="100" :active="running || finished || error" :indeterminate="running" :color="error ? 'red' : 'rgb(65, 163, 170)'"></v-progress-linear>
             <button class="info" @click="oninfo()" style="float= left;" :disabled="disableinfo"><v-icon size=20 color="white">mdi-information</v-icon></button>
             <button class="run" @click="onrun()" :disabled="disablerun">Run Tool</button>
         </div>
