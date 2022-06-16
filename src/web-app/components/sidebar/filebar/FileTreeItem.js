@@ -12,16 +12,22 @@ const filetreeitem = {
         const state = getState();
         const map = getMap();
 
-        const menu = ref(false);
+        const showmenu = ref(false);
         const menuitems = reactive([]);
 
         function refresh() {
-            menu.value = false;
+            showmenu.value = false;
             ctx.emit('refresh');
         }
         function close() {
-            menu.value = false;
+            showmenu.value = false;
             ctx.emit('close');
+        }
+
+        function callMenu(e, func, keepopen=false)
+        {
+            func();
+            if (keepopen) { onRightClick(e); }
         }
 
         let icon_open = "mdi-file-document";
@@ -54,32 +60,34 @@ const filetreeitem = {
 
         function onClick() {
             ctx.emit('click');
-            menu.value = false;
         }
 
-        function onRightClick() {
-            menu.value = true;
+        function onRightClick(e) {
+            showmenu.value = true;
+            const click = () => {
+                showmenu.value = false;
+                document.removeEventListener('click', click, true);
+            }
+            document.addEventListener('click', click, true);
+
+            const contextmenu = () => {
+                showmenu.value = false;
+                document.removeEventListener('contextmenu', contextmenu, true);
+            }
+            document.addEventListener('contextmenu', contextmenu, true);
         }
 
-        return { onClick, onRightClick, menuitems, menu, icon_close, icon_open }
+        return { onClick, onRightClick, callMenu, menuitems, showmenu, icon_close, icon_open, console}
     },
     template: `
-    <div class="filetreeitem">
-        <v-menu location="end" v-model="menu" :close-on-content-click="false">
-            <template v-slot:activator="{ props }">
-                <div v-bind="props" @click="onClick" @contextmenu.prevent="onRightClick()">
-                    <div class="icon1"><v-icon size=16 color="gray" v-if="['dir', 'gpkg'].includes(type)">{{ open ? 'mdi-chevron-down' : 'mdi-chevron-right' }}</v-icon></div>
-                    <div class="icon2"><v-icon size=18 color="gray">{{ open ? icon_open : icon_close }}</v-icon></div>
-                    <div class="text"><p>{{ name }}</p></div>
-                </div>
-            </template>
-    
-            <v-list>
-                <v-list-item v-for="(item, index) in menuitems" :key="index" @click="item.func">
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                </v-list-item>
-            </v-list>
-        </v-menu>
+    <div class="filetreeitem" @contextmenu.prevent="onRightClick">
+        <div class="item" @click="onClick">
+            <div class="icon"><v-icon size=18 color="rgb(119, 118, 118)">{{ open ? icon_open : icon_close }}</v-icon></div>
+            <div class="text"><p>  {{ name }}</p></div>
+        </div>
+        <div class="menu" v-if="showmenu">
+            <div class="menuitem" v-for="item in menuitems" @click="callMenu($event,item.func)">{{ item.title }}</div>
+        </div>
     </div>
     `
 } 
