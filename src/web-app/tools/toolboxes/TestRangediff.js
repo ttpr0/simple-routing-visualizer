@@ -12,7 +12,6 @@ const state = getState();
 
 const param = [
   {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
-  {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", options: ['Isochrone', 'IsoRaster'], text:"Test-Mode", default: 'Isochrone'},
 ]
 
 const out = [
@@ -27,30 +26,27 @@ async function run(param, out, addMessage)
     }
     if (layer.selectedfeatures.length != 1)
     {
-      throw new Error("pls select only one feature");
+        throw new Error("pls select only one feature");
     }
-    if (param.testmode === "Isochrone")
-        var alg = getDockerPolygon;
-    else
-        alg = getIsoRaster;
+    var t = [1.5, 1.5, 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 20, 30, 45, 60];
     var times = {};
-    var ranges = [300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000, 3300, 3600, 3900, 4200, 4500, 4800, 5100, 5400];
-    for (var j = 0; j < ranges.length; j++)
+    for (var j = 0; j < t.length; j++)
     {
-      var range = ranges[j];
-      addMessage(range);
-      times[range] = [];
+      var i = t[j];
+      var range = randomRanges(i, 3600);
+      addMessage(i);
+      times[3600/i] = [];
       for (var c=0; c<5; c++)
       {
-        var points = [layer.selectedfeatures[0]];
+        var points = [selectedpoints[0]];
         var start = new Date().getTime();
         await Promise.all(points.map(async element => {
           var location = element.getGeometry().getCoordinates();
-          var geojson = await alg([location], [range]);
+          var geojson = await getDockerPolygon([location], range);
         }));
         var end = new Date().getTime();
         var time = end - start;
-        times[range].push(time);
+        times[3600/i].push(time);
       }
     }
     var l = [];
@@ -64,4 +60,10 @@ async function run(param, out, addMessage)
     addMessage(l.join('\n'))
 }
 
-export { run, param, out }
+const tool = {
+  param: param,
+  out: out,
+  run
+}
+
+export { tool }

@@ -1,0 +1,48 @@
+import { tool as orsapitool } from './ORSApiTest.js'
+import { tool as compare } from './CompareIsolines.js'
+import { tool as dockertest } from './Isochrones.js'
+import { tool as isolines } from './TestIsolines.js'
+import { tool as rangediff } from './TestRangediff.js'
+import { tool as isoraster } from './IsoRaster.js'
+import { tool as featurecount } from './TestFeatureCount.js'
+import { tool as ranges } from './TestRanges.js'
+
+const toolbox = {
+    name: "ORSTools",
+    tools: [
+        {
+            name: "ORSAPITest",
+            tool: orsapitool,
+        },
+        {
+            name: "CompareIsolines",
+            tool: compare,
+        },
+        {
+            name: "Isochrones",
+            tool: dockertest,
+        },
+        {
+            name: "TestIsolines",
+            tool: isolines,
+        },
+        {
+            name: "TestRangediff",
+            tool: rangediff,
+        },
+        {
+            name: "IsoRaster",
+            tool: isoraster,
+        },
+        {
+            name: "TestFeaturecount",
+            tool: featurecount,
+        },
+        {
+            name: "TestRanges",
+            tool: ranges,
+        },
+    ]
+}
+
+export { toolbox }

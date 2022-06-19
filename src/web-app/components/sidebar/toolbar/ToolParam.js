@@ -53,19 +53,24 @@ const toolparam = {
                 <label for="range">{{ value }}</label>
             </div>
             <div v-if="param.type==='check'">
-                <v-checkbox v-model="value" :label="param.text" density="compact"></v-checkbox>
+                <input type="checkbox" v-model="value" id="cbx" :checked="param.default">
+                <label for="cbx">{{ '       ' + param.text }}</label>
             </div>
             <div v-if="param.type==='select'">
-                <v-select v-model="value" :items="param.options" density="compact" :label="param.text"></v-select>
+                <select v-model="value">
+                    <option v-for="opt in param.values">{{ opt }}</option>
+                </select>
             </div>
             <div v-if="param.type==='text'">
-                <v-text-field v-model="value" :label="param.text" clearable density="compact"></v-text-field>
+                <input type="text" v-model="value" :placeholder="param.text">
             </div>
             <div v-if="param.type==='list'">
                 <v-combobox v-model="value" :items="[]" :label="param.text" multiple chips density="compact" closable-chips></v-combobox>
             </div>
             <div v-if="param.type==='layer'">
-                <v-select v-model="value" :items="layers" density="compact" :label="param.text"></v-select>
+                <select v-model="value">
+                    <option v-for="layer in layers">{{ layer }}</option>
+                </select>
             </div>
         </div>
     </div>

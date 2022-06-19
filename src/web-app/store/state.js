@@ -10,6 +10,9 @@ const state = reactive({
         update: false,
         focuslayer: null,
     },
+    toolbox: {
+        update: false,
+    },
     map: {
         moved: false,
     },

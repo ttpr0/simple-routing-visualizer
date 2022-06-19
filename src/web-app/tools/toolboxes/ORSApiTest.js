@@ -51,4 +51,10 @@ async function run(param, out, addMessage)
     //out.orslayer.setStyle(ors_style);
 }
 
-export { run, param, out }
+const tool = {
+  param: param,
+  out: out,
+  run
+}
+
+export { tool }

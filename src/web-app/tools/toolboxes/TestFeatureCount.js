@@ -12,7 +12,7 @@ const state = getState();
 
 const param = [
     {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
-    {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", options: ['Isochrone', 'IsoRaster'], text:"Test-Mode", default: 'Isochrone'},
+    {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", values: ['Isochrone', 'IsoRaster'], text:"Test-Mode", default: 'Isochrone'},
 ]
 
 const out = [
@@ -62,4 +62,10 @@ async function run(param, out, addMessage)
     addMessage(l.join('\n'));
 }
 
-export { run, param, out }
+const tool = {
+    param: param,
+    out: out,
+    run
+}
+  
+export { tool }
