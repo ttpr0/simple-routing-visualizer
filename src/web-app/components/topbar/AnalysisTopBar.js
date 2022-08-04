@@ -6,6 +6,7 @@ import { getMap } from '/map/maps.js';
 import { getMultiGraph, getRouting } from '../../routing/api.js';
 import { accessibilityStyleFunction, lineStyle } from '/map/styles.js';
 import { topbarcomp } from './TopBarComp.js';
+import { GeoJSON } from "ol/format"
 
 const analysistopbar = {
     components: { topbarcomp },
@@ -57,7 +58,7 @@ const analysistopbar = {
             {
                 multigraphlayer.delete();
             }
-            var features = new ol.format.GeoJSON().readFeatures(geojson);
+            var features = new GeoJSON().readFeatures(geojson);
             multigraphlayer = new VectorImageLayer(features, 'Polygon', 'multigraphlayer');
             multigraphlayer.setStyle(accessibilityStyleFunction);
             map.addLayer(multigraphlayer);
@@ -102,7 +103,7 @@ const analysistopbar = {
                 routinglayer.delete();
             }
             console.log(geojson)
-            var features = new ol.format.GeoJSON().readFeatures(geojson);
+            var features = new GeoJSON().readFeatures(geojson);
             routinglayer = new VectorLayer(features, 'LineString', 'routinglayer');
             routinglayer.setStyle(lineStyle(true));
             map.addLayer(routinglayer);
@@ -135,7 +136,7 @@ const analysistopbar = {
             var end = new Date().getTime();
             time.value = end - start;
             routinglayer.delete();
-            features = new ol.format.GeoJSON().readFeatures(geojson);
+            features = new GeoJSON().readFeatures(geojson);
             routinglayer = new VectorLayer(features, 'LineString', 'routinglayer');
             routinglayer.setStyle(lineStyle(true));
             map.addLayer(routinglayer);

@@ -1,24 +1,29 @@
 import { VectorLayer } from "/map/VectorLayer.js";
+import { useGeographic } from "ol/proj"
+import { OSM } from "ol/source"
+import { Map, View } from "ol";
+import { Tile } from "ol/layer";
+import { defaults } from "ol/control"
 
 class Map2D 
 {
     constructor()
     {
-      ol.proj.useGeographic();
+      useGeographic();
 
-      this.baselayer = new ol.layer.Tile({source: new ol.source.OSM()});
+      this.baselayer = new Tile({source: new OSM()});
 
       this.layers = [];
 
       this.focusfeature = {layer: null, feature: null, changed: false, pos: [0,0]};
 
-      this.olmap = new ol.Map({
+      this.olmap = new Map({
         layers: [this.baselayer],
-        view: new ol.View({
+        view: new View({
           center: [9.7320104,52.3758916],
           zoom: 12
         }),
-        controls : ol.control.defaults({
+        controls : defaults({
           attribution : false,
           zoom : false,
         }),

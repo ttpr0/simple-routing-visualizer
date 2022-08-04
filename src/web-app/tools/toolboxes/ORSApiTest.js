@@ -6,6 +6,7 @@ import { getMap } from '/map/maps.js';
 import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_style, targamo_style } from '/map/styles.js';
 import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api.js'
 import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util.js'
+import { GeoJSON } from 'ol/format';
 
 
 const map = getMap();
@@ -45,7 +46,7 @@ async function run(param, out, addMessage)
     var end = new Date().getTime();
     var features = [];
     polygons.forEach(polygon => {
-      features = features.concat(new ol.format.GeoJSON().readFeatures(polygon));
+      features = features.concat(new GeoJSON().readFeatures(polygon));
     });
     out.orslayer = new VectorLayer(features, 'Polygon', 'orslayer');
     //out.orslayer.setStyle(ors_style);

@@ -1,5 +1,4 @@
 import { createApp, ref, reactive, onMounted} from 'vue'
-import { Map2D } from '/map/Map2D.js';
 import { VectorLayer } from './map/VectorLayer.js';
 import { getState } from './store/state.js';
 import { mapregion } from './components/mapregion/MapRegion.js';
@@ -9,9 +8,8 @@ import { sidebar } from './components/sidebar/SideBar.js';
 import { getMap } from './map/maps.js';
 import 'vuetify/styles'
 import { VSystemBar, VSpacer, VIcon, VApp, VFooter } from 'vuetify/components';
-import { Splitpanes, Pane } from 'splitpanes';
-import 'splitpanes/dist/splitpanes.css'
 import { dragablewindow } from '/components/util/DragableWindow.js';
+import { GeoJSON } from "ol/format"
 
 const app = createApp({
   components: { sidebar, toolbar, mapregion, topbar, footerbar, dragablewindow },
@@ -30,7 +28,7 @@ const app = createApp({
     fetch(window.location.origin + '/datalayers/hospitals.geojson')
       .then(response => response.json())
       .then(response => {
-        var points = new ol.format.GeoJSON().readFeatures(response);
+        var points = new GeoJSON().readFeatures(response);
         var layer = new VectorLayer(points, 'Point', 'hospitals');
         map.addLayer(layer);
         setFocusLayer(layer.name);

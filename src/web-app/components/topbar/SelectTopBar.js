@@ -3,6 +3,10 @@ import { VectorLayer } from '/map/VectorLayer.js'
 import { getState } from '/store/state.js';
 import { getMap } from '/map/maps.js';
 import { topbarcomp } from './TopBarComp.js';
+import { DragBox } from "ol/interaction"
+import { toLonLat } from 'ol/proj';
+import { Point } from 'ol/geom';
+import { Feature } from 'ol';
 
 const selecttopbar = {
     components: { topbarcomp },
@@ -59,8 +63,8 @@ const selecttopbar = {
           alert("pls select a layer to add point to!");
           return;
         }
-        var feature = new ol.Feature({
-          geometry: new ol.geom.Point(e.coordinate),
+        var feature = new Feature({
+          geometry: new Point(e.coordinate),
           name: 'new Point',
         });
         layer.addFeature(feature);
@@ -77,15 +81,15 @@ const selecttopbar = {
         });
       }
 
-      const dragBox = new ol.interaction.DragBox();
+      const dragBox = new DragBox();
       dragBox.on(['boxend'], function(e) {
           map.layers.forEach(layer => {
               if (map.isVisibile(layer.name))
               {
                   layer.unselectAll();
                   var box = dragBox.getGeometry().getExtent();
-                  var ll = ol.proj.toLonLat([box[0], box[1]]);
-                  var ur = ol.proj.toLonLat([box[2], box[3]]);
+                  var ll = toLonLat([box[0], box[1]]);
+                  var ur = toLonLat([box[2], box[3]]);
                   box = [ll[0], ll[1], ur[0], ur[1]];
                   layer.getSource().forEachFeatureInExtent(box, function(feature) {
                     layer.selectFeature(feature);

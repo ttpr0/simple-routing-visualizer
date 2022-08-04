@@ -1,12 +1,15 @@
 import { defaultStyle, defaultHighlightStyle } from "./styles.js";
+import { Vector } from 'ol/layer';
+import { Vector as VectorSource } from 'ol/source'
 
-class VectorLayer extends ol.layer.Vector 
+class VectorLayer extends Vector 
 {
     constructor(features, type, name)
     {
         features.filter(element => { return element.getGeometry().getType() === "*" + type });
-        var source = new ol.source.Vector({
+        var source = new VectorSource({
             features: features,
+            projection: 'EPSG:4326'
         });
         super({source: source});
         this.type = type;

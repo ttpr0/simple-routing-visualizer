@@ -5,6 +5,7 @@ import { getMap } from '/map/maps.js';
 import { getToolStore } from '/tools/toolstore.js'
 import { topbarcomp } from './TopBarComp.js';
 import { openDirectory } from '/util/fileapi.js'
+import { GeoJSON } from "ol/format"
 
 const layertopbar = {
     components: { topbarcomp },
@@ -26,7 +27,7 @@ const layertopbar = {
           var files = layerdialog.value.files;
           var reader = new FileReader();
           reader.onloadend = () => {
-              var points = new ol.format.GeoJSON().readFeatures(reader.result);
+              var points = new GeoJSON().readFeatures(reader.result);
               var layer = new VectorLayer(points, 'Point', files[0].name.split(".")[0]);
               map.addLayer(layer);
               updateLayerTree();

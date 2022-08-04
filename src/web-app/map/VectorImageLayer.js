@@ -1,11 +1,13 @@
 import { defaultStyle, defaultHighlightStyle } from "./styles.js";
+import { VectorImage } from 'ol/layer';
+import { Vector } from 'ol/source'
 
-class VectorImageLayer extends ol.layer.VectorImage 
+class VectorImageLayer extends VectorImage 
 {
     constructor(features, type, name)
     {
         features.filter(element => { return element.getGeometry().getType() === "*" + type });
-        var source = new ol.source.Vector({
+        var source = new Vector({
             features: features,
         });
         super({source: source});
