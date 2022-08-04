@@ -1,15 +1,14 @@
-﻿# CMakeList.txt: CMake-Projekt für "osm2graph". Schließen Sie die Quelle ein, und definieren Sie
-# projektspezifische Logik hier.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
 
-add_executable (osm2graph  
-"osm2graph.cpp")
+project(osm2graph)  
 
-target_link_libraries(osm2graph lib/zlib)
+add_executable(${PROJECT_NAME}  
+    "src/osm2graph.cpp"
+)
 
-target_include_directories(osm2graph PUBLIC include)
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/lib/libzlib.a)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/default.pbf DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/data)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 
-# Fügen Sie der ausführbaren Datei dieses Projekts eine Quelle hinzu.
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
