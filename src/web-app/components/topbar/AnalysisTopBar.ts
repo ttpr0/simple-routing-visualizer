@@ -1,8 +1,7 @@
 import { computed, ref, reactive, watch, toRef} from 'vue'
 import { VectorLayer } from '/map/VectorLayer'
 import { VectorImageLayer } from '/map/VectorImageLayer'
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState, getMapState } from '/state';
 import { getMultiGraph, getRouting } from '/routing/api';
 import { accessibilityStyleFunction, lineStyle } from '/map/styles';
 import { topbarcomp } from '/components/topbar/TopBarComp';
@@ -12,8 +11,8 @@ const analysistopbar = {
     components: { topbarcomp },
     props: [ ],
     setup(props) {
-        const state = getState();
-        const map  = getMap();
+        const state = getAppState();
+        const map  = getMapState();
 
         function updateLayerTree() {
           state.layertree.update = !state.layertree.update;

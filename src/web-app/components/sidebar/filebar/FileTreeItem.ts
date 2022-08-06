@@ -1,7 +1,6 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState } from '/state';
 import { VIcon, VList, VMenu, VListItem } from 'vuetify/components';
 
 const filetreeitem = {
@@ -9,8 +8,7 @@ const filetreeitem = {
     props: [ 'path', 'name', 'type', 'open' ],
     emits: [ 'click', 'refresh', 'close' ],
     setup(props, ctx) {
-        const state = getState();
-        const map = getMap();
+        const state = getAppState();
 
         const showmenu = ref(false);
         const menuitems = reactive([]);

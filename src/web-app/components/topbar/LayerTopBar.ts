@@ -1,7 +1,6 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer'
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState, getMapState } from '/state';
 import { getToolStore } from '/tools/toolstore'
 import { topbarcomp } from './TopBarComp';
 import { openDirectory } from '/util/fileapi'
@@ -11,16 +10,12 @@ const layertopbar = {
     components: { topbarcomp },
     props: [ ],
     setup(props) {
-      const state = getState();
-      const map = getMap();
+      const state = getAppState();
+      const map = getMapState();
       const toolstore = getToolStore();
 
       const layerdialog = ref(null);
       const tooldialog = ref(null);
-
-      function updateLayerTree() {
-        state.layertree.update = !state.layertree.update;
-      }
 
       function openLayer()
       {
@@ -30,7 +25,6 @@ const layertopbar = {
               var points = new GeoJSON().readFeatures(reader.result);
               var layer = new VectorLayer(points, 'Point', files[0].name.split(".")[0]);
               map.addLayer(layer);
-              updateLayerTree();
           };
           reader.readAsText(files[0]); 
       }
@@ -47,7 +41,6 @@ const layertopbar = {
           }
           var layer = new VectorLayer([], 'Point', layername);
           map.addLayer(layer);
-          updateLayerTree();
       }
 
       async function openFolder() {

@@ -1,7 +1,6 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState, getMapState } from '/state';
 import './ToolBar.css'
 import { VIcon, VTooltip, VCheckbox, VSelect, VTextField, VSlider, VCard, VCardText } from 'vuetify/components';
 
@@ -10,7 +9,7 @@ const toolparam = {
     emits: [ 'update:modelValue' ],
     props: [ 'modelValue', 'param' ],
     setup(props, ctx) {
-        const map = getMap();
+        const map = getMapState();
 
         const value = computed({
             get() {

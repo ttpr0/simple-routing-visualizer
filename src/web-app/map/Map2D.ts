@@ -20,8 +20,6 @@ class Map2D
 
       this.layers = [];
 
-      this.focusfeature = {layer: null, feature: null, changed: false, pos: [0,0]};
-
       this.olmap = new Map({
         layers: [this.baselayer],
         view: new View({

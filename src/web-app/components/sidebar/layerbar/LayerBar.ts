@@ -1,21 +1,17 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { layertreeitem } from './LayerTreeItem';
 import { VectorLayer } from '/map/VectorLayer';
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState, getMapState } from '/state';
 import './LayerBar.css'
 
 const layerbar = {
     components: { layertreeitem },
     props: [ ],
     setup(props) {
-        const state = getState();
-        const map = getMap();
+        const state = getAppState();
+        const map = getMapState();
 
-        const layers = computed(() => {
-            let test = state.layertree.update;
-            return map.layers;
-        })
+        const layers = computed(() => map.layers);
 
         return { layers }
     },

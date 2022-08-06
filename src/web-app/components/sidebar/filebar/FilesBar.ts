@@ -1,7 +1,6 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState } from '/state';
 import './FilesBar.css'
 import { filetree } from './FileTree';
 
@@ -9,8 +8,7 @@ const filesbar = {
     components: { filetree },
     props: [ ],
     setup(props) {
-        const state = getState();
-        const map = getMap();
+        const state = getAppState();
 
         const directories = computed(() => {
             return state.filetree.connections;

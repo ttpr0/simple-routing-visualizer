@@ -1,7 +1,6 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState } from '/state';
 import './ToolBar.css'
 import { VAutocomplete, VList, VProgressLinear, VIcon } from 'vuetify/components';
 
@@ -10,7 +9,7 @@ const toolcontainer = {
     emits: ['close', 'run', 'info' ],
     props: [ 'toolname' ],
     setup(props, ctx) {
-        const state = getState();
+        const state = getAppState();
 
         const onclose = () => {
             ctx.emit('close');

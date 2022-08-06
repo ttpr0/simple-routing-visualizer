@@ -1,11 +1,10 @@
 import { createApp, ref, reactive, onMounted} from 'vue'
 import { VectorLayer } from '/map/VectorLayer';
-import { getState } from '/store/state';
+import { getAppState, getMapState } from '/state';
 import { mapregion } from '/components/mapregion/MapRegion';
 import { footerbar } from '/components/footerbar/FooterBar';
 import { topbar } from '/components/topbar/TopBar';
 import { sidebar } from '/components/sidebar/SideBar';
-import { getMap } from '/map/maps';
 import 'vuetify/styles'
 import { VSystemBar, VSpacer, VIcon, VApp, VFooter } from 'vuetify/components';
 import { dragablewindow } from '/components/util/DragableWindow';
@@ -14,16 +13,8 @@ import { GeoJSON } from "ol/format"
 const app = createApp({
   components: { sidebar, toolbar, mapregion, topbar, footerbar, dragablewindow },
   setup() {
-    const map = getMap();
-    const state = getState();
-
-    function updateLayerTree() {
-      state.layertree.update = !state.layertree.update;
-    }
-    function setFocusLayer(layer)
-    {
-      state.layertree.focuslayer = layer;
-    }
+    const map = getMapState();
+    const state = getAppState();
 
     fetch(window.location.origin + '/datalayers/hospitals.geojson')
       .then(response => response.json())
@@ -31,8 +22,7 @@ const app = createApp({
         var points = new GeoJSON().readFeatures(response);
         var layer = new VectorLayer(points, 'Point', 'hospitals');
         map.addLayer(layer);
-        setFocusLayer(layer.name);
-        updateLayerTree();
+        map.focuslayer = layer.name;
     });
 
     return { state }

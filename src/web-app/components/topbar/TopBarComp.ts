@@ -1,5 +1,4 @@
 import { computed, ref, reactive, onMounted, defineExpose} from 'vue';
-import { getMap } from '/map/maps';
 import './TopBarComp.css'
 
 const topbarcomp = {

@@ -1,15 +1,14 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { VectorImageLayer } from '/map/VectorImageLayer'
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
 import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_style, targamo_style } from '/map/styles';
 import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api'
 import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
+import { getMapState } from '/state';
 
 
-const map = getMap();
-const state = getState();
+const map = getMapState();
+
 
 const param = [
   {name: 'url', title: 'URL', info: 'URL zum ORS-Server (bis zum API-Endpoint, z.B. localhost:5000/v2)', type: 'text', text: 'API-URL', default: 'http://172.26.62.41:8080/ors/v2'},

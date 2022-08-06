@@ -1,6 +1,5 @@
 import { computed, ref, reactive, onMounted, watch} from 'vue';
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState, getMapState } from '/state';
 import { VIcon, VSpacer } from 'vuetify/components';
 import "./FooterBar.css"
 import { footerbaritem } from './FooterBarItem';
@@ -10,21 +9,14 @@ const footerbar = {
     props: [],
     setup() {
 
-        const map = getMap();
-        const state = getState();
+        const map = getMapState();
+        const state = getAppState();
 
         const focuslayer = computed(() => {
-            return state.layertree.focuslayer;
+            return map.focuslayer;
         })
 
-        const position = computed(() => {
-            var s = state.map.moved;
-            var view = map.olmap.getView();
-            s = view.getCenter();
-            var center = String(s[0])+ "; " + String(s[1])
-            var zoom = view.getZoom();
-            return [center, zoom]
-        })
+        const position = computed(() => map.map_position )
 
 
         const openOSM = () => { window.open("https://www.openstreetmap.org/copyright"); }

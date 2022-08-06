@@ -1,6 +1,5 @@
 import { computed, ref, reactive, onMounted, watch} from 'vue';
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState } from '/state';
 import { VIcon, VSpacer } from 'vuetify/components';
 import "./FooterBarItem.css"
 

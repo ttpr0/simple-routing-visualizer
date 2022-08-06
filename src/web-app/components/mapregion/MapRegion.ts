@@ -1,19 +1,14 @@
 import { computed, ref, reactive, onMounted, watch} from 'vue';
 import { dragablewindow } from '/components/util/DragableWindow';
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState, getMapState } from '/state';
 import "./MapRegion.css"
 
 const mapregion = {
     components: { dragablewindow },
     props: [],
     setup() {
-        const state = getState();
-        const map = getMap();
-
-        map.on('moveend', () => {
-            state.map.moved = !state.map.moved;
-        })
+        const state = getAppState();
+        const map = getMapState();
 
         const showDialog = computed(() => { return state.featureinfo.display; });
         const pos = computed(() => { return state.featureinfo.pos; });
@@ -37,7 +32,7 @@ const mapregion = {
         }
 
         onMounted(() => {
-            map.olmap.setTarget("mapregion")
+            map.setTarget("mapregion")
         })
 
         return {text, state, pos, showDialog, setShow}

@@ -1,23 +1,18 @@
 import { computed, ref, reactive, onMounted, defineExpose} from 'vue'
-import { getState } from '/store/state';
+import { getAppState, getMapState } from '/state';
 import { VIcon } from 'vuetify/components';
-import { getMap } from '/map/maps';
 
 const layertreeitem = {
     components: { VIcon },
     props: ["layer"],
     setup(props) {
-        const state = getState();
-        const map = getMap();
+        const state = getAppState();
+        const map = getMapState();
 
         const icons = {
             'Polygon': 'mdi-vector-polygon',
             'LineString': 'mdi-vector-polyline',
             'Point': 'mdi-dots-hexagon',
-        }
-
-        function update() {
-            state.layertree.update = !state.layertree.update;
         }
 
         function handleDisplay()
@@ -28,16 +23,15 @@ const layertreeitem = {
         function handleClose()
         {
             map.removeLayer(props.layer.name);
-            update();
         }
 
         function handleClick()
         {
-            state.layertree.focuslayer = props.layer.name;
+            map.focuslayer = props.layer.name;
         }
 
         const isFocus = computed(() => {
-            return props.layer.name === state.layertree.focuslayer
+            return props.layer.name === map.focuslayer
         });
 
         return { handleDisplay, handleClose, handleClick, isFocus, icons, map }

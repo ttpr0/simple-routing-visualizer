@@ -1,7 +1,6 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState } from '/state';
 import { filetreeitem } from './FileTreeItem';
 import { refreshDirectory, closeDirectory } from '/util/fileapi';
 
@@ -10,8 +9,7 @@ const filetree = {
     components: { filetreeitem },
     props: [ 'path', 'item' ],
     setup(props, ctx) {
-        const state = getState();
-        const map = getMap();
+        const state = getAppState();
 
         const open = ref(false);
 

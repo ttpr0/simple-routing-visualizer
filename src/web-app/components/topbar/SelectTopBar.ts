@@ -1,7 +1,6 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer'
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState, getMapState } from '/state';
 import { topbarcomp } from './TopBarComp';
 import { DragBox } from "ol/interaction"
 import { toLonLat } from 'ol/proj';
@@ -12,8 +11,8 @@ const selecttopbar = {
     components: { topbarcomp },
     props: [ ],
     setup(props) {
-      const state = getState();
-      const map = getMap();
+      const state = getAppState();
+      const map = getMapState();
 
       function setFeatureInfo(feature, pos, display) {
         if (feature != null) state.featureinfo.feature = feature;
@@ -24,7 +23,7 @@ const selecttopbar = {
       function selectListener(e)
       {
         var count = 0;
-        map.olmap.forEachFeatureAtPixel(e.pixel, function (feature, layer) 
+        map.forEachFeatureAtPixel(e.pixel, function (feature, layer) 
         {
           count++;
           if (layer.isSelected(feature))
@@ -38,7 +37,7 @@ const selecttopbar = {
         });
         if (count == 0)
         {
-          map.layers.forEach(layer => {
+          map.forEachLayer(layer => {
             if (map.isVisibile(layer.name))
             {
               layer.unselectAll();
@@ -49,7 +48,7 @@ const selecttopbar = {
 
       function featureinfoListener(e)
       {
-        map.olmap.forEachFeatureAtPixel(e.pixel, function (feature, layer) 
+        map.forEachFeatureAtPixel(e.pixel, function (feature, layer) 
         {
           setFeatureInfo(feature, e.pixel, true);
         });
@@ -57,7 +56,7 @@ const selecttopbar = {
 
       function addpointListener(e)
       {
-        var layer = map.getLayerByName(state.layertree.focuslayer);
+        var layer = map.getLayerByName(map.focuslayer);
         if (layer == null)
         {
           alert("pls select a layer to add point to!");
@@ -72,36 +71,19 @@ const selecttopbar = {
 
       function delpointListener(e)
       {
-        map.olmap.forEachFeatureAtPixel(e.pixel, function (feature, layer) 
+        map.forEachFeatureAtPixel(e.pixel, function (feature, layer) 
         {
-          if (layer.name === state.layertree.focuslayer)
+          if (layer.name === map.focuslayer)
           {
             layer.removeFeature(feature);
           }
         });
       }
 
-      const dragBox = new DragBox();
-      dragBox.on(['boxend'], function(e) {
-          map.layers.forEach(layer => {
-              if (map.isVisibile(layer.name))
-              {
-                  layer.unselectAll();
-                  var box = dragBox.getGeometry().getExtent();
-                  var ll = toLonLat([box[0], box[1]]);
-                  var ur = toLonLat([box[2], box[3]]);
-                  box = [ll[0], ll[1], ur[0], ur[1]];
-                  layer.getSource().forEachFeatureInExtent(box, function(feature) {
-                    layer.selectFeature(feature);
-                  });
-              }
-          });
-      });
-
       var featureinfoActive = ref(false);
       var selectActive = ref(false);
       activateSelect();
-      var dragboxActive = ref(false);
+      var dragboxActive = computed(() => map.dragbox_active);
       var addpointActive = ref(false);
       var delpointActive = ref(false);
 
@@ -109,13 +91,11 @@ const selecttopbar = {
       {
         if (dragboxActive.value)
         {
-          map.removeInteraction(dragBox);
-          dragboxActive.value = false;
+          map.deactivateDragBox();
         }
         else
         {
-          map.addInteraction(dragBox);
-          dragboxActive.value = true;
+          map.activateDragBox();
         }
       }
 

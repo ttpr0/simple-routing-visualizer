@@ -1,7 +1,6 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { getState } from '/store/state';
-import { getMap } from '/map/maps';
+import { getAppState, getMapState } from '/state';
 import { getToolStore } from '/tools/toolstore';
 import './ToolBar.css'
 import { VAutocomplete, VList } from 'vuetify/components';
@@ -12,13 +11,9 @@ const toolbar = {
     components: { VAutocomplete, VList, toolcontainer, toolparam },
     props: [ ],
     setup(props) {
-        const state = getState();
-        const map = getMap();
+        const state = getAppState();
+        const map = getMapState();
         const toolstore = getToolStore();
-
-        function updateLayerTree() {
-            state.layertree.update = !state.layertree.update;
-        }
 
         const tools = computed(() => {
             let test = state.toolbox.update;
@@ -80,7 +75,6 @@ const toolbar = {
                         map.addLayer(out[element.name]);
                     }                    
                 });
-                updateLayerTree();
                 addMessage("Succesfully finished", 'green');
                 state.tools.state = 'finished';
             }
