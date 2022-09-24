@@ -1,13 +1,12 @@
 import { createApp, ref, reactive, onMounted} from 'vue'
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState, getMapState } from '/state';
-import { mapregion } from '/components/mapregion/MapRegion';
-import { footerbar } from '/components/footerbar/FooterBar';
-import { topbar } from '/components/topbar/TopBar';
-import { sidebar } from '/components/sidebar/SideBar';
+import { mapregion } from '/app/mapregion/MapRegion';
+import { footerbar } from '/app/footerbar/FooterBar';
+import { topbar } from '/app/topbar/TopBar';
+import { sidebar } from '/app/sidebar/SideBar';
 import 'vuetify/styles'
-import { VSystemBar, VSpacer, VIcon, VApp, VFooter } from 'vuetify/components';
-import { dragablewindow } from '/components/util/DragableWindow';
+import { dragablewindow } from '/app/util/DragableWindow';
 import { GeoJSON } from "ol/format"
 
 const app = createApp({
@@ -31,8 +30,10 @@ const app = createApp({
   template: `
   <div class="appcontainer">
     <topbar></topbar>
-    <sidebar></sidebar>
-    <mapregion></mapregion>
+    <div class="middlecontainer">
+      <sidebar></sidebar>
+      <mapregion></mapregion>
+    </div>
     <footerbar></footerbar>
     <dragablewindow v-if="state.tools.toolinfo.show" :pos="state.tools.toolinfo.pos" name="Tool-Info" icon="mdi-information-outline" @onclose="state.tools.toolinfo.show=false">
       <div class="tooltext"><span v-html="state.tools.toolinfo.text"></span></div>

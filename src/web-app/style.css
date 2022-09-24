@@ -7,9 +7,14 @@ body {
 .appcontainer {
   height: 100%;
   width: 100%;
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  grid-template-rows: 150px 1fr;
+  color: rgb(165, 165, 165);
+}
+
+.middlecontainer {
+  height: calc(100vh - 57px);
+  width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .tooltext {

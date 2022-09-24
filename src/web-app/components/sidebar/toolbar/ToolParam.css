@@ -1,0 +1,36 @@
+.toolparam {
+    width: 100%;
+    height: max-content;
+    padding: 10px;
+}
+
+.toolparam .header {
+    height: 15px;
+}
+
+.toolparam .body {
+    padding-top: 10px;
+    padding-bottom: 0px;
+    height: fit-content;
+}
+
+.toolparam .body input[type=text] {
+    width: 100%;
+    padding: 6px 10px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.toolparam .body select {
+    width: 100%;
+    padding: 10px 10px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    -webkit-appearance: menulist;
+}

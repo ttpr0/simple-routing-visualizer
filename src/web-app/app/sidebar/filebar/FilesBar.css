@@ -1,0 +1,74 @@
+.filesbar {
+    height: 500px;
+    width: 250px;
+    background-color: transparent;
+    padding: 20px;
+    font-size: 16;
+}
+
+.filesbar .divider {
+    height: 1px;
+    width: 200px;
+    background-color: darkgray;
+    margin: 15px 0px;
+}
+
+.filetree {
+    width: fit-content;
+    height: fit-content;
+    position: relative;
+}
+
+.filetree .children {
+    position: relative;
+    left: 20px;
+}
+
+.filetreeitem {
+    padding: 0px 20px 0px 0px;
+    height: 30px;
+    width: max-content;
+}
+
+.filetreeitem .item {
+    z-index: 1;
+    user-select: none;
+    cursor: pointer;
+}
+
+.filetreeitem .item:hover {
+    background-color: white;
+}
+
+.filetreeitem .icon {
+    width: 20px;
+    display: inline-block;
+}
+
+.filetreeitem .text {
+    width: fit-content;
+    display: inline-block;
+}
+
+.filetreeitem .menu {
+    width: fit-content;
+    height: fit-content;
+    background-color: white;
+    position: absolute;
+    top: 30px;
+    z-index: 2;
+    box-shadow: 0 0 1em grey;
+}
+
+.filetreeitem .menuitem {
+    width: 150;
+    height: 30;
+    padding: 5px;
+    background-color: white;
+    cursor: pointer;
+    user-select: none;
+}
+
+.filetreeitem .menuitem:hover {
+    background-color: lightgray;
+}

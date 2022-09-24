@@ -1,0 +1,33 @@
+.topbaritem {
+    height: 33px;
+    width: fit-content;
+    position: relative;
+    float: left;
+    background-color: rgb(71, 71, 71);
+}
+
+.topbaritem  .tab {
+    height: 33px;
+    width: fit-content;
+    padding: 5px 15px;
+}
+
+.topbaritem:hover {
+    background-color: rgb(81, 81, 81);
+}
+.topbaritem.active {
+    background-color: rgb(81, 81, 81);
+}
+.topbaritem.active:hover {
+    background-color: rgb(81, 81, 81);
+}
+
+.topbaritem.active .menu {
+    position: absolute;
+    top: 100%;
+    left: 0%;
+    height: fit-content;
+    width: 200px;
+    background-color: rgb(71, 71, 71);
+    z-index: 100;
+}

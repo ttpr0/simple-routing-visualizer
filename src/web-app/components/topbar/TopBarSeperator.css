@@ -1,0 +1,12 @@
+.topbarseperator {
+    width: 200px;
+    height: 1px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: rgb(165, 165, 165);
+}

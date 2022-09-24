@@ -1,0 +1,21 @@
+.topbarbutton {
+    width: 200px;
+    height: 24px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: rgb(71, 71, 71);
+    font-size: 13;
+    text-align: left;
+}
+.topbarbutton:hover {
+    background-color: rgb(81, 81, 81);;  
+}
+.topbarbutton.highlight {
+    background-color: rgb(65, 163, 170);
+}
+.topbarbutton.highlight:hover {
+    background-color: rgb(65, 163, 170);
+}

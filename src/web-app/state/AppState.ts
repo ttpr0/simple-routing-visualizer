@@ -1,7 +1,7 @@
 class AppState
 {
     topbar = {
-        active: 'select',
+        active: null,
     }
 
     sidebar = {

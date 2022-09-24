@@ -1,6 +1,7 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
-import { getMapState } from '/state';
-import './ToolParam.css'
+import { VectorLayer } from '/map/VectorLayer';
+import { getAppState, getMapState } from '/state';
+import './ToolBar.css'
 import { VIcon, VTooltip, VCombobox } from 'vuetify/components';
 
 const toolparam = {
