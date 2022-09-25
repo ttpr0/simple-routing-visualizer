@@ -1,6 +1,6 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { getAppState } from '/state';
+import { getAppState, getToolbarState } from '/state';
 import './ToolBar.css'
 import { VAutocomplete, VList, VProgressLinear, VIcon } from 'vuetify/components';
 
@@ -10,6 +10,7 @@ const toolcontainer = {
     props: [ 'toolname' ],
     setup(props, ctx) {
         const state = getAppState();
+        const toolbar = getToolbarState();
 
         const onclose = () => {
             ctx.emit('close');
@@ -24,41 +25,41 @@ const toolcontainer = {
         }
 
         const running = computed(() => {
-            if (state.tools.currtool === props.toolname)
+            if (toolbar.currtool.name === props.toolname)
             {
-                return state.tools.state === 'running'; 
+                return toolbar.state === 'running'; 
             }
             else
             { return false; }
         });
 
         const error = computed(() => {
-            if (state.tools.currtool === props.toolname)
+            if (toolbar.currtool.name === props.toolname)
             {
-                return state.tools.state === 'error'; 
+                return toolbar.state === 'error'; 
             }
             else
             { return false; }
         });
 
         const finished = computed(() => {
-            if (state.tools.currtool === props.toolname)
+            if (toolbar.currtool.name === props.toolname)
             {
-                return state.tools.state === 'finished'; 
+                return toolbar.state === 'finished'; 
             }
             else
             { return false; }
         })
 
         const disableinfo = computed(() => {
-            if (state.tools.currtool !== props.toolname)
+            if (toolbar.currtool.name !== props.toolname)
             { return true; }
             else 
             { return false; }
         });
 
         const disablerun = computed(() => {
-            return state.tools.running === 'running';
+            return toolbar.running === 'running';
         });
 
         return { onclose, onrun, oninfo, running, disablerun, disableinfo, error, finished }

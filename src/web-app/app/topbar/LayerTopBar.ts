@@ -1,7 +1,6 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer'
-import { getAppState, getMapState } from '/state';
-import { getToolStore } from '/tools/toolstore'
+import { getAppState, getMapState, getToolbarState } from '/state';
 import { topbaritem } from '/components/topbar/TopBarItem';
 import { topbarbutton } from '/components/topbar/TopBarButton';
 import { topbarseperator } from '/components/topbar/TopBarSeperator';
@@ -15,7 +14,7 @@ const layertopbar = {
     setup(props) {
       const state = getAppState();
       const map = getMapState();
-      const toolstore = getToolStore();
+      const toolbar = getToolbarState();
 
       const layerdialog = ref(null);
       const tooldialog = ref(null);
@@ -57,14 +56,11 @@ const layertopbar = {
           var reader = new FileReader();
           reader.onloadend = async () => {
             if (reader.result instanceof ArrayBuffer)
-            {
-                return
-            }
+                return;
             let b64moduleData = "data:text/javascript;base64," + btoa(reader.result);
             let { toolbox } = await import(/* @vite-ignore */b64moduleData);
 
-            toolstore.loadToolBox(toolbox);
-            state.toolbox.update = !state.toolbox.update;
+            toolbar.loadTools(toolbox.tools, toolbox.name);
           };
           reader.readAsText(files[0]); 
       }

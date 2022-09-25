@@ -5,20 +5,27 @@ import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_st
 import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api'
 import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
 import { getMapState } from '/state';
+import { ITool } from '/tools/ITool';
 
 
 const map = getMapState();
 
-const param = [
-  {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
-  {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", values: ['Isochrone', 'IsoRaster'], text:"Test-Mode", default: 'Isochrone'},
-]
-
-const out = [
-]
-
-async function run(param, out, addMessage)
+class TestIsolines implements ITool
 {
+  name: string = "TestIsolines";
+  getParameterInfo(): object[] {
+    throw new Error('Method not implemented.');
+  }
+  getOutputInfo(): object[] {
+    throw new Error('Method not implemented.');
+  }
+  param = [
+    {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
+  ]
+
+  out = []
+
+  async run(param, out, addMessage) {
     const layer = map.getLayerByName(param.layer);
     if (layer == null || layer.type != "Point")
     {
@@ -26,30 +33,25 @@ async function run(param, out, addMessage)
     }
     if (layer.selectedfeatures.length != 1)
     {
-      throw new Error("pls select only one feature");
+        throw new Error("pls select only one feature");
     }
-    if (param.testmode === "Isochrone")
-        var alg = getDockerPolygon;
-    else
-        alg = getIsoRaster;
     var times = {};
-    var ranges = [300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000, 3300, 3600, 3900, 4200, 4500, 4800, 5100, 5400];
-    for (var j = 0; j < ranges.length; j++)
+    for (var i=1; i<11; i++)
     {
-      var range = ranges[j];
-      addMessage(range);
-      times[range] = [];
+      var range = randomRanges(i, 3600);
+      addMessage(i);
+      times[i] = [];
       for (var c=0; c<5; c++)
       {
         var points = [layer.selectedfeatures[0]];
         var start = new Date().getTime();
         await Promise.all(points.map(async element => {
           var location = element.getGeometry().getCoordinates();
-          var geojson = await alg([location], [range]);
+          var geojson = await getDockerPolygon([location], range);
         }));
         var end = new Date().getTime();
         var time = end - start;
-        times[range].push(time);
+        times[i].push(time);
       }
     }
     var l = [];
@@ -61,12 +63,9 @@ async function run(param, out, addMessage)
       l.push(k+", "+mean+", "+std);
     }
     addMessage(l.join('\n'))
+  }
 }
 
-const tool = {
-  param: param,
-  out: out,
-  run
-}
+const tool = new TestIsolines();
 
 export { tool }

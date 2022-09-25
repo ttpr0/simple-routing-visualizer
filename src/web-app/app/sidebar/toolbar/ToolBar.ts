@@ -1,7 +1,6 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { getAppState, getMapState } from '/state';
-import { getToolStore } from '/tools/toolstore';
+import { getAppState, getMapState, getToolbarState } from '/state';
 import './ToolBar.css'
 import { VAutocomplete, VList, VListItem, VListSubheader, VListItemTitle, VListItemAvatar } from 'vuetify/components';
 import { toolcontainer } from './ToolContainer';
@@ -13,83 +12,63 @@ const toolbar = {
     setup(props) {
         const state = getAppState();
         const map = getMapState();
-        const toolstore = getToolStore();
+        const toolbar = getToolbarState();
 
         const tools = computed(() => {
-            let test = state.toolbox.update;
-            let tools = [];
-            for (let t of  Object.keys(toolstore.tools))
-            {
-                tools.push(t);
-            }
-            return tools;
+            return toolbar.tools;
         })
 
         const showSearch = ref(true);
-        const toolname = ref(null);
+        const currtool = computed(() => {
+            return toolbar.currtool;
+        })
 
         const onToolClick = (name) => {
-            toolname.value = name;
+            toolbar.currtool.name = name;
             loadTool();
         }
 
-        const Tool: any = {};
-
         const loadTool = async () => {
-            let t = toolstore.tools[toolname.value];
-            Tool.run = t.run;
-            Tool.param = t.param;
-            Tool.out = t.out;
-            for (let p of Tool.param)
+            let t = toolbar.getTool(toolbar.currtool.name);
+            toolbar.currtool.params = t.param;
+            toolbar.currtool.out = t.out;
+            for (let p of t.param)
             {
-                reactiveObj[p.name] = p.default;
+                reactiveParams[p['name']] = p['default'];
             }
             showSearch.value = false;
         }
 
-        var obj = {};
-        const reactiveObj = reactive(obj);
+        var params = {};
+        const reactiveParams = reactive(params);
 
         function setToolInfo() {
-            state.tools.toolinfo.show = true; 
-            state.tools.toolinfo.pos = [400, 400];          
-        }
-
-        function addMessage(message, color="black") {
-            if (typeof message === 'string')
-            { message = message.replace(/(?:\r\n|\r|\n)/g, '<br>'); }
-            state.tools.toolinfo.text += "<span style='color:" + color + "'>" + message + "</span><br>";
+            toolbar.setToolInfo();
         }
 
         const runTool = async () => {
-            state.tools.currtool = toolname.value;
-            state.tools.state = 'running';
-            state.tools.toolinfo.text = "";
-            const out = {};
-            addMessage("Started " + toolname.value + ":", 'green');
-            try {
-                await Tool.run(obj, out, addMessage);
-                Tool.out.forEach(element => {
-                    if (element.type==='layer') 
-                    {
+            const out = await toolbar.runTool(toolbar.currtool.name, params)
+            if (out == null)
+                return;
+            toolbar.currtool.out.forEach(element => {
+                if (element.type==='layer') 
+                {
+                    try {
                         map.addLayer(out[element.name]);
-                    }                    
-                });
-                addMessage("Succesfully finished", 'green');
-                state.tools.state = 'finished';
-            }
-            catch (e) {
-                addMessage(e, 'red');
-                state.tools.state = 'error';
-            }
+                    }
+                    catch {
+                        return;
+                    }
+                }                    
+            });
         }
 
-        return { toolname, tools, onToolClick, loadTool, showSearch, runTool, reactiveObj, Tool, setToolInfo }
+        return { tools, onToolClick, loadTool, showSearch, runTool, reactiveParams, currtool, setToolInfo }
     },
     template: `
     <div class="toolbar">
         <div v-if="showSearch">
-            <v-autocomplete v-model="toolname" :items="tools" dense filled label="Select Tool" prepend-icon="mdi-wrench" @update:modelValue="loadTool()"></v-autocomplete>
+            <v-autocomplete v-model="currtool.name" :items="tools" dense filled label="Select Tool" prepend-icon="mdi-wrench" @update:modelValue="loadTool()"></v-autocomplete>
             <v-list density="compact" bg-color="rgb(51,51,51)">
                 <v-list-subheader color="white">TOOLS</v-list-subheader>
                 <v-list-item v-for="(item, i) in tools.slice(0,9)" :key="i" :value="item" variant="plain" @click="onToolClick(item)">
@@ -101,8 +80,8 @@ const toolbar = {
             </v-list>
         </div>
         <div v-if="!showSearch">
-            <toolcontainer :toolname="toolname" @close="showSearch=true" @run="runTool()" @info="setToolInfo()">
-                <toolparam v-for="param in Tool.param" v-model="reactiveObj[param.name]" :param="param"></toolparam>
+            <toolcontainer :toolname="currtool.name" @close="showSearch=true" @run="runTool()" @info="setToolInfo()">
+                <toolparam v-for="param in currtool.params" v-model="reactiveParams[param.name]" :param="param"></toolparam>
             </toolcontainer>
         </div>
     </div>

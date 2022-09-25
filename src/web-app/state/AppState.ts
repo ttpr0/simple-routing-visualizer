@@ -14,23 +14,8 @@ class AppState
         display: false,
     }
 
-    toolbox = {
-        update: false,
-    }
-
     filetree = {
         connections: []
-    }
-
-    tools = {
-        toolinfo: {
-            show: false,
-            text: "",
-            pos: [0,0]
-        },
-        currtool: "",
-        state: null,
-        running: "",
     }
 }
 

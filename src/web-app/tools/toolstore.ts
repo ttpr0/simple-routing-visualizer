@@ -1,31 +1,22 @@
+import { ITool } from "./ITool";
+
 class ToolStore 
 {
-    tools;
+    tools: Map<string, ITool>;
 
     constructor() 
     {
-        this.tools = {};
+        this.tools = new Map<string, ITool>();
     }
 
-    loadToolBox(toolbox) 
+    loadTools(tools: ITool[], group_name: string) 
     {
-        for (let t of toolbox.tools)
+        for (let t of tools)
         {
-            let toolname = t.name + "  (" + toolbox.name + ")";
-            this.tools[toolname] = t.tool;
+            let toolname = t.name + "  (" + group_name + ")";
+            this.tools.set(toolname, t);
         }
     }
 }
 
-const toolstore = new ToolStore();
-
-import { toolbox as orstoolbox } from "/tools/toolboxes/ORSToolBox";
-//import { toolbox as testtoolbox } from "./toolboxes/TestToolBox.js";
-toolstore.loadToolBox(orstoolbox);
-//toolstore.loadToolBox(testtoolbox);
-
-function getToolStore() {
-    return toolstore;
-}
-
-export { getToolStore }
+export { ToolStore }

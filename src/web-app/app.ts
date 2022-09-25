@@ -1,6 +1,6 @@
-import { createApp, ref, reactive, onMounted} from 'vue'
+import { createApp, ref, reactive, onMounted, computed} from 'vue'
 import { VectorLayer } from '/map/VectorLayer';
-import { getAppState, getMapState } from '/state';
+import { getAppState, getMapState, getToolbarState } from '/state';
 import { mapregion } from '/app/mapregion/MapRegion';
 import { footerbar } from '/app/footerbar/FooterBar';
 import { topbar } from '/app/topbar/TopBar';
@@ -8,12 +8,23 @@ import { sidebar } from '/app/sidebar/SideBar';
 import 'vuetify/styles'
 import { dragablewindow } from '/app/util/DragableWindow';
 import { GeoJSON } from "ol/format"
+import { toolbox as orstoolbox } from "/tools/orstools/ORSToolBox";
+import { toolbox as testtoolbox } from "/tools/testtools/TestToolBox";
+
 
 const app = createApp({
   components: { sidebar, toolbar, mapregion, topbar, footerbar, dragablewindow },
   setup() {
     const map = getMapState();
     const state = getAppState();
+    const toolbar = getToolbarState();
+
+    const toolinfo = computed(() => {
+      return toolbar.toolinfo;
+    })
+
+    toolbar.loadTools(testtoolbox.tools, testtoolbox.name);
+    toolbar.loadTools(orstoolbox.tools, orstoolbox.name);
 
     fetch(window.location.origin + '/datalayers/hospitals.geojson')
       .then(response => response.json())
@@ -24,7 +35,7 @@ const app = createApp({
         map.focuslayer = layer.name;
     });
 
-    return { state }
+    return { toolinfo }
   },
 
   template: `
@@ -35,8 +46,8 @@ const app = createApp({
       <mapregion></mapregion>
     </div>
     <footerbar></footerbar>
-    <dragablewindow v-if="state.tools.toolinfo.show" :pos="state.tools.toolinfo.pos" name="Tool-Info" icon="mdi-information-outline" @onclose="state.tools.toolinfo.show=false">
-      <div class="tooltext"><span v-html="state.tools.toolinfo.text"></span></div>
+    <dragablewindow v-if="toolinfo.show" :pos="toolinfo.pos" name="Tool-Info" icon="mdi-information-outline" @onclose="toolinfo.show=false">
+      <div class="tooltext"><span v-html="toolinfo.text"></span></div>
     </dragablewindow>
   </div>
   `
