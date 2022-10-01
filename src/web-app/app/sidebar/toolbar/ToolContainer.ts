@@ -2,7 +2,7 @@ import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState, getToolbarState } from '/state';
 import './ToolBar.css'
-import { VAutocomplete, VList, VProgressLinear, VIcon } from 'vuetify/components';
+import { VProgressLinear, VIcon } from 'vuetify/components';
 
 const toolcontainer = {
     components: { VProgressLinear, VIcon },
@@ -25,7 +25,7 @@ const toolcontainer = {
         }
 
         const running = computed(() => {
-            if (toolbar.currtool.name === props.toolname)
+            if (toolbar.toolinfo.tool === props.toolname)
             {
                 return toolbar.state === 'running'; 
             }
@@ -34,7 +34,7 @@ const toolcontainer = {
         });
 
         const error = computed(() => {
-            if (toolbar.currtool.name === props.toolname)
+            if (toolbar.toolinfo.tool === props.toolname)
             {
                 return toolbar.state === 'error'; 
             }
@@ -43,7 +43,7 @@ const toolcontainer = {
         });
 
         const finished = computed(() => {
-            if (toolbar.currtool.name === props.toolname)
+            if (toolbar.toolinfo.tool === props.toolname)
             {
                 return toolbar.state === 'finished'; 
             }
@@ -52,7 +52,7 @@ const toolcontainer = {
         })
 
         const disableinfo = computed(() => {
-            if (toolbar.currtool.name !== props.toolname)
+            if (toolbar.toolinfo.tool !== props.toolname)
             { return true; }
             else 
             { return false; }

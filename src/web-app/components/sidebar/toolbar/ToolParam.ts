@@ -1,10 +1,11 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { getMapState } from '/state';
 import './ToolParam.css'
-import { VIcon, VTooltip, VCombobox } from 'vuetify/components';
+import { VIcon } from 'vuetify/components';
+import { NSlider, NSpace, NSelect, NInput, NPopover, NDynamicTags, NCheckbox } from 'naive-ui';
 
 const toolparam = {
-    components: { VIcon, VTooltip, VCombobox },
+    components: { VIcon, NSlider, NSpace, NSelect, NInput, NPopover, NDynamicTags, NCheckbox },
     emits: [ 'update:modelValue' ],
     props: [ 'modelValue', 'param' ],
     setup(props, ctx) {
@@ -37,38 +38,42 @@ const toolparam = {
         <div class="header">
             <div style="display: inline-block;">{{ param.title }}</div>
             <div style="float: right;">
-                <v-tooltip location='bottom'>
-                    <template v-slot:activator="{ props }">
-                        <v-icon v-bind="props" size="16">mdi-information-outline</v-icon>
+                <n-popover trigger="hover" placement="right">
+                    <template #trigger>
+                        <v-icon size="16">mdi-information-outline</v-icon>
                     </template>
                     <span>{{ param.info }}</span>
-                </v-tooltip>
+                </n-popover>
             </div>
         </div>
         <div class="body">
             <div v-if="param.type==='range'">
-                <input type="range" id="range" v-model="value" :min="param.values[0]" :max="param.values[1]" :step="param.values[2]">
-                <label for="range">{{ value }}</label>
+                <n-space vertical>
+                    <n-slider v-model:value="value" :min="param.values[0]" :max="param.values[1]" :step="param.values[2]"/>
+                </n-space>
             </div>
             <div v-if="param.type==='check'">
-                <input type="checkbox" v-model="value" id="cbx" :checked="param.default">
-                <label for="cbx">{{ '       ' + param.text }}</label>
+                <n-space vertical>
+                    <n-checkbox v-model:checked="value">{{ '       ' + param.text }}</n-checkbox>
+                </n-space>
             </div>
             <div v-if="param.type==='select'">
-                <select v-model="value">
-                    <option v-for="opt in param.values">{{ opt }}</option>
-                </select>
+                <n-space vertical>
+                    <n-select v-model:value="value" :options="param.values.map((item) => { return {label: item, value: item} })" />
+                </n-space>
             </div>
             <div v-if="param.type==='text'">
-                <input type="text" v-model="value" :placeholder="param.text">
+                <n-space vertical>
+                    <n-input v-model:value="value" type="text" placeholder="param.text" />
+                </n-space>
             </div>
             <div v-if="param.type==='list'">
-                <v-combobox v-model="value" :items="[]" :label="param.text" multiple chips density="compact" closable-chips></v-combobox>
+                <n-dynamic-tags v-model:value="value" />
             </div>
             <div v-if="param.type==='layer'">
-                <select v-model="value">
-                    <option v-for="layer in layers">{{ layer }}</option>
-                </select>
+                <n-space vertical>
+                    <n-select v-model:value="value" :options="layers.map((item) => { return {label: item, value: item} })" />
+                </n-space>
             </div>
         </div>
     </div>

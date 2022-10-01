@@ -6,9 +6,10 @@ const TOOLSTORE = new ToolStore();
 class ToolbarState
 {
     toolinfo = {
-            show: false,
-            text: "",
-            pos: [0,0]
+        tool: "",
+        show: false,
+        text: "",
+        pos: [0,0]
     }
     tools = []
     currtool = {

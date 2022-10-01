@@ -8,6 +8,11 @@ body {
   height: 100%;
   width: 100%;
   color: rgb(165, 165, 165);
+  font-size: 15;
+  font-style: normal;
+  font-family: sans-serif;
+  font-stretch: normal;
+  line-height: 1.5;
 }
 
 .middlecontainer {

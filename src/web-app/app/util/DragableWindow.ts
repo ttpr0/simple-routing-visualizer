@@ -1,9 +1,10 @@
 import { createApp, ref, reactive, onMounted, watch} from 'vue'
 import "./DragableWindow.css"
 import { VIcon } from 'vuetify/components';
+import { NConfigProvider, darkTheme } from 'naive-ui';
 
 const dragablewindow = {
-    components: { VIcon },
+    components: { VIcon, NConfigProvider },
     props: [ "icon", "name", "pos"],
     emits: ["onclose"],
     setup(props) {
@@ -51,7 +52,7 @@ const dragablewindow = {
             }
         })
 
-        return { window, windowheader }
+        return { window, windowheader, darkTheme }
     },
     template: `
     <div class="dragablewindow" ref="window">
@@ -61,7 +62,9 @@ const dragablewindow = {
             <div class="dragablewindow-header-close" @click="$emit('onclose')"><v-icon size=24 color="white">mdi-close</v-icon></div>
         </div>
         <div class="dragablewindow-body">
-            <slot></slot>
+            <n-config-provider :theme="darkTheme">
+                <slot></slot>
+            </n-config-provider>
         </div>
     </div>
     `

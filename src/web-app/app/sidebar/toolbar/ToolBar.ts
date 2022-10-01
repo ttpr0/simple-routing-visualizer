@@ -47,6 +47,7 @@ const toolbar = {
         }
 
         const runTool = async () => {
+            toolbar.toolinfo.tool = toolbar.currtool.name;
             const out = await toolbar.runTool(toolbar.currtool.name, params)
             if (out == null)
                 return;

@@ -19,7 +19,7 @@ const footerbaritem = {
     },
     template: `
     <div class="footerbaritem" :style="{float: side}" @click="onclick()">
-        <v-icon v-if="icon != null" size=16 color="white">{{icon}}</v-icon>
+        <v-icon v-if="icon != null" size=16 color="white">{{ icon }}</v-icon>
         <div v-if="text != null">{{text}}</div>
     </div>
     `

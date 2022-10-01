@@ -5,9 +5,10 @@ import { layerbar } from './layerbar/LayerBar';
 import { toolbar } from './toolbar/ToolBar';
 import { filesbar } from './filebar/FilesBar';
 import { VIcon } from 'vuetify/components';
+import { NConfigProvider, darkTheme } from 'naive-ui';
 
 const sidebar = {
-    components: { layerbar, toolbar, filesbar, VIcon },
+    components: { layerbar, toolbar, filesbar, VIcon, NConfigProvider },
     props: [],
     setup() {
         const state = getAppState();
@@ -67,7 +68,7 @@ const sidebar = {
                 state.sidebar.active = item;
         }
 
-        return { active, handleClick, resizer, sidebar_item }
+        return { active, handleClick, resizer, sidebar_item, darkTheme }
     },
     template: `
     <div class="sidebar">
@@ -79,9 +80,11 @@ const sidebar = {
         </div>
         <div ref="sidebar_item" class="sidebar-item" v-show="active!==''">
             <div class="content">
-                <div v-show="active === 'layers'"><layerbar></layerbar></div>
-                <div v-show="active === 'tools'"><toolbar></toolbar></div>
-                <div v-show="active === 'files'"><filesbar></filesbar></div>
+                <n-config-provider :theme="darkTheme">
+                    <div v-show="active === 'layers'"><layerbar></layerbar></div>
+                    <div v-show="active === 'tools'"><toolbar></toolbar></div>
+                    <div v-show="active === 'files'"><filesbar></filesbar></div>
+                </n-config-provider>
             </div>
             <div ref="resizer" class="resizer">
             </div>
