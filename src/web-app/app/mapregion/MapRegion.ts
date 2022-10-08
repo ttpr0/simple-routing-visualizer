@@ -14,27 +14,13 @@ const mapregion = {
 
         const showDialog = computed(() => { return state.featureinfo.display; });
         const pos = computed(() => { return state.featureinfo.pos; });
-        const text = computed(() => {
-            var t = "";
-            t += "Feature: \n";
-            if (state.featureinfo.feature == null)
-            {
-                return t;
-            }
-            var properties = state.featureinfo.feature.getProperties();
-            for (var p in properties)
-            {
-              t += p + ": " + properties[p] + "\n";
-            }
-            return t;
-        })
         const data = computed(() => {
             var d = [];
             if (state.featureinfo.feature == null)
             {
                 return d;
             }
-            var properties = state.featureinfo.feature.getProperties();
+            var properties = state.featureinfo.feature["properties"];
             for (var p in properties)
             {
               d.push({prop: p, val: String(properties[p])});
@@ -51,7 +37,7 @@ const mapregion = {
             map.setTarget("mapregion")
         })
 
-        return {text, data, state, pos, showDialog, setShow}
+        return { data, state, pos, showDialog, setShow}
     },
     template: `
     <div id="mapregion" class="mapregion"></div>

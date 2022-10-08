@@ -31,7 +31,7 @@ class TestFeatureCount implements ITool
     async run(param, out, addMessage) 
     {
         const layer = map.getLayerByName(param.layer);
-        if (layer == null || layer.type != "Point")
+        if (layer == null || layer.getType() != "Point")
         {
           throw new Error("pls select a pointlayer!");
         }
@@ -53,7 +53,8 @@ class TestFeatureCount implements ITool
                 var points = selectRandomPoints(layer, k);
                 var start = new Date().getTime();
                 await Promise.all(points.map(async element => {
-                    var location = element.getGeometry().getCoordinates();
+                    let feature = layer.getFeature(element);
+                    var location = feature.geometry.coordinates;
                     var geojson = await alg([location], ranges);
                 }));
                 var end = new Date().getTime();

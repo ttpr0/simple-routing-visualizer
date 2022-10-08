@@ -2,8 +2,7 @@ import { GeoJSON } from "ol/format";
 import { Vector as VectorLayer } from "ol/layer";
 import { Vector as VectorSource } from "ol/source";
 import { lineStyle, accessibilityStyleFunction } from "/map/styles"
-
-declare const turf
+import turf from '@turf/turf'
 
 function randomRanges(count, maxValue)
 {

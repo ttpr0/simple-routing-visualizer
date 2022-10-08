@@ -42,15 +42,16 @@ class IsoRaster implements ITool
   async run(param, out, addMessage)
   {
       const layer = map.getLayerByName(param.layer);
-      if (layer == null || layer.type != "Point")
+      if (layer == null || layer.getType() != "Point")
       {
         throw new Error("pls select a pointlayer!");
       }
-      if (layer.selectedfeatures.length > 300)
+      let selectedfeatures = layer.getSelectedFeatures();
+      if (selectedfeatures.length > 300)
       {
         throw new Error("pls mark less than 100 features!");
       }
-      if (layer.selectedfeatures.length == 0)
+      if (selectedfeatures.length == 0)
       {
         throw new Error("you have to mark at least one feature!");
       }
@@ -75,11 +76,13 @@ class IsoRaster implements ITool
       // out.multigraphlayer.setStyle(accessibilityStyleFunction);
       var polygons = [];
       var start = new Date().getTime();
-      await Promise.all(layer.selectedfeatures.map(async element => {
-        var location = element.getGeometry().getCoordinates();
+      await Promise.all(selectedfeatures.map(async element => {
+        let feature = layer.getFeature(element);
+        var location = feature.geometry.coordinates;
         var geojson = await getIsoRaster([location], [range], rastersize, crs, url, consumertype, locationtype, travelmode);
         //geojson = calcDifferences(geojson);
-        polygons.push(geojson);
+        for (let feat of geojson.features)
+          polygons.push(feat);
       }));
       var end = new Date().getTime();
       addMessage(start - end);

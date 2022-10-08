@@ -4,6 +4,7 @@
     background-color: rgb(61, 61, 61);
     position: relative;
     z-index: 1;
+    float: left;
 }
 
 .sidebar-tabs {

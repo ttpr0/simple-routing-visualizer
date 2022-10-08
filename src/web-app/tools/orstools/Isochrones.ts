@@ -45,10 +45,11 @@ class Isochrones implements ITool
   async run(param: any, out: any, addMessage: any): Promise<void> 
   {
     const layer = map.getLayerByName(param.layer);
-    if (layer == null || layer.type != "Point") {
+    if (layer == null || layer.getType() != "Point") {
       throw new Error("pls select a pointlayer!");
     }
-    if (layer.selectedfeatures.length > 100 || layer.selectedfeatures.length == 0) {
+    let selectedfeatures = layer.getSelectedFeatures();
+    if (selectedfeatures.length > 100 || selectedfeatures.length == 0) {
       throw new Error("pls select less then 100 features!");
     }
     let url = param.url + "/isochrones/" + param.profile;
@@ -59,20 +60,18 @@ class Isochrones implements ITool
     let outname = param.outname;
     var polygons = [];
     var start = new Date().getTime();
-    await Promise.all(layer.selectedfeatures.map(async element => {
-      var location = element.getGeometry().getCoordinates();
+    await Promise.all(selectedfeatures.map(async element => {
+      let feature = layer.getFeature(element);
+      var location = feature.geometry.coordinates;
       var geojson = await getDockerPolygon([location], ranges, smoothing, url, locationtype, travelmode);
       //geojson = calcDifferences(geojson);
-      polygons.push(geojson);
+      for (let feat of geojson.features)
+        polygons.push(feat);
     }));
     var end = new Date().getTime();
     addMessage(start - end);
-    var features = []
-    polygons.forEach(polygon => {
-      features = features.concat(new GeoJSON().readFeatures(polygon));
-    });
-    out.dockerlayer = new VectorLayer(features, 'Polygon', outname);
-    out.dockerlayer.setStyle(ors_style);
+    out.dockerlayer = new VectorLayer(polygons, 'Polygon', outname);
+    out.dockerlayer.setStyleFunction(ors_style);
   }
 }
 

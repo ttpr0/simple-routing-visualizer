@@ -24,8 +24,9 @@ const layertopbar = {
           var files = layerdialog.value.files;
           var reader = new FileReader();
           reader.onloadend = () => {
-              var points = new GeoJSON().readFeatures(reader.result);
-              var layer = new VectorLayer(points, 'Point', files[0].name.split(".")[0]);
+              //var points = new GeoJSON().readFeatures(reader.result);
+              let features = JSON.parse(reader.result as string)["features"]
+              var layer = new VectorLayer(features, 'Point', files[0].name.split(".")[0]);
               map.addLayer(layer);
           };
           reader.readAsText(files[0]); 
@@ -41,7 +42,7 @@ const layertopbar = {
                   return;
               }
           }
-          var layer = new VectorLayer([], 'Point', layername);
+          var layer = new VectorLayer([], "Point", layername);
           map.addLayer(layer);
       }
 

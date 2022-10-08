@@ -15,9 +15,12 @@ const layertreeitem = {
             'Point': 'mdi-vector-point',
         }
 
+        const visibile = ref(map.isVisibile(props.layer.name))
+
         function handleDisplay()
         {
             map.toggleLayer(props.layer.name);
+            visibile.value = map.isVisibile(props.layer.name);
         }
 
         function handleClose()
@@ -34,11 +37,11 @@ const layertreeitem = {
             return props.layer.name === map.focuslayer
         });
 
-        return { handleDisplay, handleClose, handleClick, isFocus, icons, map }
+        return { handleDisplay, handleClose, handleClick, isFocus, icons, visibile }
     },
     template: `
     <div class="layertreeitem">
-        <input type="checkbox" :checked="map.isVisibile(layer.name)" @change="handleDisplay()">
+        <input type="checkbox" :checked="visibile" @change="handleDisplay()">
         <div :class="[{layer:true}, {highlightlayer: isFocus}]" @click="handleClick()">
             <v-icon class="icon">{{icons[layer.type]}}</v-icon>
             <label>{{"  "+layer.name}}</label>

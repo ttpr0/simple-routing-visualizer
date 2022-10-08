@@ -6,6 +6,7 @@ import { topbarbutton } from '/components/topbar/TopBarButton';
 import { topbarseperator } from '/components/topbar/TopBarSeperator';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol';
+import { ILayer } from '/map/ILayer';
 
 const selecttopbar = {
     components: { topbaritem, topbarbutton, topbarseperator },
@@ -24,22 +25,22 @@ const selecttopbar = {
       function selectListener(e)
       {
         var count = 0;
-        map.forEachFeatureAtPixel(e.pixel, function (feature, layer) 
+        map.forEachFeatureAtPixel(e.pixel, function (layer: ILayer, id: number) 
         {
           count++;
-          if (layer.isSelected(feature))
+          if (layer.isSelected(id))
           {
-            layer.unselectFeature(feature);
+            layer.unselectFeature(id);
           }
           else
           {
-            layer.selectFeature(feature);
+            layer.selectFeature(id);
           }
         });
         if (count == 0)
         {
           map.forEachLayer(layer => {
-            if (map.isVisibile(layer.name))
+            if (map.isVisibile(layer.getName()))
             {
               layer.unselectAll();
             }
@@ -49,9 +50,9 @@ const selecttopbar = {
 
       function featureinfoListener(e)
       {
-        map.forEachFeatureAtPixel(e.pixel, function (feature, layer) 
+        map.forEachFeatureAtPixel(e.pixel, function (layer, id) 
         {
-          setFeatureInfo(feature, e.pixel, true);
+          setFeatureInfo(layer.getFeature(id), e.pixel, true);
         });
       }
 
@@ -63,20 +64,21 @@ const selecttopbar = {
           alert("pls select a layer to add point to!");
           return;
         }
-        var feature = new Feature({
-          geometry: new Point(e.coordinate),
+        var feature = {
+          type: "Feature",
+          geometry: { type: "Point", coordinates: e.coordinate },
           name: 'new Point',
-        });
+        };
         layer.addFeature(feature);
       }
 
       function delpointListener(e)
       {
-        map.forEachFeatureAtPixel(e.pixel, function (feature, layer) 
+        map.forEachFeatureAtPixel(e.pixel, function (layer, id) 
         {
-          if (layer.name === map.focuslayer)
+          if (layer.getName() === map.focuslayer)
           {
-            layer.removeFeature(feature);
+            layer.removeFeature(id);
           }
         });
       }

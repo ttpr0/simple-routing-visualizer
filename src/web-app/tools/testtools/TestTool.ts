@@ -1,27 +1,10 @@
 import { ITool } from "/tools/ITool";
 import { getMapState } from "/state";
+import { ILayer } from "/map/ILayer";
+import { GeoJSON } from "ol/format";
 import { VectorLayer } from "/map/VectorLayer";
 
 const map = getMapState();
-
-class Test<T>
-{
-    sub: T;
-    test: any[];
-    num: number = 1;
-
-    getSub() : T {
-        return this.sub;
-    }
-}
-
-class Sub
-{
-    name: string = "test";
-
-    getName()
-    { return this.name; }
-}
 
 class TestTool implements ITool
 {
@@ -40,24 +23,16 @@ class TestTool implements ITool
     ]
     
     async run(param, out, addMessage) {
-        const layer: VectorLayer = map.getLayerByName(param.layer);
-        if (layer == null || layer.type != "Point") {
+        const layer: ILayer = map.getLayerByName(param.layer);
+        if (layer == null || layer.getType() != "Point") {
             throw new Error("pls select a pointlayer!");
         }
-        const feature = layer.getSource().getFeatures()[0]
-        console.log(feature);
-        let obj: object = {
-            sub: new Sub(),
-            test: []
-        }
-        let t = Object.assign(new Test<Sub>(), obj);
-        test(t);
-    }
-}
+        const id = (layer as VectorLayer).selected_features[0];
+        const feature = layer.getFeature(id);
 
-function test(t: Test<Sub>)
-{
-    console.log(typeof t.getSub().getName());
+        console.log(feature);
+    
+    }
 }
 
 const tool = new TestTool();

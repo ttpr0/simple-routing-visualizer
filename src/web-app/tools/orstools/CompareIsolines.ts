@@ -35,28 +35,30 @@ class CompareIsolines implements ITool
   async run(param, out, addMessage) 
   {
       const layer = map.getLayerByName(param.layer);
-      if (layer == null || layer.type != "Point")
+      if (layer == null || layer.getType() != "Point")
       {
         throw new Error("pls select a pointlayer!");
       }
-      if (layer.selectedfeatures.length != 1)
+      let selectedfeatures = layer.getSelectedFeatures();
+      if (selectedfeatures.length != 1)
       {
         throw new Error("pls select exactly one feature!");
       }
-      var location = layer.selectedfeatures[0].getGeometry().getCoordinates();
+      let feature = layer.getFeature(selectedfeatures[0]);
+      var location = feature.geometry.coordinates;
       var ranges = [param.range];
       var mapbox = getMapBoxPolygon(location, ranges);
       var targamo = getTargamoPolygon(location, ranges);
       var bing = getBingPolygon(location, ranges);
-      var mapboxfeature = new GeoJSON().readFeatures(await mapbox);
-      var targamofeature = new GeoJSON().readFeatures(await targamo);
-      var bingfeature = new GeoJSON().readFeatures(await bing);
-      out.binglayer = new VectorLayer(bingfeature, 'Polygon', 'binglayer');
-      out.binglayer.setStyle(bing_style);
-      out.mapboxlayer = new VectorLayer(mapboxfeature, 'Polygon', 'mapboxlayer');
-      out.mapboxlayer.setStyle(mapbox_style);
-      out.targamolayer = new VectorLayer(targamofeature, 'Polygon', 'targamolayer');
-      out.targamolayer.setStyle(targamo_style);
+      var mapboxfeature = await mapbox;
+      var targamofeature = await targamo;
+      var bingfeature = await bing;
+      out.binglayer = new VectorLayer(bingfeature["features"], 'Polygon', 'binglayer');
+      out.binglayer.setStyleFunction(bing_style);
+      out.mapboxlayer = new VectorLayer(mapboxfeature["features"], 'Polygon', 'mapboxlayer');
+      out.mapboxlayer.setStyleFunction(mapbox_style);
+      out.targamolayer = new VectorLayer(targamofeature["features"], 'Polygon', 'targamolayer');
+      out.targamolayer.setStyleFunction(targamo_style);
   }
 }
 

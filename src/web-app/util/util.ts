@@ -1,3 +1,5 @@
+import { ILayer } from "/map/ILayer";
+
 function randomRanges(count, maxValue)
 {
     var ranges = [];
@@ -25,9 +27,9 @@ function calcMean(array)
     return mean / array.length;
 }
 
-function selectRandomPoints(layer, number)
+function selectRandomPoints(layer: ILayer, number)
 {
-    var features = layer.getSource().getFeatures();
+    var features = layer.getAllFeatures();
     var randoms = [];
     var length = features.length;
     var random;

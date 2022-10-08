@@ -50,6 +50,14 @@ const defaultHighlightStyle = {
   }),
 };
 
+const HIGHLIGHT_FILL = new Fill({
+  color: 'lightseagreen'
+})
+const HIGHLIGHT_STROKE = new Stroke({
+    color: 'lightseagreen',
+    width: 2
+})
+
 var width = 2;
 function ors_style(feature, resolution) 
 {
@@ -165,4 +173,4 @@ const lineStyle = (final) => {
   }
 }
 
-export { defaultStyle, defaultHighlightStyle, accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, targamo_style, bing_style }
+export { defaultStyle, defaultHighlightStyle, accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, targamo_style, bing_style, HIGHLIGHT_FILL, HIGHLIGHT_STROKE }

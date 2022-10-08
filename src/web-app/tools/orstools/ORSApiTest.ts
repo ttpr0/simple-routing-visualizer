@@ -35,11 +35,12 @@ class ORSApiTest implements ITool
   async run(param, out, addMessage)
   {
       const layer = map.getLayerByName(param.layer);
-      if (layer == null || layer.type != "Point")
+      if (layer == null || layer.getType() != "Point")
       {
         throw new Error("pls select a pointlayer!");
       }
-      if (layer.selectedfeatures.length > 20 || layer.selectedfeatures.length == 0)
+      let selectedfeatures = layer.getSelectedFeatures();
+      if (selectedfeatures.length > 20 || selectedfeatures.length == 0)
       {
         throw new Error("pls select less then 20 features!");
       }
@@ -47,18 +48,16 @@ class ORSApiTest implements ITool
       var polygons = [];
       var start = new Date().getTime();
       addMessage(ranges);
-      await Promise.all(layer.selectedfeatures.map(async element => {
-        var location = element.getGeometry().getCoordinates();
+      await Promise.all(selectedfeatures.map(async element => {
+        let feature = layer.getFeature(element);
+        var location = feature.geometry.coordinates;
         var geojson = await getORSPolygon([location], ranges);
         //geojson = calcDifferences(geojson);
-        polygons.push(geojson);
+        for (let feat of geojson.features)
+          polygons.push(feat);
       }));
       var end = new Date().getTime();
-      var features = [];
-      polygons.forEach(polygon => {
-        features = features.concat(new GeoJSON().readFeatures(polygon));
-      });
-      out.orslayer = new VectorLayer(features, 'Polygon', 'orslayer');
+      out.orslayer = new VectorLayer(polygons, 'Polygon', 'orslayer');
       //out.orslayer.setStyle(ors_style);
   }
 }

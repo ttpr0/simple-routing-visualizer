@@ -1,3 +1,4 @@
+import { NPageHeader } from "naive-ui";
 import { DragBox } from "ol/interaction";
 import { toLonLat } from "ol/proj";
 import { Map2D } from "/map/Map2D";
@@ -7,16 +8,16 @@ const MAP: Map2D = new Map2D();
 const dragBox = new DragBox();
 dragBox.on(['boxend'], function(e) {
     MAP.layers.forEach(layer => {
-        if (MAP.isVisibile(layer.name))
+        if (MAP.isVisibile(layer.getName()))
         {
             layer.unselectAll();
             var box = dragBox.getGeometry().getExtent();
             var ll = toLonLat([box[0], box[1]]);
             var ur = toLonLat([box[2], box[3]]);
             box = [ll[0], ll[1], ur[0], ur[1]];
-            layer.getSource().forEachFeatureInExtent(box, function(feature) {
-              layer.selectFeature(feature);
-            });
+            for (let id of layer.getFeaturesInExtend(box)) {
+              layer.selectFeature(id);
+            };
         }
     });
 });
@@ -59,7 +60,7 @@ class MapState
         this.layers = [];
         for (let layer of MAP.layers)
         {
-            this.layers.push({'name': layer.name, 'type': layer.type})
+            this.layers.push({'name': layer.getName(), 'type': layer.getType()})
         }
     }
 
@@ -113,9 +114,12 @@ class MapState
         MAP.olmap.setTarget(target);
     }
 
-    forEachFeatureAtPixel(target, func)
+    forEachFeatureAtPixel(pixel: number[], func: (ILayer, number) => void)
     {
-        MAP.olmap.forEachFeatureAtPixel(target, func);
+        MAP.olmap.forEachFeatureAtPixel(pixel, (feature, layer) => {
+            let l = MAP.layers.find(element => element.getOlLayer() === layer)
+            func(l, feature.getId());
+        })
     }
 
     activateDragBox()

@@ -29,8 +29,8 @@ const app = createApp({
     fetch(window.location.origin + '/datalayers/hospitals.geojson')
       .then(response => response.json())
       .then(response => {
-        var points = new GeoJSON().readFeatures(response);
-        var layer = new VectorLayer(points, 'Point', 'hospitals');
+        //var points = new GeoJSON().readFeatures(response);
+        var layer = new VectorLayer(response.features, 'Point', 'hospitals');
         map.addLayer(layer);
         map.focuslayer = layer.name;
     });

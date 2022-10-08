@@ -27,11 +27,12 @@ class TestIsolines implements ITool
 
   async run(param, out, addMessage) {
     const layer = map.getLayerByName(param.layer);
-    if (layer == null || layer.type != "Point")
+    if (layer == null || layer.getType() != "Point")
     {
       throw new Error("pls select a pointlayer!");
     }
-    if (layer.selectedfeatures.length != 1)
+    let selectedfeatures = layer.getSelectedFeatures();
+    if (selectedfeatures.length != 1)
     {
         throw new Error("pls select only one feature");
     }
@@ -43,10 +44,11 @@ class TestIsolines implements ITool
       times[i] = [];
       for (var c=0; c<5; c++)
       {
-        var points = [layer.selectedfeatures[0]];
+        var points = [selectedfeatures[0]];
         var start = new Date().getTime();
         await Promise.all(points.map(async element => {
-          var location = element.getGeometry().getCoordinates();
+          let feature = layer.getFeature(element);
+          var location = feature.geometry.coordinates;
           var geojson = await getDockerPolygon([location], range);
         }));
         var end = new Date().getTime();
