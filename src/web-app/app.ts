@@ -10,6 +10,7 @@ import { dragablewindow } from '/app/util/DragableWindow';
 import { GeoJSON } from "ol/format"
 import { toolbox as orstoolbox } from "/tools/orstools/ORSToolBox";
 import { toolbox as testtoolbox } from "/tools/testtools/TestToolBox";
+import { toolbox as routingtoolbox } from "/tools/routingtools/RoutingToolBox";
 
 
 const app = createApp({
@@ -25,6 +26,7 @@ const app = createApp({
 
     toolbar.loadTools(testtoolbox.tools, testtoolbox.name);
     toolbar.loadTools(orstoolbox.tools, orstoolbox.name);
+    toolbar.loadTools(routingtoolbox.tools, routingtoolbox.name);
 
     fetch(window.location.origin + '/datalayers/hospitals.geojson')
       .then(response => response.json())

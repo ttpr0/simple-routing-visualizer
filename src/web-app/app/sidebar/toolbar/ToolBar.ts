@@ -72,7 +72,7 @@ const toolbar = {
             <v-autocomplete v-model="currtool.name" :items="tools" dense filled label="Select Tool" prepend-icon="mdi-wrench" @update:modelValue="loadTool()"></v-autocomplete>
             <v-list density="compact" bg-color="rgb(51,51,51)">
                 <v-list-subheader color="white">TOOLS</v-list-subheader>
-                <v-list-item v-for="(item, i) in tools.slice(0,9)" :key="i" :value="item" variant="plain" @click="onToolClick(item)">
+                <v-list-item v-for="(item, i) in tools" :key="i" :value="item" variant="plain" @click="onToolClick(item)">
                     <v-list-item-avatar start>
                         <v-icon icon="mdi-tools" color="white"></v-icon>
                     </v-list-item-avatar>

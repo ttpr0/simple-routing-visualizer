@@ -1,5 +1,4 @@
 import { computed, ref, reactive, onMounted, defineExpose} from 'vue';
-import { analysistopbar } from './AnalysisTopBar';
 import { selecttopbar } from './SelectTopBar'
 import { layertopbar } from './LayerTopBar';
 import { getAppState } from '/state';
@@ -10,7 +9,7 @@ import { topbarseperator } from '/components/topbar/TopBarSeperator';
 import './TopBar.css'
 
 const topbar = {
-    components: { selecttopbar, layertopbar, analysistopbar, VIcon, topbaritem},
+    components: { selecttopbar, layertopbar, VIcon, topbaritem},
     props: [ ],
     setup(props) {
         const state = getAppState();
