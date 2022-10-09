@@ -2,20 +2,22 @@ import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState, getMapState, getToolbarState } from '/state';
 import './ToolBar.css'
-import { VAutocomplete, VList, VListItem, VListSubheader, VListItemTitle, VListItemAvatar } from 'vuetify/components';
+import { VIcon } from 'vuetify/components';
+import { NSpace, NInput, NTag, NScrollbar } from 'naive-ui';
 import { toolcontainer } from './ToolContainer';
 import { toolparam } from '/components/sidebar/toolbar/ToolParam';
 
 const toolbar = {
-    components: { VAutocomplete, VList, VListItem, VListSubheader, VListItemAvatar, VListItemTitle, toolcontainer, toolparam },
+    components: { VIcon, NSpace, NInput, NTag, NScrollbar, toolcontainer, toolparam },
     props: [ ],
     setup(props) {
         const state = getAppState();
         const map = getMapState();
         const toolbar = getToolbarState();
 
+        const tool_search = ref("");
         const tools = computed(() => {
-            return toolbar.tools;
+            return toolbar.tools.filter(element => element.toLowerCase().includes(tool_search.value))
         })
 
         const showSearch = ref(true);
@@ -64,21 +66,24 @@ const toolbar = {
             });
         }
 
-        return { tools, onToolClick, loadTool, showSearch, runTool, reactiveParams, currtool, setToolInfo }
+        return { tools, tool_search, onToolClick, showSearch, runTool, reactiveParams, currtool, setToolInfo }
     },
     template: `
     <div class="toolbar">
-        <div v-if="showSearch">
-            <v-autocomplete v-model="currtool.name" :items="tools" dense filled label="Select Tool" prepend-icon="mdi-wrench" @update:modelValue="loadTool()"></v-autocomplete>
-            <v-list density="compact" bg-color="rgb(51,51,51)">
-                <v-list-subheader color="white">TOOLS</v-list-subheader>
-                <v-list-item v-for="(item, i) in tools" :key="i" :value="item" variant="plain" @click="onToolClick(item)">
-                    <v-list-item-avatar start>
-                        <v-icon icon="mdi-tools" color="white"></v-icon>
-                    </v-list-item-avatar>
-                    <div style="color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><v-list-item-title v-text="item"></v-list-item-title></div>
-                </v-list-item>
-            </v-list>
+        <div v-if="showSearch" style="height: 100%;">
+            <n-input v-model:value="tool_search" type="text" placeholder="Basic Input" />
+            <div style="height: calc(100% - 34px); padding-top: 20px;">
+                <n-scrollbar>
+                    <n-space vertical>
+                        <n-tag v-for="(item, i) in tools" @click="onToolClick(item)" size="large">
+                            <div style="cursor: pointer;">
+                                <v-icon icon="mdi-tools" color="white"></v-icon>
+                                {{ item }}
+                            </div>
+                        </n-tag>
+                    </n-space>
+                </n-scrollbar>
+            </div>
         </div>
         <div v-if="!showSearch">
             <toolcontainer :toolname="currtool.name" @close="showSearch=true" @run="runTool()" @info="setToolInfo()">

@@ -18,7 +18,7 @@ class MultiGraph implements ITool
     param = [
         {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
         {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,3600,100], text:"check?", default: 900},
-        {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?", default: 1}
+        {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [100,1000,100], text:"check?", default: 1}
     ]
     
     out = [

@@ -62,6 +62,11 @@ const toolparam = {
                     <n-select v-model:value="value" :options="param.values.map((item) => { return {label: item, value: item} })" />
                 </n-space>
             </div>
+            <div v-if="param.type==='multiselect'">
+                <n-space vertical>
+                    <n-select v-model:value="value" multiple :options="param.values.map((item) => { return {label: item, value: item} })" />
+                </n-space>
+            </div>
             <div v-if="param.type==='text'">
                 <n-space vertical>
                     <n-input v-model:value="value" type="text" placeholder="param.text" />
