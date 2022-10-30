@@ -5,7 +5,7 @@ import './ToolBar.css'
 import { VIcon } from 'vuetify/components';
 import { NSpace, NInput, NTag, NScrollbar } from 'naive-ui';
 import { toolcontainer } from './ToolContainer';
-import { toolparam } from '/components/sidebar/toolbar/ToolParam';
+import { toolparam } from '/share_components/sidebar/toolbar/ToolParam';
 
 const toolbar = {
     components: { VIcon, NSpace, NInput, NTag, NScrollbar, toolcontainer, toolparam },
@@ -71,7 +71,7 @@ const toolbar = {
     template: `
     <div class="toolbar">
         <div v-if="showSearch" style="height: 100%;">
-            <n-input v-model:value="tool_search" type="text" placeholder="Basic Input" />
+            <n-input v-model:value="tool_search" type="text" placeholder="Filter Tools" />
             <div style="height: calc(100% - 34px); padding-top: 20px;">
                 <n-scrollbar>
                     <n-space vertical>

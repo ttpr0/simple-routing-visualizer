@@ -1,0 +1,53 @@
+{
+    "app": {
+        "topbar": [
+            {
+                "title": "Select",
+                "childs": [
+                    "FeatureInfo",
+                    "FeatureSelect",
+                    "MapDragbox",
+                    null,
+                    "MapAddPoint",
+                    "MapDelPoint"
+                ]
+            },
+            {
+                "title": "Layer",
+                "childs": [
+                    "OpenFile",
+                    "MapAddLayer",
+                    "OpenDirectory",
+                    "OpenToolbox"
+                ]
+            }
+        ],
+        "sidebar": [
+            {
+                "comp": "LayerBar",
+                "icon": "mdi-layers-outline"
+            },
+            {
+                "comp": "SymbologyBar",
+                "icon": "mdi-brush"
+            },
+            {
+                "comp": "ToolBar",
+                "icon": "mdi-toolbox-outline"
+            },
+            {
+                "comp": "FileBar",
+                "icon": "mdi-folder-arrow-up-down-outline"
+            }
+        ],
+        "footer": [
+            "OSMLink",
+            "Layer",
+            "Position",
+            "Zoom"
+        ],
+        "popup": {
+            "default": "FeatureInfo"
+        }
+    }
+}

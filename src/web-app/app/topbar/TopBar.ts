@@ -1,23 +1,50 @@
-import { computed, ref, reactive, onMounted, defineExpose} from 'vue';
-import { selecttopbar } from './SelectTopBar'
-import { layertopbar } from './LayerTopBar';
+import { computed, ref, reactive, onMounted, defineExpose, watch} from 'vue';
 import { getAppState } from '/state';
 import { VIcon } from 'vuetify/components';
-import { topbaritem } from '/components/topbar/TopBarItem';
-import { topbarbutton } from '/components/topbar/TopBarButton';
-import { topbarseperator } from '/components/topbar/TopBarSeperator';
-import './TopBar.css'
+import { topbaritem } from '/share_components/topbar/TopBarItem';
+import { topbarseperator } from '/share_components/topbar/TopBarSeperator';
+import './TopBar.css';
+import { CONFIG, TOPBARCOMPS } from "/config";
 
 const topbar = {
-    components: { selecttopbar, layertopbar, VIcon, topbaritem},
+    components: { VIcon, topbaritem},
     props: [ ],
     setup(props) {
         const state = getAppState();
 
         const active = computed(() => state.topbar.active )
 
-        function setActive(value: string) {
-            state.topbar.active = value; 
+        const comps = computed(() => {
+            const top_conf = CONFIG["app"]["topbar"]
+            let comps = [];
+            for (let comp of top_conf) {
+                let childs = [];
+                for (let child of comp["childs"]) {
+                    if (child === null) 
+                        childs.push(topbarseperator)
+                    else
+                        childs.push(TOPBARCOMPS[child])
+                }
+                comps.push([comp["title"], childs])
+            }
+            return comps;
+        })
+
+        function clickOutside(e) {
+            if (e["inside"] !== true) {
+                state.topbar.active = null
+            }
+        }
+        watch(active, (newA, oldA) => {
+            if (oldA === null) {
+                document.addEventListener("click", clickOutside)
+            }
+            if (newA === null) {
+                document.removeEventListener("click", clickOutside)
+            }
+        })
+        function clickInside(e) {
+            e["inside"] = true
         }
 
         function handleClick(item: string) {
@@ -34,13 +61,16 @@ const topbar = {
                 state.topbar.active = item;
         }
 
-        return { active, handleClick, handleHover }
+        return { active, handleClick, handleHover, clickInside, comps }
     },
     template: `
     <div class="topbar">
         <v-icon size=33 color="white" style="float: left;" small>mdi-navigation-variant-outline</v-icon>
-        <selecttopbar :active="active === 'select'" @click="handleClick('select')" @hover="handleHover('select')"></selecttopbar>
-        <layertopbar :active="active === 'layer'" @click="handleClick('layer')" @hover="handleHover('layer')"></layertopbar>
+        <div @click="clickInside">
+            <topbaritem v-for="[title, childs] in comps" :name="title" :active="active === title" @click="handleClick(title)" @hover="handleHover(title)">
+                <component v-for="comp in childs" :is="comp"></component>
+            </topbaritem>
+        </div>
     </div>
     `
 } 

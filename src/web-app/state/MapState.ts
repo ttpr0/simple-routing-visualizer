@@ -141,6 +141,16 @@ class MapState
             func(layer);
         }
     }
+
+    addOverlay(overlay) 
+    {
+        MAP.olmap.addOverlay(overlay);
+    }
+
+    removeOverlay(overlay)
+    {
+        MAP.olmap.removeOverlay(overlay);
+    }
 }
 
 export { MapState }

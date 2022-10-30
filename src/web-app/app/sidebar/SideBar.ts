@@ -1,19 +1,26 @@
 import { computed, ref, reactive, onMounted, watch} from 'vue';
 import { getAppState } from '/state';
+import { CONFIG, SIDEBARCOMPS } from "/config" 
 import './SideBar.css'
-import { layerbar } from './layerbar/LayerBar';
-import { toolbar } from './toolbar/ToolBar';
-import { filesbar } from './filebar/FilesBar';
 import { VIcon } from 'vuetify/components';
 import { NConfigProvider, darkTheme } from 'naive-ui';
 
 const sidebar = {
-    components: { layerbar, toolbar, filesbar, VIcon, NConfigProvider },
+    components: { VIcon, NConfigProvider },
     props: [],
     setup() {
         const state = getAppState();
 
         const active = computed(() => state.sidebar.active )
+
+        const comps = computed(() => {
+            const side_conf = CONFIG["app"]["sidebar"]
+            let comps = [];
+            for (let comp of side_conf) {
+                comps.push([comp["comp"], comp["icon"], SIDEBARCOMPS[comp["comp"]]])
+            }
+            return comps;
+        })
 
         const resizer = ref(null);
         const sidebar_item = ref(null);
@@ -68,22 +75,21 @@ const sidebar = {
                 state.sidebar.active = item;
         }
 
-        return { active, handleClick, resizer, sidebar_item, darkTheme }
+        return { active, handleClick, resizer, sidebar_item, darkTheme, comps }
     },
     template: `
     <div class="sidebar">
         <div class="sidebar-tabs">
-            <div :class="['sidebar-tab', {active: active === 'layers'}]" @click="handleClick('layers')"><v-icon size="40" color="gray" theme="x-small">mdi-layers-outline</v-icon></div>
-            <div :class="['sidebar-tab', {active: active === 'symbology'}]" @click="handleClick('symbology')"><v-icon size="40" color="gray">mdi-brush</v-icon></div>
-            <div :class="['sidebar-tab', {active: active === 'tools'}]" @click="handleClick('tools')"><v-icon size="40" color="gray">mdi-toolbox-outline</v-icon></div>
-            <div :class="['sidebar-tab', {active: active === 'files'}]" @click="handleClick('files')"><v-icon size="40" color="gray">mdi-folder-arrow-up-down-outline</v-icon></div>
+            <div v-for="[name, icon, comp] in comps" :class="['sidebar-tab', {active: active === name}]" @click="handleClick(name)">
+                <v-icon size="40" color="gray" theme="x-small">
+                    {{ icon }}
+                </v-icon>
+            </div>
         </div>
         <div ref="sidebar_item" class="sidebar-item" v-show="active!==''">
             <div class="content">
                 <n-config-provider :theme="darkTheme">
-                    <div v-show="active === 'layers'"><layerbar></layerbar></div>
-                    <div v-show="active === 'tools'"><toolbar></toolbar></div>
-                    <div v-show="active === 'files'"><filesbar></filesbar></div>
+                    <component v-for="[name, icon, comp] in comps" :is="comp" v-show="active === name"></component>
                 </n-config-provider>
             </div>
             <div ref="resizer" class="resizer">

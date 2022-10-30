@@ -1,34 +1,26 @@
-import { computed, ref, reactive, onMounted, watch} from 'vue';
-import { getAppState, getMapState } from '/state';
+import { CONFIG, FOOTERCOMPS } from "/config" 
 import "./FooterBar.css"
-import { footerbaritem } from '/components/footer/FooterBarItem';
+import { computed } from "vue"
 
 const footerbar = {
-    components: { footerbaritem},
+    components: {  },
     props: [],
     setup() {
 
-        const map = getMapState();
-        const state = getAppState();
-
-        const focuslayer = computed(() => {
-            return map.focuslayer;
+        const comps = computed(() => {
+            const footer_conf = CONFIG["app"]["footer"]
+            let comps = []
+            for (let comp of footer_conf) {
+                comps.push(FOOTERCOMPS[comp])
+            }
+            return comps
         })
 
-        const position = computed(() => map.map_position )
-
-
-        const openOSM = () => { window.open("https://www.openstreetmap.org/copyright"); }
-
-
-        return {focuslayer, position, openOSM}
+        return { comps }
     },
     template: `
     <div class="footerbar">
-        <footerbaritem text="@OpenStreetMap contributors." side="right" @click="openOSM()"></footerbaritem>
-        <footerbaritem icon="mdi-bookmark-multiple" :text="focuslayer"></footerbaritem>
-        <footerbaritem icon="mdi-axis-arrow" :text="position[0]"></footerbaritem>
-        <footerbaritem icon="mdi-contrast-box" :text="position[1]"></footerbaritem>
+        <component v-for="comp in comps" :is="comp"></component>
     </div>
     `
 } 

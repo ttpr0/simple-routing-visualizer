@@ -19,7 +19,7 @@ const topbaritem = {
     template: `
     <div :class="[{active: active}, {topbaritem: true}]">
         <div class="tab" @click="onclick()" @mouseover="onhover()">{{ name }}</div>
-        <div class="menu" v-if="active">
+        <div class="menu" v-show="active">
             <slot></slot>
         </div>
     </div>
