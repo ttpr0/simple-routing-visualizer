@@ -21,6 +21,12 @@ class AppState
         display: false,
     }
 
+    contextmenu = {
+        map_pos: [0, 0],
+        pos: [0, 0],
+        display: false,
+    }
+
     filetree = {
         connections: []
     }

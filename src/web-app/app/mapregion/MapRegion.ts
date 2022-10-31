@@ -4,10 +4,11 @@ import { NDataTable } from 'naive-ui';
 import "ol/ol.css"
 import "./MapRegion.css"
 import { popup } from './Popup';
+import { contextmenu } from './ContextMenu';
 import { Overlay } from 'ol';
 
 const mapregion = {
-    components: { popup },
+    components: { popup, contextmenu },
     props: [],
     setup() {
         const state = getAppState();
@@ -16,6 +17,9 @@ const mapregion = {
         onMounted(() => {
             map.setTarget("mapregion")
             mapregion.value.addEventListener("contextmenu", (e) => {
+                state.contextmenu.pos = [e.pageX, e.pageY]
+                state.contextmenu.display = true
+                e["ctx_inside"] = "nvnkjvnrni"
                 e.preventDefault()
             })
         })
@@ -27,6 +31,7 @@ const mapregion = {
     template: `
     <div id="mapregion" class="mapregion" ref="mapregion"></div>
     <popup></popup>
+    <contextmenu></contextmenu>
     `
 } 
 

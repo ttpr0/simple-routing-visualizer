@@ -48,6 +48,10 @@
         ],
         "popup": {
             "default": "FeatureInfo"
-        }
+        },
+        "contextmenu": [
+            "MapDragbox",
+            null
+        ]
     }
 }
