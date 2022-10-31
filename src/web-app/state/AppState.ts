@@ -8,12 +8,6 @@ class AppState
         active: '',
     }
 
-    featureinfo = {
-        feature: null,
-        pos: [0,0],
-        display: false,
-    }
-
     popup = {
         type: null,
         feature: null,
@@ -22,7 +16,9 @@ class AppState
     }
 
     contextmenu = {
-        map_pos: [0, 0],
+        context: {
+            map_pos: [0, 0],
+        },
         pos: [0, 0],
         display: false,
     }

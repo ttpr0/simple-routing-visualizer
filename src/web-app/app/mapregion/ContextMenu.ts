@@ -3,13 +3,13 @@ import { getAppState, getMapState } from '/state';
 import { NDataTable, NConfigProvider, darkTheme } from 'naive-ui';
 import { CONFIG, TOPBARCOMPS } from "/config" 
 import { contextmenuitem } from '/share_components/contextmenu/ContextMenuItem';
-import { topbarbutton } from '/share_components/topbar/TopBarButton';
+import { topbarseperator } from '/share_components/topbar/TopBarSeperator';
 import "ol/ol.css"
 import "./MapRegion.css"
 import { Overlay } from 'ol';
 
 const contextmenu = {
-    components: { contextmenuitem, topbarbutton },
+    components: { contextmenuitem },
     props: [],
     setup() {
         const state = getAppState();
@@ -19,7 +19,10 @@ const contextmenu = {
             const ctx_conf = CONFIG["app"]["contextmenu"]
             let comps = [];
             for (let comp of ctx_conf) {
-                comps.push(TOPBARCOMPS[comp])
+                if (comp === null) 
+                    comps.push(topbarseperator)
+                else
+                    comps.push(TOPBARCOMPS[comp])
             }
             return comps;
         })
@@ -27,10 +30,10 @@ const contextmenu = {
         const pos = computed(() => { return state.contextmenu.pos })
         const active = computed(() => { return state.contextmenu.display })
 
-        const clickInside = (e) => {
+        const mousedownInside = (e) => {
             e["ctx_inside"] = "nvnkjvnrni"
         }
-        const clickOutside = (e) => {
+        const mousedownOutside = (e) => {
             if (e["ctx_inside"] === "nvnkjvnrni") return
             state.contextmenu.display = false
         }
@@ -41,19 +44,19 @@ const contextmenu = {
 
         watch(active, (newA) => {
             if (newA === true) {
-                document.addEventListener("click", clickOutside)
+                document.addEventListener("mousedown", mousedownOutside)
                 document.addEventListener("contextmenu", contextmenuOutside)
             }
             if (newA === false) {
-                document.removeEventListener("click", clickOutside)
+                document.addEventListener("mousedown", mousedownOutside)
                 document.removeEventListener("contextmenu", contextmenuOutside)
             }
         })
 
-        return { comps, active, pos, clickInside }
+        return { comps, active, pos, mousedownInside }
     },
     template: `
-    <contextmenuitem :active="active" :pos="pos" @click="clickInside">
+    <contextmenuitem :active="active" :pos="pos" @mousedown="mousedownInside">
         <component v-for="comp in comps" :is="comp"></component>
     </contextmenuitem>
     `

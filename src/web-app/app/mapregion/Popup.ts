@@ -23,8 +23,8 @@ const popup = {
             return comp;
         })
 
-        const show = computed(() => { return state.featureinfo.display; });
-        const pos = computed(() => { return state.featureinfo.pos; });
+        const show = computed(() => { return state.popup.display; });
+        const pos = computed(() => { return state.popup.pos; });
 
         watch([show, pos], ([newS, newP]) => {
             if (newS === true) {
@@ -40,7 +40,7 @@ const popup = {
 
         const closePopup = () => {
             popup.setPosition(undefined);
-            state.featureinfo.display = false;
+            state.popup.display = false;
         }
 
         onMounted(() => {

@@ -79,22 +79,22 @@ const sidebar = {
     },
     template: `
     <div class="sidebar">
-        <div class="sidebar-tabs">
-            <div v-for="[name, icon, comp] in comps" :class="['sidebar-tab', {active: active === name}]" @click="handleClick(name)">
-                <v-icon size="40" color="gray" theme="x-small">
-                    {{ icon }}
-                </v-icon>
+        <n-config-provider :theme="darkTheme">
+            <div class="sidebar-tabs">
+                <div v-for="[name, icon, comp] in comps" :class="['sidebar-tab', {active: active === name}]" @click="handleClick(name)">
+                    <v-icon size="40" color="gray" theme="x-small">
+                        {{ icon }}
+                    </v-icon>
+                </div>
             </div>
-        </div>
-        <div ref="sidebar_item" class="sidebar-item" v-show="active!==''">
-            <div class="content">
-                <n-config-provider :theme="darkTheme">
-                    <component v-for="[name, icon, comp] in comps" :is="comp" v-show="active === name"></component>
-                </n-config-provider>
+            <div ref="sidebar_item" class="sidebar-item" v-show="active!==''">
+                <div class="content">
+                        <component v-for="[name, icon, comp] in comps" :is="comp" v-show="active === name"></component>
+                </div>
+                <div ref="resizer" class="resizer">
+                </div>
             </div>
-            <div ref="resizer" class="resizer">
-            </div>
-        </div>
+        </n-config-provider>
     </div>
     `
 } 

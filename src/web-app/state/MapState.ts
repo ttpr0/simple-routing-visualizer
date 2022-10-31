@@ -151,6 +151,11 @@ class MapState
     {
         MAP.olmap.removeOverlay(overlay);
     }
+
+    getCoordinateFromPixel(pixel)
+    {
+        return MAP.olmap.getCoordinateFromPixel(pixel);
+    }
 }
 
 export { MapState }

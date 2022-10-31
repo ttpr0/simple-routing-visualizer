@@ -11,11 +11,11 @@ const feature_info_popup = {
 
         const data = computed(() => {
             var d = [];
-            if (state.featureinfo.feature == null)
+            if (state.popup.feature == null)
             {
                 return d;
             }
-            var properties = state.featureinfo.feature["properties"];
+            var properties = state.popup.feature["properties"];
             for (var p in properties)
             {
               d.push({prop: p, val: String(properties[p])});

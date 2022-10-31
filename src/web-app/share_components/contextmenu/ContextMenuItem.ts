@@ -4,11 +4,14 @@ import './ContextMenuItem.css'
 const contextmenuitem = {
     components: {  },
     props: [ "active", "pos" ],
-    emits: [ "click" ],
+    emits: [ "click", "mousedown" ],
     setup(props, ctx) {
 
         function onClick(e) {
             ctx.emit("click", e);
+        }
+        function onMouseDown(e) {
+            ctx.emit("mousedown", e);
         }
 
         const dim = reactive({
@@ -62,10 +65,10 @@ const contextmenuitem = {
             }
         })
 
-        return { onClick, position, self }
+        return { onClick, onMouseDown, position, self }
     },
     template: `
-    <div ref="self" class="contextmenu" v-if="active" :style="position" @click="onClick">
+    <div ref="self" class="contextmenu" v-if="active" :style="position" @click="onClick" @mousedown="onMouseDown">
         <slot></slot>
     </div>
     `

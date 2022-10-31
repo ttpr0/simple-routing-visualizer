@@ -37,6 +37,9 @@ interface ILayer
     setVisibile(visibile: boolean);
     getZIndex() : number;
     setZIndex(z_index: number);
+
+    on(type: string, listener);
+    un(type: string, listener);
 }
 
 

@@ -17,9 +17,9 @@ const feature_info = {
     const map = getMapState();
 
     function setFeatureInfo(feature, pos, display) {
-      if (feature != null) state.featureinfo.feature = feature;
-      if (pos != null) state.featureinfo.pos = pos;
-      if (display != null) state.featureinfo.display = display;
+      if (feature != null) state.popup.feature = feature;
+      if (pos != null) state.popup.pos = pos;
+      if (display != null) state.popup.display = display;
     }
 
     function featureinfoListener(e) {

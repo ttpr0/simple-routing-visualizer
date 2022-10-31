@@ -51,7 +51,9 @@
         },
         "contextmenu": [
             "MapDragbox",
-            null
+            null,
+            "RoutingFrom",
+            "RoutingTo"
         ]
     }
 }

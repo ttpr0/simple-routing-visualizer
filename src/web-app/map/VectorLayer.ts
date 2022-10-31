@@ -198,6 +198,16 @@ class VectorLayer implements ILayer
             }
         });
     }
+
+    on(type, listener)
+    {
+      this.ol_layer.on(type, listener);
+    }
+
+    un(type, listener)
+    {
+      this.ol_layer.un(type, listener);
+    }
 }
 
 export {VectorLayer}

@@ -1,0 +1,44 @@
+.layerbar {
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    padding: 20px;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+}
+
+.layertreeitem {
+    padding: 0px 10px;
+    width: 100%;
+    height: 25px; 
+    margin: 10px 0px;   
+}
+
+.layertreeitem input {
+    margin: 5px 0px;   
+    width: 10%;
+}
+
+.layertreeitem .layer {
+    width: 85%;
+    height: 25px;
+    border-top-left-radius: 10px;
+    border-radius: 5px;
+    display: inline-block;
+    color: white;
+}
+  
+.layertreeitem .highlightlayer {
+    background-color: rgba(65, 163, 170);
+}
+  
+.layertreeitem div {
+    height: fit-content;
+    width: fit-content;
+    float: right;
+}
+
+.layertreeitem .icon
+{
+    float: left;
+}
