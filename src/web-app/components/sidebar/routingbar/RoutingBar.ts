@@ -27,11 +27,11 @@ const routingbar = {
             let startpoint = params["start"];
             let endpoint = params["finish"];
             let routing_type = params["type"];
-            if (startpoint === undefined) {
+            if (startpoint === null) {
                 alert("pls select a valid start-point")
                 return
             }
-            if (endpoint === undefined) {
+            if (endpoint === null) {
                 alert("pls select a valid end-point")
                 return
             }
