@@ -1,5 +1,6 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { getAppState, getMapState } from '/state';
+import { getMap } from '/map';
 import { topbarbutton } from '/share_components/topbar/TopBarButton';
 
 const map_delpoint = {
@@ -8,11 +9,12 @@ const map_delpoint = {
   emits: [],
   setup(props) {
     const state = getAppState();
-    const map = getMapState();
+    const map = getMap();
+    const map_state = getMapState();
 
     function delpointListener(e) {
       map.forEachFeatureAtPixel(e.pixel, function (layer, id) {
-        if (layer.getName() === map.focuslayer) {
+        if (layer.getName() === map_state.focuslayer) {
           layer.removeFeature(id);
         }
       });

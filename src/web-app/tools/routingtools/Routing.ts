@@ -4,12 +4,12 @@ import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_st
 import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api'
 import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
 import { GeoJSON } from 'ol/format';
-import { getMapState } from '/state';
+import { getMap } from '/map';
 import { ITool } from '/tools/ITool';
 import { getMultiGraph, getRouting } from '/routing/api';
 
 
-const map = getMapState();
+const map = getMap();
 
 class MultiGraph implements ITool
 {

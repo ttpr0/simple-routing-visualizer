@@ -1,6 +1,7 @@
 import { computed, ref, reactive, watch, toRef, onMounted} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState, getMapState } from '/state';
+import { getMap } from '/map';
 import { CONFIG, POPUPCOMPS, SIDEBARCOMPS } from "/config" 
 import { NSpace, NTag, NSelect, NCheckbox, NButton } from 'naive-ui';
 import './RoutingBar.css'
@@ -12,11 +13,12 @@ const routingbar = {
     props: [ ],
     setup(props) {
         const state = getAppState();
-        const map = getMapState();
+        const map = getMap();
+        const map_state = getMapState();
 
-        const layers = computed(() => map.layers);
+        const layers = computed(() => map_state.layers);
         watch(layers, () => {
-            const l = map.layers.find(layer => layer.name === "routing_points" )
+            const l = map_state.layers.find(layer => layer.name === "routing_points" )
             if (l === undefined) {
                 CONFIG["app"]["sidebar"] = CONFIG["app"]["sidebar"].filter(elem => elem.comp !== "RoutingBar")
                 state.sidebar.active = ""

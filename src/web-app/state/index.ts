@@ -3,10 +3,8 @@ import { AppState } from './AppState';
 import { MapState } from './MapState';
 import { ToolbarState } from './ToolbarState';
 
-
 const APP_STATE = reactive(new AppState());
 const MAP_STATE = reactive(new MapState());
-MAP_STATE.setup();
 const TOOLBAR_STATE = reactive(new ToolbarState());
 
 function getAppState()

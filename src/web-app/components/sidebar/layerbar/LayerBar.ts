@@ -9,9 +9,9 @@ const layerbar = {
     props: [ ],
     setup(props) {
         const state = getAppState();
-        const map = getMapState();
+        const map_state = getMapState();
 
-        const layers = computed(() => map.layers);
+        const layers = computed(() => map_state.layers);
 
         return { layers }
     },

@@ -1,5 +1,6 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { getAppState, getMapState } from '/state';
+import { getMap } from '/map';
 import { topbarbutton } from '/share_components/topbar/TopBarButton';
 
 const map_addpoint = {
@@ -8,10 +9,11 @@ const map_addpoint = {
   emits: [],
   setup(props) {
     const state = getAppState();
-    const map = getMapState();
+    const map = getMap();
+    const map_state = getMapState();
 
     function addpointListener(e) {
-      var layer = map.getLayerByName(map.focuslayer);
+      var layer = map.getLayerByName(map_state.focuslayer);
       if (layer == null) {
         alert("pls select a layer to add point to!");
         return;

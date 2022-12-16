@@ -1,7 +1,7 @@
 import { ITool } from "/tools/ITool";
-import { getMapState } from "/state";
+import { getMap } from '/map';
 
-const map = getMapState();
+const map = getMap();
 
 class TestTool implements ITool
 {

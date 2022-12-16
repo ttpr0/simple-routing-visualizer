@@ -1,6 +1,7 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer'
-import { getAppState, getMapState, getToolbarState } from '/state';
+import { getAppState, getToolbarState } from '/state';
+import { getMap } from '/map';
 import { topbarbutton } from '/share_components/topbar/TopBarButton';
 
 const map_addlayer = {
@@ -9,7 +10,7 @@ const map_addlayer = {
     emits: [],
     setup(props) {
       const state = getAppState();
-      const map = getMapState();
+      const map = getMap();
 
       function addVectorLayer() {
           var layername = "";

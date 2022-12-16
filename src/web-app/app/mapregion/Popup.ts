@@ -1,5 +1,6 @@
 import { computed, ref, reactive, onMounted, watch, onUnmounted} from 'vue';
-import { getAppState, getMapState } from '/state';
+import { getAppState } from '/state';
+import { getMap } from '/map';
 import { NDataTable, NConfigProvider, darkTheme } from 'naive-ui';
 import { CONFIG, POPUPCOMPS, SIDEBARCOMPS } from "/config" 
 import "ol/ol.css"
@@ -11,7 +12,7 @@ const popup = {
     props: [],
     setup() {
         const state = getAppState();
-        const map = getMapState();
+        const map = getMap();
 
         const comp = computed(() => {
             const popup_conf = CONFIG["app"]["popup"]

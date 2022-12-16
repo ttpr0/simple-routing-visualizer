@@ -6,10 +6,10 @@ const zoom = {
     components: { footerbaritem },
     props: [],
     setup() {
-        const map = getMapState();
+        const map_state = getMapState();
         const state = getAppState();
 
-        const position = computed(() => map.map_position )
+        const position = computed(() => map_state.map_position )
 
         return { position }
     },

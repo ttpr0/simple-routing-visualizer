@@ -1,5 +1,6 @@
 import { computed, ref, reactive, onMounted, watch} from 'vue';
-import { getAppState, getMapState } from '/state';
+import { getAppState } from '/state';
+import { getMap } from '/map';
 import { NDataTable } from 'naive-ui';
 import "ol/ol.css"
 import "./MapRegion.css"
@@ -12,7 +13,7 @@ const mapregion = {
     props: [],
     setup() {
         const state = getAppState();
-        const map = getMapState();
+        const map = getMap();
 
         onMounted(() => {
             map.setTarget("mapregion")

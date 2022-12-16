@@ -9,7 +9,7 @@ const toolparam = {
     emits: [ 'update:modelValue' ],
     props: [ 'modelValue', 'param' ],
     setup(props, ctx) {
-        const map = getMapState();
+        const map_state = getMapState();
 
         const value = computed({
             get() {
@@ -23,7 +23,7 @@ const toolparam = {
         let layers = [];
         if (props.param.type === 'layer')
         {
-            map.layers.forEach(element => {
+            map_state.layers.forEach(element => {
                 if (element.type === props.param.layertype)
                 {
                     layers.push(element.name);

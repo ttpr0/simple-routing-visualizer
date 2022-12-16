@@ -1,10 +1,10 @@
 import { ITool } from "/tools/ITool";
-import { getMapState } from "/state";
+import { getMap } from '/map';
 import { ILayer } from "/map/ILayer";
 import { GeoJSON } from "ol/format";
 import { VectorLayer } from "/map/VectorLayer";
 
-const map = getMapState();
+const map = getMap();
 
 class TestTool implements ITool
 {

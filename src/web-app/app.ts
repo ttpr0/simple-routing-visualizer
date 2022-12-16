@@ -1,6 +1,7 @@
 import { createApp, ref, reactive, onMounted, computed} from 'vue'
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState, getMapState, getToolbarState } from '/state';
+import { getMap } from '/map';
 import { mapregion } from '/app/mapregion/MapRegion';
 import { footerbar } from '/app/footerbar/FooterBar';
 import { topbar } from '/app/topbar/TopBar';
@@ -16,7 +17,8 @@ import { toolbox as routingtoolbox } from "/tools/routingtools/RoutingToolBox";
 const app = createApp({
   components: { sidebar, toolbar, mapregion, topbar, footerbar, dragablewindow },
   setup() {
-    const map = getMapState();
+    const map = getMap();
+    const map_state = getMapState();
     const state = getAppState();
     const toolbar = getToolbarState();
 
@@ -34,7 +36,7 @@ const app = createApp({
         //var points = new GeoJSON().readFeatures(response);
         var layer = new VectorLayer(response.features, 'Point', 'hospitals');
         map.addLayer(layer);
-        map.focuslayer = layer.name;
+        map_state.focuslayer = layer.name;
     });
 
     return { toolinfo }

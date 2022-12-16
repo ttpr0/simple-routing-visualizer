@@ -1,6 +1,7 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer'
-import { getAppState, getMapState } from '/state';
+import { getAppState } from '/state';
+import { getMap } from '/map';
 import { CONFIG } from "/config" 
 import { topbarbutton } from '/share_components/topbar/TopBarButton';
 
@@ -10,7 +11,7 @@ const routing_from = {
   emits: [],
   setup(props) {
     const state = getAppState();
-    const map = getMapState();
+    const map = getMap();
 
     function addRoutingBar() {
       const side_conf = CONFIG["app"]["sidebar"]

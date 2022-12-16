@@ -1,5 +1,6 @@
 import { computed, ref, reactive, onMounted, defineExpose} from 'vue'
 import { getAppState, getMapState } from '/state';
+import { getMap } from '/map';
 import { VIcon } from 'vuetify/components';
 
 const layertreeitem = {
@@ -7,7 +8,8 @@ const layertreeitem = {
     props: ["layer"],
     setup(props) {
         const state = getAppState();
-        const map = getMapState();
+        const map = getMap();
+        const map_state = getMapState();
 
         const icons = {
             'Polygon': 'mdi-vector-polygon',
@@ -30,11 +32,11 @@ const layertreeitem = {
 
         function handleClick()
         {
-            map.focuslayer = props.layer.name;
+            map_state.focuslayer = props.layer.name;
         }
 
         const isFocus = computed(() => {
-            return props.layer.name === map.focuslayer
+            return props.layer.name === map_state.focuslayer
         });
 
         return { handleDisplay, handleClose, handleClick, isFocus, icons, visibile }

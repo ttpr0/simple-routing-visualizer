@@ -4,11 +4,11 @@ import { VectorImageLayer } from '/map/VectorImageLayer'
 import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_style, targamo_style } from '/map/styles';
 import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api'
 import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
-import { getMapState } from '/state';
+import { getMap } from '/map';
 import { ITool } from '/tools/ITool';
 
 
-const map = getMapState();
+const map = getMap();
 
 class TestFeatureCount implements ITool
 {

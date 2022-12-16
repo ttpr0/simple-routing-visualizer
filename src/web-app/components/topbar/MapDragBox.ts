@@ -1,6 +1,7 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer'
 import { getAppState, getMapState } from '/state';
+import { getMap } from '/map';
 import { topbaritem } from '/share_components/topbar/TopBarItem';
 import { topbarbutton } from '/share_components/topbar/TopBarButton';
 import { topbarseperator } from '/share_components/topbar/TopBarSeperator';
@@ -14,9 +15,10 @@ const map_dragbox = {
   emits: [],
   setup(props) {
     const state = getAppState();
-    const map = getMapState();
+    const map = getMap();
+    const map_state = getMapState();
 
-    var active = computed(() => map.dragbox_active);
+    var active = computed(() => map_state.dragbox_active);
 
     function activateDragBox() {
       if (active.value) {

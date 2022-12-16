@@ -1,6 +1,7 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { getAppState, getMapState, getToolbarState } from '/state';
+import { getAppState, getToolbarState } from '/state';
+import { getMap } from '/map';
 import './ToolBar.css'
 import { VIcon } from 'vuetify/components';
 import { NSpace, NInput, NTag, NScrollbar } from 'naive-ui';
@@ -12,7 +13,7 @@ const toolbar = {
     props: [ ],
     setup(props) {
         const state = getAppState();
-        const map = getMapState();
+        const map = getMap();
         const toolbar = getToolbarState();
 
         const tool_search = ref("");

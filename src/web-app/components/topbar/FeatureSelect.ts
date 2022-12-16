@@ -1,6 +1,7 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer'
-import { getAppState, getMapState } from '/state';
+import { getAppState } from '/state';
+import { getMap } from '/map';
 import { topbaritem } from '/share_components/topbar/TopBarItem';
 import { topbarbutton } from '/share_components/topbar/TopBarButton';
 import { topbarseperator } from '/share_components/topbar/TopBarSeperator';
@@ -14,7 +15,7 @@ const feature_select = {
   emits: [],
   setup(props) {
     const state = getAppState();
-    const map = getMapState();
+    const map = getMap();
 
     function selectListener(e) {
       var count = 0;

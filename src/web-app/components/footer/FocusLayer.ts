@@ -6,11 +6,11 @@ const focus_layer = {
     components: { footerbaritem },
     props: [],
     setup() {
-        const map = getMapState();
+        const map_state = getMapState();
         const state = getAppState();
 
         const focuslayer = computed(() => {
-            return map.focuslayer;
+            return map_state.focuslayer;
         })
 
         return { focuslayer }
