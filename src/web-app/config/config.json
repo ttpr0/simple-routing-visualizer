@@ -20,6 +20,12 @@
                     "OpenDirectory",
                     "OpenToolbox"
                 ]
+            },
+            {
+                "title": "Analysis",
+                "childs": [
+                    "OpenAccessibility"
+                ]
             }
         ],
         "sidebar": [

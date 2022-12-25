@@ -13,6 +13,7 @@ class VectorImageLayer implements ILayer
 {
     ol_layer: VectorImage<VectorSource>;
     format: GeoJSON;
+    count: number = 0;
 
     name: any;
     type: string;
@@ -24,8 +25,13 @@ class VectorImageLayer implements ILayer
         this.format = new GeoJSON();
 
         features.filter(element => { return element.geometry.type === "*" + type});
+        let ol_feat = this.format.readFeatures({type: "FeatureCollection", features: features});
+        ol_feat.forEach((element) => {
+            element.setId(this.count);
+            this.count += 1;
+        })
         var source = new VectorSource({
-            features: this.format.readFeatures({type: "FeatureCollection", features: features}),
+            features: ol_feat,
         });
         this.ol_layer = new VectorImage({source: source});
 
@@ -189,6 +195,16 @@ class VectorImageLayer implements ILayer
                 return style;
             }
         });
+    }
+
+    on(type, listener)
+    {
+      this.ol_layer.on(type, listener);
+    }
+
+    un(type, listener)
+    {
+      this.ol_layer.un(type, listener);
     }
 }
 
