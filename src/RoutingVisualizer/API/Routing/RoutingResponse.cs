@@ -1,11 +1,5 @@
 ﻿using Simple.GeoData;
-using Simple.Routing.Graph;
-using System;
-using Simple.Routing.ShortestPath;
-using Microsoft.AspNetCore.Http;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RoutingVisualizer.API.Routing
 {
@@ -48,6 +42,16 @@ namespace RoutingVisualizer.API.Routing
             //};
             //return geojson;
             return this;
+        }
+    }
+
+    public class DrawContextResponse
+    {
+        public int key { get; set; }
+
+        public DrawContextResponse(int key)
+        {
+            this.key = key;
         }
     }
 }

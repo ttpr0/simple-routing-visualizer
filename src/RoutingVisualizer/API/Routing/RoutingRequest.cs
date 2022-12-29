@@ -15,4 +15,17 @@ namespace RoutingVisualizer.API.Routing
         public string algorithm { get; set; }
         public int stepcount { get; set; }
     }
+
+    public class DrawContextRequest
+    {
+        public float[] start { get; set; }
+        public float[] end { get; set; }
+        public string algorithm { get; set; }
+    }
+
+    public class DrawRoutingRequest
+    {
+        public int key { get; set; }
+        public int stepcount { get; set; }   
+    }
 }
