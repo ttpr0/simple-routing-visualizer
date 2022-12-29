@@ -55,4 +55,50 @@ async function getRouting(start, end, key, draw, stepcount, algorithm)
     return json;
 }
 
-export {getMultiGraph, getRouting}
+async function getRoutingDrawContext(start, end, algorithm)
+{
+    var url = "http://localhost:5000/v0/routing/draw/create";
+    var response = await fetch(url, {
+        method: 'POST', 
+        mode: 'cors',
+        cache: 'no-cache', 
+        //credentials: 'same-origin', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        redirect: 'follow', 
+        referrerPolicy: 'no-referrer', 
+        body: JSON.stringify({
+            start: start, 
+            end: end,
+            algorithm: algorithm,
+        })
+      });
+    var json = await response.json();
+    return json;
+}
+
+async function getRoutingStep(key, stepcount)
+{
+    var url = "http://localhost:5000/v0/routing/draw/step";
+    var response = await fetch(url, {
+        method: 'POST', 
+        mode: 'cors',
+        cache: 'no-cache', 
+        //credentials: 'same-origin', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        redirect: 'follow', 
+        referrerPolicy: 'no-referrer', 
+        body: JSON.stringify({
+            key: key,
+            stepcount: stepcount,
+        })
+      });
+    var json = await response.json();
+    //console.log(json);
+    return json;
+}
+
+export {getMultiGraph, getRouting, getRoutingDrawContext, getRoutingStep}

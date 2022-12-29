@@ -1,11 +1,11 @@
 import { computed, ref, reactive, watch, toRef, onMounted} from 'vue';
-import { VectorLayer } from '/map/VectorLayer';
+import { VectorImageLayer } from '/map/VectorImageLayer';
 import { getAppState, getMapState } from '/state';
 import { getMap } from '/map';
 import { CONFIG, POPUPCOMPS, SIDEBARCOMPS } from "/config" 
 import { NSpace, NTag, NSelect, NCheckbox, NButton } from 'naive-ui';
 import './RoutingBar.css'
-import { getRouting } from '/routing/api';
+import { getRouting, getRoutingDrawContext, getRoutingStep } from '/routing/api';
 import { lineStyle } from '/map/styles';
 
 const routingbar = {
@@ -45,25 +45,28 @@ const routingbar = {
             try {
                 if (params["draw"]) 
                 {
-                    var key = -1;
+                    let context = await getRoutingDrawContext(startpoint, endpoint, routing_type);
+                    let key = context["key"];
                     var finished = false;
                     var geojson = null;
-                    let routinglayer = new VectorLayer([], 'LineString', "routinglayer");
-                    (routinglayer as VectorLayer).setStyleFunction((feature, resolution) => lineStyle(false));
+                    let routinglayer = new VectorImageLayer([], 'LineString', "routing_layer");
+                    (routinglayer as VectorImageLayer).setStyleFunction((feature, resolution) => lineStyle(false));
                     map.addLayer(routinglayer);
                     var start = new Date().getTime();
-                    do
-                    {
-                        geojson = await getRouting(startpoint, endpoint, key, true, 1000, routing_type);
-                        key = geojson.key;
-                        finished = geojson.finished;
-                        for (let feature of geojson["features"]) {
-                            routinglayer.addFeature(feature);
+                    while (true) {
+                        geojson = await getRoutingStep(key, 1000);
+                        if (geojson.finished) {
+                            break;
                         }
-                    } while (!geojson.finished)
+                        routinglayer.addFeatures(geojson["features"]);
+                        // for (let feature of geojson["features"]) {
+                        //     routinglayer.addFeature(feature);
+                        // }
+                        console.log(routinglayer.ol_layer.getSource().getFeatures().length)
+                    }
                     var end = new Date().getTime();
-                    routinglayer = new VectorLayer(geojson["features"], 'LineString', 'routing_layer');
-                    (routinglayer as VectorLayer).setStyleFunction((feature, resolution) => lineStyle(true));
+                    routinglayer = new VectorImageLayer(geojson["features"], 'LineString', 'routing_layer');
+                    (routinglayer as VectorImageLayer).setStyleFunction((feature, resolution) => lineStyle(true));
                     map.addLayer(routinglayer);
                 }
                 else 
@@ -72,8 +75,8 @@ const routingbar = {
                     var start = new Date().getTime();
                     var geojson = await getRouting(startpoint, endpoint, key, false, 1, routing_type);
                     var end = new Date().getTime();
-                    let routinglayer = new VectorLayer(geojson["features"], 'LineString', 'routing_layer');
-                    (routinglayer as VectorLayer).setStyleFunction((feature, resolution) => lineStyle(true));
+                    let routinglayer = new VectorImageLayer(geojson["features"], 'LineString', 'routing_layer');
+                    (routinglayer as VectorImageLayer).setStyleFunction((feature, resolution) => lineStyle(true));
                     map.addLayer(routinglayer);
                 }
 
@@ -95,7 +98,7 @@ const routingbar = {
         }
 
         const params = reactive({});
-        function readFromLayer(layer: VectorLayer) {
+        function readFromLayer(layer: VectorImageLayer) {
             params["start"] = null
             params["finish"] = null
             for (let id of layer.getAllFeatures()) {
@@ -109,8 +112,8 @@ const routingbar = {
 
         onMounted(() => {
             const layer = map.getLayerByName("routing_points");
-            readFromLayer(layer as VectorLayer)
-            layer.on("change", () => { readFromLayer(layer as VectorLayer) })
+            readFromLayer(layer as VectorImageLayer)
+            layer.on("change", () => { readFromLayer(layer as VectorImageLayer) })
         })
 
         return { params, handleClose, runRouting }
@@ -127,7 +130,7 @@ const routingbar = {
                 {{ params.finish }}
             </n-tag>
             <p>routing type:</p>
-            <n-select v-model:value="params.type" :options="[{label:'Dijkstra',value:'Dijkstra'},{label:'AStar',value:'A*'},{label:'Bidirectional Dijkstra',value:'Bidirect-Dijkstra'},{label:'Bidirectional AStar',value:'Bidirectional-A*'}]" />
+            <n-select v-model:value="params.type" :options="[{label:'Dijkstra',value:'Dijkstra'},{label:'AStar',value:'A*'},{label:'Bidirectional Dijkstra',value:'Bidirect-Dijkstra'},{label:'Bidirectional AStar',value:'Bidirect-A*'}]" />
             <n-checkbox v-model:checked="params.draw">{{ 'draw?' }}</n-checkbox>
             <p>run routing:</p>
             <n-button @click="runRouting()">    Run    </n-button>
