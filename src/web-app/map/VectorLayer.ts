@@ -24,7 +24,7 @@ class VectorLayer implements ILayer
     {
         this.format = new GeoJSON();
 
-        features.filter(element => { return element.geometry.type === "*" + type});
+        features = features.filter(element => { return element.geometry.type === "Multi" + type || element.geometry.type === type; });
         let ol_feat = this.format.readFeatures({type: "FeatureCollection", features: features});
         ol_feat.forEach((element) => {
             element.setId(this.count);
@@ -69,13 +69,18 @@ class VectorLayer implements ILayer
 
     addFeature(feature: any)
     {
-        if (feature.geometry.type  === "Point" || feature.geometry.type === "MultiPoint")
+        if (feature.geometry.type === "Multi" + this.type || feature.geometry.type === this.type)
         {
             let f = this.format.readFeature(feature);
             f.setId(this.count);
             this.count += 1;
             this.ol_layer.getSource().addFeature(f);
         }
+    }
+    addFeatures(features: any) {
+        features = features.filter(element => { return element.geometry.type === "Multi" + this.type || element.geometry.type === this.type; });
+        let ol_feat = this.format.readFeatures({type: "FeatureCollection", features: features});
+        this.ol_layer.getSource().addFeatures(ol_feat);
     }
     getFeature(id: number) {
         let f = this.ol_layer.getSource().getFeatureById(id);
