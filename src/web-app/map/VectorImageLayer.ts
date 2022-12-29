@@ -71,12 +71,18 @@ class VectorImageLayer implements ILayer
         if (feature.geometry.type === "Multi" + this.type || feature.geometry.type === this.type)
         {
             let f = this.format.readFeature(feature);
+            f.setId(this.count);
+            this.count += 1;
             this.ol_layer.getSource().addFeature(f);
         }
     }
     addFeatures(features: any) {
         features = features.filter(element => { return element.geometry.type === "Multi" + this.type || element.geometry.type === this.type; });
         let ol_feat = this.format.readFeatures({type: "FeatureCollection", features: features});
+        for (let f of ol_feat) {
+            f.setId(this.count);
+            this.count += 1;
+        }
         this.ol_layer.getSource().addFeatures(ol_feat);
     }
     getFeature(id: number) {
