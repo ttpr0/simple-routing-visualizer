@@ -1,12 +1,10 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { VectorImageLayer } from '/map/VectorImageLayer'
-import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_style, targamo_style } from '/map/styles';
-import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api'
-import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
-import { GeoJSON } from "ol/format"
+import { VectorImageLayer } from '/map/VectorImageLayer';
+import { getBingPolygon, getMapBoxPolygon, getTargamoPolygon } from '/external/api';
 import { getMap } from '/map';
 import { ITool } from '/tools/ITool';
+import { PolygonStyle } from '/map/style';
 
 const map = getMap();
 
@@ -54,11 +52,11 @@ class CompareIsolines implements ITool
       var targamofeature = await targamo;
       var bingfeature = await bing;
       out.binglayer = new VectorLayer(bingfeature["features"], 'Polygon', 'binglayer');
-      out.binglayer.setStyleFunction(bing_style);
+      out.binglayer.setStyle(new PolygonStyle('blue', 2));
       out.mapboxlayer = new VectorLayer(mapboxfeature["features"], 'Polygon', 'mapboxlayer');
-      out.mapboxlayer.setStyleFunction(mapbox_style);
+      out.mapboxlayer.setStyle(new PolygonStyle('red', 2));
       out.targamolayer = new VectorLayer(targamofeature["features"], 'Polygon', 'targamolayer');
-      out.targamolayer.setStyleFunction(targamo_style);
+      out.targamolayer.setStyle(new PolygonStyle('green', 2));
   }
 }
 

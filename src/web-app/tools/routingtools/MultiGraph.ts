@@ -1,6 +1,6 @@
 import { VectorLayer } from '/map/VectorLayer';
 import { VectorImageLayer } from '/map/VectorImageLayer'
-import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_style, targamo_style } from '/map/styles';
+import { AccessibilityStyle } from '/map/styles';
 import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api'
 import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
 import { GeoJSON } from 'ol/format';
@@ -55,7 +55,7 @@ class MultiGraph implements ITool
         var end = new Date().getTime();
         addMessage(start - end);
         out.multigraphlayer = new VectorImageLayer(geojson["features"], 'Polygon', 'multigraphlayer');
-        (out.multigraphlayer as VectorImageLayer).setStyleFunction(accessibilityStyleFunction);
+        out.multigraphlayer.setStyle(new AccessibilityStyle());
     }
 }
 

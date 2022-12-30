@@ -1,12 +1,12 @@
 import { VectorLayer } from '/map/VectorLayer';
 import { VectorImageLayer } from '/map/VectorImageLayer'
-import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_style, targamo_style } from '/map/styles';
 import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api'
 import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
 import { GeoJSON } from 'ol/format';
 import { getMap } from '/map';
 import { ITool } from '/tools/ITool';
 import { getMultiGraph, getRouting } from '/routing/api';
+import { LineStyle } from '/map/style';
 
 
 const map = getMap();
@@ -54,7 +54,7 @@ class MultiGraph implements ITool
             var finished = false;
             var geojson = null;
             let routinglayer = new VectorLayer([], 'LineString', "routinglayer");
-            (routinglayer as VectorLayer).setStyleFunction((feature, resolution) => lineStyle(false));
+            routinglayer.setStyle(new LineStyle('green', 2));
             map.addLayer(routinglayer);
             var start = new Date().getTime();
             do
@@ -69,7 +69,7 @@ class MultiGraph implements ITool
             var end = new Date().getTime();
             addMessage(end - start);
             routinglayer = new VectorLayer(geojson["features"], 'LineString', 'routinglayer');
-            (routinglayer as VectorLayer).setStyleFunction((feature, resolution) => lineStyle(true));
+            routinglayer.setStyle(new LineStyle('#ffcc33', 10));
             map.addLayer(routinglayer);
         }
         else 
@@ -80,7 +80,7 @@ class MultiGraph implements ITool
             var end = new Date().getTime();
             addMessage(end - start);
             let routinglayer = new VectorLayer(geojson["features"], 'LineString', 'routinglayer');
-            (routinglayer as VectorLayer).setStyleFunction((feature, resolution) => lineStyle(true));
+            routinglayer.setStyle(new LineStyle('#ffcc33', 10));
             map.addLayer(routinglayer);
         }
     }

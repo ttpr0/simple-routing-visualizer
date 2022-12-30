@@ -1,9 +1,8 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { VectorImageLayer } from '/map/VectorImageLayer'
-import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_style, targamo_style } from '/map/styles';
-import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api'
-import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
+import { VectorImageLayer } from '/map/VectorImageLayer';
+import { AccessibilityStyle } from '/map/styles';
+import { getIsoRaster } from '/external/api';
 import { getMap } from '/map';
 import { ITool } from '/tools/ITool';
 
@@ -63,29 +62,17 @@ class IsoRaster implements ITool
       let locationtype = param.locationtype;
       let consumertype = param.consumertype;
       let outname = param.outname;
-      // let locations = [];
-      // layer.selectedfeatures.forEach(element => {
-      //     locations.push(element.getGeometry().getCoordinates());
-      // })
-      // var start = new Date().getTime();
-      // var geojson = await getIsoRaster(locations, [range], rastersize, crs, url, consumertype, locationtype, travelmode);
-      // var end = new Date().getTime();
-      // addMessage(start - end);
-      // var features = new ol.format.GeoJSON().readFeatures(geojson);
-      // out.multigraphlayer = new VectorImageLayer(features, 'Polygon', outname);
-      // out.multigraphlayer.setStyle(accessibilityStyleFunction);
-      var polygons = [];
+      let locations = [];
+      selectedfeatures.forEach(element => {
+          let feature = layer.getFeature(element);
+          locations.push(feature.geometry.coordinates);
+      })
       var start = new Date().getTime();
-      await Promise.all(selectedfeatures.map(async element => {
-        let feature = layer.getFeature(element);
-        var location = feature.geometry.coordinates;
-        var geojson = await getIsoRaster([location], [range], rastersize, crs, url, consumertype, locationtype, travelmode);
-        //geojson = calcDifferences(geojson);
-        for (let feat of geojson.features)
-          polygons.push(feat);
-      }));
+      var geojson = await getIsoRaster(locations, [range], rastersize, crs, url, consumertype, locationtype, travelmode);
       var end = new Date().getTime();
       addMessage(start - end);
+      out.multigraphlayer = new VectorImageLayer(geojson['features'], 'Polygon', outname);
+      out.multigraphlayer.setStyle(new AccessibilityStyle());
   }
 }
 

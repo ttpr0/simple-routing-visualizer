@@ -205,23 +205,6 @@ class VectorLayer implements ILayer
         return this.selected_features;
     }
 
-    setStyleFunction(style_func)
-    {
-        if(typeof style_func !== 'function')
-        { return; }
-
-        this.ol_layer.setStyle((feature, resolution) => {
-            let style = style_func(feature, resolution);
-            if (feature.get('selected'))
-            {
-                return defaultHighlightStyle[this.type];
-            }
-            else
-            {
-                return style;
-            }
-        });
-    }
     setStyle(style: IStyle) {
         this.style = style;
         this.ol_layer.setStyle((feature, resolution) => {

@@ -1,9 +1,8 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
-import { VectorImageLayer } from '/map/VectorImageLayer'
-import { accessibilityStyleFunction, lineStyle, ors_style, mapbox_style, bing_style, targamo_style } from '/map/styles';
-import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api'
-import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
+import { VectorImageLayer } from '/map/VectorImageLayer';
+import { getDockerPolygon } from '/external/api';
+import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util';
 import { getMap } from '/map';
 import { ITool } from '/tools/ITool';
 

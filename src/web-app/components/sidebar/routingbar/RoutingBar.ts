@@ -7,6 +7,7 @@ import { NSpace, NTag, NSelect, NCheckbox, NButton } from 'naive-ui';
 import './RoutingBar.css'
 import { getRouting, getRoutingDrawContext, getRoutingStep } from '/routing/api';
 import { lineStyle } from '/map/styles';
+import { LineStyle } from '/map/style/LineStyle';
 
 const routingbar = {
     components: { NSpace, NTag, NSelect, NCheckbox, NButton },
@@ -50,7 +51,7 @@ const routingbar = {
                     var finished = false;
                     var geojson = null;
                     let routinglayer = new VectorImageLayer([], 'LineString', "routing_layer");
-                    (routinglayer as VectorImageLayer).setStyleFunction((feature, resolution) => lineStyle(false));
+                    routinglayer.setStyle(new LineStyle('green', 2));
                     map.addLayer(routinglayer);
                     var start = new Date().getTime();
                     while (true) {
@@ -66,7 +67,7 @@ const routingbar = {
                     }
                     var end = new Date().getTime();
                     routinglayer = new VectorImageLayer(geojson["features"], 'LineString', 'routing_layer');
-                    (routinglayer as VectorImageLayer).setStyleFunction((feature, resolution) => lineStyle(true));
+                    routinglayer.setStyle(new LineStyle('#ffcc33', 10));
                     map.addLayer(routinglayer);
                 }
                 else 
@@ -76,7 +77,7 @@ const routingbar = {
                     var geojson = await getRouting(startpoint, endpoint, key, false, 1, routing_type);
                     var end = new Date().getTime();
                     let routinglayer = new VectorImageLayer(geojson["features"], 'LineString', 'routing_layer');
-                    (routinglayer as VectorImageLayer).setStyleFunction((feature, resolution) => lineStyle(true));
+                    routinglayer.setStyle(new LineStyle('#ffcc33', 10));
                     map.addLayer(routinglayer);
                 }
 
