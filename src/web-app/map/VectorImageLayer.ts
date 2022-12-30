@@ -7,6 +7,8 @@ import { Point } from "ol/geom";
 import { RegularShape } from "ol/style";
 import { asArray } from 'ol/color';
 import { Image } from "ol";
+import { IStyle } from "/map/style/IStyle";
+import { PointStyle, LineStyle, PolygonStyle } from "/map/style";
 
 
 class VectorImageLayer implements ILayer
@@ -18,9 +20,9 @@ class VectorImageLayer implements ILayer
     name: any;
     type: string;
     selected_features: number[];
-    style: any;
+    style: IStyle;
 
-    constructor(features, type, name)
+    constructor(features, type, name, style = null)
     {
         this.format = new GeoJSON();
 
@@ -38,10 +40,23 @@ class VectorImageLayer implements ILayer
         this.name = name;
         this.type = type;
         this.selected_features = [];
-        this.style = defaultStyle[this.type];
-        this.setStyleFunction((feature, resolution) => {
-            return this.style;
-        })
+
+        if (style === null) {
+            switch (this.type) {
+                case "Point":
+                    this.style = new PointStyle();
+                    break;
+                case "LineString":
+                    this.style = new LineStyle();
+                    break;
+                default:
+                    this.style = new PolygonStyle();
+            }
+        }
+        else {
+            this.style = style;
+        }
+        this.setStyle(this.style);
     }
     
     getVisibile(): boolean {
@@ -203,6 +218,19 @@ class VectorImageLayer implements ILayer
             else
             {
                 return style;
+            }
+        });
+    }
+    setStyle(style: IStyle) {
+        this.style = style;
+        this.ol_layer.setStyle((feature, resolution) => {
+            if (feature.get('selected'))
+            {
+                return this.style.getHighlightStyle(feature, resolution);
+            }
+            else
+            {
+                return this.style.getStyle(feature, resolution);
             }
         });
     }

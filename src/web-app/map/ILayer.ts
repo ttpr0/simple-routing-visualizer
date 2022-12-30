@@ -1,5 +1,6 @@
 import { Vector as VectorLayer } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source';
+import { IStyle } from '/map/style/IStyle';
 
 
 interface ILayer
@@ -37,6 +38,8 @@ interface ILayer
     setVisibile(visibile: boolean);
     getZIndex() : number;
     setZIndex(z_index: number);
+
+    setStyle(style: IStyle);
 
     on(type: string, listener);
     un(type: string, listener);
