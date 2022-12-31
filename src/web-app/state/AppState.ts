@@ -23,6 +23,14 @@ class AppState
         display: false,
     }
 
+    window = {
+        show: false,
+        pos: [0,0],
+        icon: "mdi-information-outline",
+        name: "Window",
+        type: null,
+    }
+
     filetree = {
         connections: []
     }

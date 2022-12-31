@@ -2,6 +2,7 @@ import { getAppState, getToolbarState } from '/state';
 import { ITool } from "./ITool";
 
 const toolbar = getToolbarState();
+const state = getAppState();
 
 class ToolManager
 {
@@ -32,8 +33,10 @@ class ToolManager
     }
 
     setToolInfo() {
-        toolbar.toolinfo.show = true; 
-        toolbar.toolinfo.pos = [400, 400];          
+        state.window.show = true; 
+        state.window.pos = [400, 400];
+        state.window.name = "Tool-Info";
+        state.window.type = "toolinfo"         
     }
 
     async runTool(tool: string, params) {

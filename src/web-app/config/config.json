@@ -55,6 +55,9 @@
         "popup": {
             "default": "FeatureInfo"
         },
+        "window": {
+            "toolinfo": "BasicToolInfo"
+        },
         "contextmenu": [
             "MapDragbox",
             null,

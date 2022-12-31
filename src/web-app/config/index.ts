@@ -5,6 +5,7 @@ import { layerbar, filesbar, toolbar, routingbar, accessibilitybar } from "/comp
 import { map_addlayer, map_addpoint, map_delpoint, map_dragbox, open_directory, open_file, open_toolbox, feature_info, feature_select, open_accessibility } from "/components/topbar";
 import { feature_info_popup } from "/components/popup";
 import { routing_from, routing_to } from "/components/contextmenu";
+import { basic_tool_info } from "/components/window";
 
 const CONFIG = reactive(config);
 
@@ -43,4 +44,8 @@ const POPUPCOMPS = {
     "FeatureInfo": feature_info_popup
 }
 
-export { CONFIG, FOOTERCOMPS, SIDEBARCOMPS, TOPBARCOMPS, POPUPCOMPS }
+const WINDOWCOMPS = {
+    "BasicToolInfo": basic_tool_info
+}
+
+export { CONFIG, FOOTERCOMPS, SIDEBARCOMPS, TOPBARCOMPS, POPUPCOMPS, WINDOWCOMPS }
