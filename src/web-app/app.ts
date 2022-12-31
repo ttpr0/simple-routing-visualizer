@@ -1,6 +1,7 @@
 import { createApp, ref, reactive, onMounted, computed} from 'vue'
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState, getMapState, getToolbarState } from '/state';
+import { getToolManager } from '/components/sidebar/toolbar/ToolManager';
 import { getMap } from '/map';
 import { mapregion } from '/app/mapregion/MapRegion';
 import { footerbar } from '/app/footerbar/FooterBar';
@@ -21,14 +22,15 @@ const app = createApp({
     const map_state = getMapState();
     const state = getAppState();
     const toolbar = getToolbarState();
+    const toolmanager = getToolManager();
 
     const toolinfo = computed(() => {
       return toolbar.toolinfo;
     })
 
-    toolbar.loadTools(testtoolbox.tools, testtoolbox.name);
-    toolbar.loadTools(orstoolbox.tools, orstoolbox.name);
-    toolbar.loadTools(routingtoolbox.tools, routingtoolbox.name);
+    toolmanager.loadTools(testtoolbox.tools, testtoolbox.name);
+    toolmanager.loadTools(orstoolbox.tools, orstoolbox.name);
+    toolmanager.loadTools(routingtoolbox.tools, routingtoolbox.name);
 
     fetch(window.location.origin + '/datalayers/hospitals.geojson')
       .then(response => response.json())

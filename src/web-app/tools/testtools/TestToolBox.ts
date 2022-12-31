@@ -1,4 +1,4 @@
-import { ITool } from "/tools/ITool";
+import { ITool } from "/components/sidebar/toolbar/ITool";
 import { getMap } from '/map';
 
 const map = getMap();

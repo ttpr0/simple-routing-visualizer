@@ -4,7 +4,7 @@ import { VectorImageLayer } from '/map/VectorImageLayer';
 import { AccessibilityStyle } from '/map/styles';
 import { getIsoRaster } from '/external/api';
 import { getMap } from '/map';
-import { ITool } from '/tools/ITool';
+import { ITool } from '/components/sidebar/toolbar/ITool';
 
 
 const map = getMap();

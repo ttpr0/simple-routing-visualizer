@@ -5,7 +5,7 @@ import { getORSPolygon } from '/external/api';
 import { randomRanges } from '/util/util';
 import { GeoJSON } from 'ol/format';
 import { getMap } from '/map';
-import { ITool } from '/tools/ITool';
+import { ITool } from '/components/sidebar/toolbar/ITool';
 
 
 const map = getMap();

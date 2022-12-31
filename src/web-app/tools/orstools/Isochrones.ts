@@ -4,7 +4,7 @@ import { VectorImageLayer } from '/map/VectorImageLayer';
 import { getDockerPolygon } from '/external/api';
 import { randomRanges } from '/util/util';
 import { getMap } from '/map';
-import { ITool } from '/tools/ITool';
+import { ITool } from '/components/sidebar/toolbar/ITool';
 import { PolygonStyle } from '/map/style';
 
 

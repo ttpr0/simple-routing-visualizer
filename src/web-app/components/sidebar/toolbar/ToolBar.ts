@@ -7,6 +7,7 @@ import { VIcon } from 'vuetify/components';
 import { NSpace, NInput, NTag, NScrollbar } from 'naive-ui';
 import { toolcontainer } from './ToolContainer';
 import { toolparam } from '/share_components/sidebar/toolbar/ToolParam';
+import { getToolManager } from './ToolManager';
 
 const toolbar = {
     components: { VIcon, NSpace, NInput, NTag, NScrollbar, toolcontainer, toolparam },
@@ -15,6 +16,7 @@ const toolbar = {
         const state = getAppState();
         const map = getMap();
         const toolbar = getToolbarState();
+        const toolmanager = getToolManager(); 
 
         const tool_search = ref("");
         const tools = computed(() => {
@@ -32,7 +34,7 @@ const toolbar = {
         }
 
         const loadTool = async () => {
-            let t = toolbar.getTool(toolbar.currtool.name);
+            let t = toolmanager.getTool(toolbar.currtool.name);
             toolbar.currtool.params = t.param;
             toolbar.currtool.out = t.out;
             for (let p of t.param)
@@ -46,12 +48,12 @@ const toolbar = {
         const reactiveParams = reactive(params);
 
         function setToolInfo() {
-            toolbar.setToolInfo();
+            toolmanager.setToolInfo();
         }
 
         const runTool = async () => {
             toolbar.toolinfo.tool = toolbar.currtool.name;
-            const out = await toolbar.runTool(toolbar.currtool.name, params)
+            const out = await toolmanager.runTool(toolbar.currtool.name, params)
             if (out == null)
                 return;
             toolbar.currtool.out.forEach(element => {

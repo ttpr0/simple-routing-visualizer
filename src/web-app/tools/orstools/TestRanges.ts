@@ -4,7 +4,7 @@ import { VectorImageLayer } from '/map/VectorImageLayer';
 import { getDockerPolygon, getIsoRaster } from '/external/api';
 import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util';
 import { getMap } from '/map';
-import { ITool } from '/tools/ITool';
+import { ITool } from '/components/sidebar/toolbar/ITool';
 
 
 const map = getMap();

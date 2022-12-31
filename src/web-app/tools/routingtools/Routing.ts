@@ -4,7 +4,7 @@ import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getT
 import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
 import { GeoJSON } from 'ol/format';
 import { getMap } from '/map';
-import { ITool } from '/tools/ITool';
+import { ITool } from '/components/sidebar/toolbar/ITool';
 import { getMultiGraph, getRouting } from '/routing/api';
 import { LineStyle } from '/map/style';
 
