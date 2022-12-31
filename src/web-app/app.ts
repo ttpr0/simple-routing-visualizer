@@ -9,14 +9,14 @@ import { topbar } from '/app/topbar/TopBar';
 import { sidebar } from '/app/sidebar/SideBar';
 import 'vuetify/styles'
 import { dragablewindow } from '/app/util/DragableWindow';
-import { GeoJSON } from "ol/format"
+import { contextmenu } from '/app/contextmenu/ContextMenu';
 import { toolbox as orstoolbox } from "/tools/orstools/ORSToolBox";
 import { toolbox as testtoolbox } from "/tools/testtools/TestToolBox";
 import { toolbox as routingtoolbox } from "/tools/routingtools/RoutingToolBox";
 
 
 const app = createApp({
-  components: { sidebar, toolbar, mapregion, topbar, footerbar, dragablewindow },
+  components: { sidebar, toolbar, mapregion, topbar, footerbar, dragablewindow, contextmenu },
   setup() {
     const map = getMap();
     const map_state = getMapState();
@@ -55,6 +55,7 @@ const app = createApp({
     <dragablewindow v-if="toolinfo.show" :pos="toolinfo.pos" name="Tool-Info" icon="mdi-information-outline" @onclose="toolinfo.show=false">
       <div class="tooltext"><span v-html="toolinfo.text"></span></div>
     </dragablewindow>
+    <contextmenu></contextmenu>
   </div>
   `
 })

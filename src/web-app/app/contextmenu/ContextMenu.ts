@@ -1,12 +1,8 @@
 import { computed, ref, reactive, onMounted, watch, onUnmounted} from 'vue';
 import { getAppState, getMapState } from '/state';
-import { NDataTable, NConfigProvider, darkTheme } from 'naive-ui';
 import { CONFIG, TOPBARCOMPS } from "/config" 
 import { contextmenuitem } from '/share_components/contextmenu/ContextMenuItem';
 import { topbarseperator } from '/share_components/topbar/TopBarSeperator';
-import "ol/ol.css"
-import "./MapRegion.css"
-import { Overlay } from 'ol';
 
 const contextmenu = {
     components: { contextmenuitem },
@@ -38,17 +34,17 @@ const contextmenu = {
             state.contextmenu.display = false
         }
         const contextmenuOutside = (e) => {
-            if (e["ctx_inside"] === "nvnkjvnrni") return
+            //if (e["ctx_inside"] === "nvnkjvnrni") return
             state.contextmenu.display = false
         }
 
         watch(active, (newA) => {
             if (newA === true) {
                 document.addEventListener("mousedown", mousedownOutside)
-                document.addEventListener("contextmenu", contextmenuOutside)
+                document.addEventListener("contextmenu", contextmenuOutside, true)
             }
             if (newA === false) {
-                document.addEventListener("mousedown", mousedownOutside)
+                document.removeEventListener("mousedown", mousedownOutside)
                 document.removeEventListener("contextmenu", contextmenuOutside)
             }
         })
