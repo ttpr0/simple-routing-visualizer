@@ -8,7 +8,7 @@ import { footerbar } from '/app/footerbar/FooterBar';
 import { topbar } from '/app/topbar/TopBar';
 import { sidebar } from '/app/sidebar/SideBar';
 import 'vuetify/styles'
-import { dragablewindow } from '/app/util/DragableWindow';
+import { dragwindow } from '/app/window/Window';
 import { contextmenu } from '/app/contextmenu/ContextMenu';
 import { toolbox as orstoolbox } from "/tools/orstools/ORSToolBox";
 import { toolbox as testtoolbox } from "/tools/testtools/TestToolBox";
@@ -16,17 +16,13 @@ import { toolbox as routingtoolbox } from "/tools/routingtools/RoutingToolBox";
 
 
 const app = createApp({
-  components: { sidebar, toolbar, mapregion, topbar, footerbar, dragablewindow, contextmenu },
+  components: { sidebar, toolbar, mapregion, topbar, footerbar, dragwindow, contextmenu },
   setup() {
     const map = getMap();
     const map_state = getMapState();
     const state = getAppState();
     const toolbar = getToolbarState();
     const toolmanager = getToolManager();
-
-    const toolinfo = computed(() => {
-      return toolbar.toolinfo;
-    })
 
     toolmanager.loadTools(testtoolbox.tools, testtoolbox.name);
     toolmanager.loadTools(orstoolbox.tools, orstoolbox.name);
@@ -41,7 +37,7 @@ const app = createApp({
         map_state.focuslayer = layer.name;
     });
 
-    return { toolinfo }
+    return { }
   },
 
   template: `
@@ -52,9 +48,7 @@ const app = createApp({
       <mapregion></mapregion>
     </div>
     <footerbar></footerbar>
-    <dragablewindow v-if="toolinfo.show" :pos="toolinfo.pos" name="Tool-Info" icon="mdi-information-outline" @onclose="toolinfo.show=false">
-      <div class="tooltext"><span v-html="toolinfo.text"></span></div>
-    </dragablewindow>
+    <dragwindow></dragwindow>
     <contextmenu></contextmenu>
   </div>
   `
