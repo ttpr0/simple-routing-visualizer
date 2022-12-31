@@ -1,16 +1,13 @@
 .dragablewindow {
     background-color: none;
-    width: max-content;
-    height: max-content;
     position: absolute;
-    z-index: 1;
+    z-index: 10;
 }
 
 .dragablewindow-header {
     width: 100%;
-    min-width: 200px;
     height: 30px;
-    background-color: rgb(65, 163, 170);
+    background-color: rgb(65, 163, 170, 0.7);
     cursor: move;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
@@ -39,11 +36,38 @@
 }
 
 .dragablewindow-body {
-    width: max-content;
-    height: max-content;
+    width: 100%;
+    height: calc(100% - 30px);
     background-color: rgb(61, 61, 61);
-    padding: 5px;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    scrollbar-width: thin;
+    overflow: hidden;
+}
+
+.dragablewindow .resizer-right {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    height: calc(100% - 5px);
+    width: 5px;
+    background-color: transparent;
+    cursor: ew-resize;
+}
+
+.dragablewindow .resizer-bottom {
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    width: calc(100% - 5px);
+    height: 5px;
+    background-color: transparent;
+    cursor: ns-resize;
+}
+
+.dragablewindow .resizer-corner {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    width: 5px;
+    height: 5px;
+    background-color: transparent;
+    cursor: nw-resize;
 }

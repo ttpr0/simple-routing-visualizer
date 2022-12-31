@@ -5,6 +5,7 @@ body {
 }
 
 .appcontainer {
+  position: fixed;
   height: 100%;
   width: 100%;
   color: rgb(165, 165, 165);
