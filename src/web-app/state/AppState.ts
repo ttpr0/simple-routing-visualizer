@@ -21,6 +21,7 @@ class AppState
         },
         pos: [0, 0],
         display: false,
+        type: null,
     }
 
     window = {

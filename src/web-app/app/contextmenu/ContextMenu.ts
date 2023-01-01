@@ -13,8 +13,12 @@ const contextmenu = {
 
         const comps = computed(() => {
             const ctx_conf = CONFIG["app"]["contextmenu"]
+            let type = state.contextmenu.type;
+            if (ctx_conf[type] === undefined) {
+                return null;
+            }
             let comps = [];
-            for (let comp of ctx_conf) {
+            for (let comp of ctx_conf[type]) {
                 if (comp === null) 
                     comps.push(topbarseperator)
                 else
@@ -24,7 +28,12 @@ const contextmenu = {
         })
 
         const pos = computed(() => { return state.contextmenu.pos })
-        const active = computed(() => { return state.contextmenu.display })
+        const active = computed(() => {
+            if (state.contextmenu.type === null) {
+                return false;
+            }
+            return state.contextmenu.display 
+        })
 
         const mousedownInside = (e) => {
             e["ctx_inside"] = "nvnkjvnrni"

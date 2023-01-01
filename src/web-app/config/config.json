@@ -58,11 +58,13 @@
         "window": {
             "toolinfo": "BasicToolInfo"
         },
-        "contextmenu": [
-            "MapDragbox",
-            null,
-            "RoutingFrom",
-            "RoutingTo"
-        ]
+        "contextmenu": {
+            "map": [
+                "MapDragbox",
+                null,
+                "RoutingFrom",
+                "RoutingTo"
+            ]
+        }
     }
 }

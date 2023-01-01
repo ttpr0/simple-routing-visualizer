@@ -18,6 +18,7 @@ const mapregion = {
                 state.contextmenu.pos = [e.pageX, e.pageY]
                 state.contextmenu.display = true
                 state.contextmenu.context.map_pos = map.getEventCoordinate(e);
+                state.contextmenu.type = "map"
                 e.preventDefault()
             })
         })
