@@ -161,6 +161,9 @@ class Map2D {
   getCoordinateFromPixel(pixel) {
     return this.olmap.getCoordinateFromPixel(pixel);
   }
+  getEventCoordinate(e) {
+    return this.olmap.getEventCoordinate(e);
+  }
 
   activateDragBox()
   {

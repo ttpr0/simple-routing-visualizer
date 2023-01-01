@@ -17,7 +17,7 @@ const mapregion = {
             mapregion.value.addEventListener("contextmenu", (e) => {
                 state.contextmenu.pos = [e.pageX, e.pageY]
                 state.contextmenu.display = true
-                state.contextmenu.context.map_pos = map.getCoordinateFromPixel([e.offsetX, e.offsetY])
+                state.contextmenu.context.map_pos = map.getEventCoordinate(e);
                 e.preventDefault()
             })
         })
