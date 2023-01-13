@@ -2,13 +2,13 @@
 
 interface ITool
 {
-    name: string;
-    param: object[];
-    out: object[];
+    getToolName() : string;
     
     getParameterInfo() : Array<object>;
 
     getOutputInfo() : Array<object>;
+
+    getDefaultParameters() : object;
 
     run(param, out, addMessage) : Promise<void>;
 }

@@ -12,20 +12,25 @@ const map = getMap();
 class TestFeatureCount implements ITool
 {
     name: string = "TestFeatureCount";
-    getParameterInfo(): object[] {
-        throw new Error('Method not implemented.');
-    }
-    getOutputInfo(): object[] {
-        throw new Error('Method not implemented.');
-    }
-    
     param = [
         {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
-        {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", values: ['Isochrone', 'IsoRaster'], text:"Test-Mode", default: 'Isochrone'},
+        {name: "testmode", title: "Test-Mode", info: "Test-Modus", type: "select", values: ['Isochrone', 'IsoRaster'], text:"Test-Mode"},
     ]
-    
     out = [
     ]
+
+    getToolName(): string {
+        return this.name;
+    }
+    getParameterInfo(): object[] {
+        return this.param;
+    }
+    getOutputInfo(): object[] {
+        return this.out;
+    }
+    getDefaultParameters(): object {
+        return { testmode: 'Isochrone' };
+    }
     
     async run(param, out, addMessage) 
     {

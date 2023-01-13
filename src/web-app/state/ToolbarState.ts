@@ -7,9 +7,8 @@ class ToolbarState
     }
     tools = []
     currtool = {
-        name: "",
-        params: [],
-        out: []
+        name: undefined,
+        params: {}
     }
     state = null
     running = ""

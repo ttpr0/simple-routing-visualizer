@@ -16,19 +16,25 @@ class ORSApiTest implements ITool
 
   param = [
     {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
-    {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,3600,100], text:"check?", default: 900},
-    {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?", default: 1}
+    {name: "range", title: "Reichweite", info: "Reichweite", type: "range", values: [100,3600,100], text:"check?"},
+    {name: "count", title: "Intervalle", info: "Intervalle", type: "range", values: [1,10,1], text:"check?"}
   ]
   
   out = [
     {name: 'orslayer', type: 'layer'},
   ]
 
+  getToolName(): string {
+    return this.name;
+  }
   getParameterInfo(): object[] {
-    throw new Error('Method not implemented.');
+      return this.param;
   }
   getOutputInfo(): object[] {
-    throw new Error('Method not implemented.');
+      return this.out;
+  }
+  getDefaultParameters(): object {
+      return { range: 900, count: 1};
   }
   
   async run(param, out, addMessage)

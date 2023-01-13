@@ -16,7 +16,7 @@ class ToolManager
     loadTools(tools: ITool[], group_name: string) {
         for (let t of tools)
         {
-            let toolname = t.name + "  (" + group_name + ")";
+            let toolname = t.getToolName() + " (" + group_name + ")";
             this.tools.set(toolname, t);
             toolbar.tools.push(toolname);
         }

@@ -12,17 +12,23 @@ const map = getMap();
 class TestIsolines implements ITool
 {
   name: string = "TestIsolines";
-  getParameterInfo(): object[] {
-    throw new Error('Method not implemented.');
-  }
-  getOutputInfo(): object[] {
-    throw new Error('Method not implemented.');
-  }
   param = [
     {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
   ]
-
   out = []
+
+  getToolName(): string {
+    return this.name;
+  }
+  getParameterInfo(): object[] {
+      return this.param;
+  }
+  getOutputInfo(): object[] {
+      return this.out;
+  }
+  getDefaultParameters(): object {
+      return {};
+  }
 
   async run(param, out, addMessage) {
     const layer = map.getLayerByName(param.layer);

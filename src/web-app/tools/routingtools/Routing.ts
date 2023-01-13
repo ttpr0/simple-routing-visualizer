@@ -11,24 +11,28 @@ import { LineStyle } from '/map/style';
 
 const map = getMap();
 
-class MultiGraph implements ITool
+class Routing implements ITool
 {
     name: string = "Routing";
-
     param = [
         {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
-        {name: "draw", title: "Draw Routing", info: "", type: "check", values: [], text:"draw?", default: true},
-        {name: "routingtype", title: "Routing Algorithm", info: "", type: "select", values: ['Dijktra', 'A*', 'Bidirect-Dijkstra', 'Bidirect-A*'], text:"Routing-Alg", default: 'Djkstra'}
+        {name: "draw", title: "Draw Routing", info: "", type: "check", values: [], text:"draw?" },
+        {name: "routingtype", title: "Routing Algorithm", info: "", type: "select", values: ['Dijktra', 'A*', 'Bidirect-Dijkstra', 'Bidirect-A*'], text:"Routing-Alg"}
     ]
-    
     out = [
     ]
 
+    getToolName(): string {
+        return this.name;
+    }
     getParameterInfo(): object[] {
-        throw new Error('Method not implemented.');
+        return this.param;
     }
     getOutputInfo(): object[] {
-        throw new Error('Method not implemented.');
+        return this.out;
+    }
+    getDefaultParameters(): object {
+        return { draw: false, routingtype: "Djkstra" };
     }
   
     async run(param, out, addMessage)
@@ -86,6 +90,6 @@ class MultiGraph implements ITool
     }
 }
 
-const tool = new MultiGraph();
+const tool = new Routing();
 
 export { tool }

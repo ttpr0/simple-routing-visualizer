@@ -19,33 +19,48 @@ const toolbar = {
         const toolmanager = getToolManager(); 
 
         const tool_search = ref("");
-        const tools = computed(() => {
+        const tool_list = computed(() => {
             return toolbar.tools.filter(element => element.toLowerCase().includes(tool_search.value))
         })
 
-        const showSearch = ref(true);
-        const currtool = computed(() => {
-            return toolbar.currtool;
+        let params = {};
+
+        const showSearch = computed(() => {
+            if (toolbar.currtool.name === undefined) {
+                return true;
+            }
+            else {
+                let tool = toolmanager.getTool(toolbar.currtool.name);
+                params = tool.getDefaultParameters();
+                toolbar.currtool.params = params;
+                return false;
+            }
         })
 
-        const onToolClick = (name) => {
-            toolbar.currtool.name = name;
-            loadTool();
-        }
-
-        const loadTool = async () => {
-            let t = toolmanager.getTool(toolbar.currtool.name);
-            toolbar.currtool.params = t.param;
-            toolbar.currtool.out = t.out;
-            for (let p of t.param)
-            {
-                reactiveParams[p['name']] = p['default'];
+        const param_info = computed(() => {
+            const tool = toolmanager.getTool(toolbar.currtool.name);
+            if (tool !== undefined) {
+                return tool.getParameterInfo();
             }
-            showSearch.value = false;
-        }
+            return [];
+        })
+        const out_info = computed(() => {
+            const tool = toolmanager.getTool(toolbar.currtool.name);
+            if (tool !== undefined) {
+                return tool.getOutputInfo();
+            }
+            return [];
+        })
+        const tool_params = computed(() => {
+            return toolbar.currtool.params;
+        })
+        const tool_name = computed(() => {
+            return toolbar.currtool.name;
+        })
 
-        var params = {};
-        const reactiveParams = reactive(params);
+        function setCurrTool(name) {
+            toolbar.currtool.name = name;
+        }
 
         function setToolInfo() {
             toolmanager.setToolInfo();
@@ -56,11 +71,11 @@ const toolbar = {
             const out = await toolmanager.runTool(toolbar.currtool.name, params)
             if (out == null)
                 return;
-            toolbar.currtool.out.forEach(element => {
-                if (element.type==='layer') 
+            out_info.value.forEach(element => {
+                if (element['type'] ==='layer') 
                 {
                     try {
-                        map.addLayer(out[element.name]);
+                        map.addLayer(out[element['name']]);
                     }
                     catch {
                         return;
@@ -69,7 +84,7 @@ const toolbar = {
             });
         }
 
-        return { tools, tool_search, onToolClick, showSearch, runTool, reactiveParams, currtool, setToolInfo }
+        return { tool_search, showSearch, tool_params, tool_list, param_info, tool_name , runTool, setToolInfo, setCurrTool}
     },
     template: `
     <div class="toolbar">
@@ -78,7 +93,7 @@ const toolbar = {
             <div style="height: calc(100% - 34px); padding-top: 20px;">
                 <n-scrollbar>
                     <n-space vertical>
-                        <n-tag v-for="(item, i) in tools" @click="onToolClick(item)" size="large">
+                        <n-tag v-for="(item, i) in tool_list" @click="setCurrTool(item)" size="large">
                             <div style="cursor: pointer;">
                                 <v-icon icon="mdi-tools" color="white"></v-icon>
                                 {{ item }}
@@ -89,8 +104,8 @@ const toolbar = {
             </div>
         </div>
         <div v-if="!showSearch">
-            <toolcontainer :toolname="currtool.name" @close="showSearch=true" @run="runTool()" @info="setToolInfo()">
-                <toolparam v-for="param in currtool.params" v-model="reactiveParams[param.name]" :param="param"></toolparam>
+            <toolcontainer :toolname="tool_name" @close="setCurrTool(undefined)" @run="runTool()" @info="setToolInfo()">
+                <toolparam v-for="param in param_info" v-model="tool_params[param.name]" :param="param"></toolparam>
             </toolcontainer>
         </div>
     </div>
