@@ -1,4 +1,3 @@
-import { defaultStyle, defaultHighlightStyle, HIGHLIGHT_STROKE, HIGHLIGHT_FILL } from "/map/styles";
 import { Vector } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source'
 import { ILayer } from "/map/ILayer";
@@ -205,6 +204,9 @@ class VectorLayer implements ILayer
         return this.selected_features;
     }
 
+    getStyle() : IStyle {
+        return this.style;
+    }
     setStyle(style: IStyle) {
         this.style = style;
         this.ol_layer.setStyle((feature, resolution) => {

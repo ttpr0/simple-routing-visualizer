@@ -39,6 +39,7 @@ interface ILayer
     getZIndex() : number;
     setZIndex(z_index: number);
 
+    getStyle() : IStyle;
     setStyle(style: IStyle);
 
     on(type: string, listener);

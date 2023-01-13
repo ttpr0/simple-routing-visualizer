@@ -4,6 +4,7 @@ import { getAppState } from '/state';
 import { getMap } from '/map';
 import { CONFIG } from "/config" 
 import { topbarbutton } from '/share_components/topbar/TopBarButton';
+import { PointStyle } from '/map/style';
 
 const routing_to = {
   components: { topbarbutton },
@@ -34,6 +35,7 @@ const routing_to = {
       let layer = map.getLayerByName("routing_points")
       if (layer === undefined) {
         layer = new VectorLayer([], "Point", "routing_points")
+        layer.setStyle(new PointStyle('red', 10, 'circle'))
         map.addLayer(layer)
       }
       const features = layer.getAllFeatures()

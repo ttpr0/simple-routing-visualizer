@@ -6,7 +6,6 @@ import { CONFIG, POPUPCOMPS, SIDEBARCOMPS } from "/config"
 import { NSpace, NTag, NSelect, NCheckbox, NButton } from 'naive-ui';
 import './RoutingBar.css'
 import { getRouting, getRoutingDrawContext, getRoutingStep } from '/routing/api';
-import { lineStyle } from '/map/styles';
 import { LineStyle } from '/map/style/LineStyle';
 
 const routingbar = {
@@ -81,7 +80,7 @@ const routingbar = {
                     map.addLayer(routinglayer);
                 }
 
-                map.removeLayer("routing_points")
+                //map.removeLayer("routing_points")
             }
             catch (e) {
                 alert("An Exception has occured: " + e)
