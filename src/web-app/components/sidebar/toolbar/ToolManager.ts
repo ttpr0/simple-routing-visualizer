@@ -46,8 +46,11 @@ class ToolManager
         const out = {};
         this.addMessage("Started " + tool + ":", 'green');
         try {
+            let start = new Date().getTime();
             await Tool.run(params, out, (message) => this.addMessage(message));
-            this.addMessage("Succesfully finished", 'green');
+            let end = new Date().getTime();
+            let time = end - start;
+            this.addMessage("Succesfully finished in " + time + " ms", 'green');
             toolbar.state = 'finished';
             return out;
         }
