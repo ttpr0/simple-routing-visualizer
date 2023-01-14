@@ -18,6 +18,7 @@ class AppState
     contextmenu = {
         context: {
             map_pos: [0, 0],
+            layer: null,
         },
         pos: [0, 0],
         display: false,

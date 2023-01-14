@@ -64,6 +64,9 @@
                 null,
                 "RoutingFrom",
                 "RoutingTo"
+            ],
+            "layertree": [
+                "RemoveLayer"
             ]
         }
     }

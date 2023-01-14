@@ -67,7 +67,13 @@ class Map2D {
 
   updateLayerState() {
     MAP_STATE.layers = [];
-    for (let layer of this.layers) {
+    let sorted_layers = this.layers.sort((a: ILayer, b: ILayer) => {
+      if (a.getZIndex() < b.getZIndex())
+        return 1;
+      else
+        return -1;
+    });
+    for (let layer of sorted_layers) {
       MAP_STATE.layers.push({ 'name': layer.getName(), 'type': layer.getType() })
     }
   }
@@ -77,6 +83,7 @@ class Map2D {
     if (l) {
       this.removeLayer(layer.getName());
     }
+    layer.setZIndex(100 + this.layers.length);
     this.layers.push(layer);
     this.olmap.addLayer(layer.getOlLayer());
     this.updateLayerState();
@@ -85,7 +92,12 @@ class Map2D {
   removeLayer(layername) {
     let layer = this.layers.find(layer => layer.getName() == layername);
     this.olmap.removeLayer(layer.getOlLayer());
-    this.layers = this.layers.filter(element => { return element.getName() != layername; })
+    this.layers = this.layers.filter(element => {
+      if (element.getZIndex() > layer.getZIndex()) {
+        element.setZIndex(element.getZIndex() - 1);
+      }
+      return element.getName() != layername;
+    });
     this.updateLayerState();
   }
 
@@ -113,6 +125,34 @@ class Map2D {
   isVisibile(layername) {
     let layer = this.layers.find(layer => layer.getName() == layername);
     return layer.getVisibile();
+  }
+
+  increaseZIndex(layername) {
+    const layer = this.layers.find(layer => layer.getName() == layername);
+    if (layer.getZIndex() === 99 + this.layers.length) {
+      return;
+    }
+    this.layers.forEach(element => {
+      if (element.getZIndex() === layer.getZIndex() + 1) {
+        element.setZIndex(layer.getZIndex());
+      }
+    });
+    layer.setZIndex(layer.getZIndex() + 1);
+    this.updateLayerState();
+  }
+
+  decreaseZIndex(layername) {
+    const layer = this.layers.find(layer => layer.getName() == layername);
+    if (layer.getZIndex() === 100) {
+      return;
+    }
+    this.layers.forEach(element => {
+      if (element.getZIndex() === layer.getZIndex() - 1) {
+        element.setZIndex(layer.getZIndex());
+      }
+    });
+    layer.setZIndex(layer.getZIndex() - 1);
+    this.updateLayerState();
   }
 
   addInteraction(interaction) {
