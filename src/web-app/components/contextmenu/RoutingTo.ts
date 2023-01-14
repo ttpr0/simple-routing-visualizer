@@ -1,6 +1,6 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { VectorLayer } from '/map/VectorLayer'
-import { getAppState } from '/state';
+import { getAppState, getToolbarState } from '/state';
 import { getMap } from '/map';
 import { CONFIG } from "/config" 
 import { topbarbutton } from '/share_components/topbar/TopBarButton';
@@ -13,6 +13,7 @@ const routing_to = {
   setup(props) {
     const state = getAppState();
     const map = getMap();
+    const toolbar = getToolbarState();
 
     function addRoutingBar() {
       const side_conf = CONFIG["app"]["sidebar"]
@@ -56,9 +57,19 @@ const routing_to = {
         }
       }
       layer.addFeature(feature)
+
+      for (let id of layer.getAllFeatures()) {
+          let type = layer.getProperty(id, "type")
+          if (type === "start")
+            toolbar.currtool.params["startpoint"] = layer.getGeometry(id)["coordinates"]
+          if (type === "finish")
+            toolbar.currtool.params["endpoint"] = layer.getGeometry(id)["coordinates"]
+      }
       state.contextmenu.display = false
 
-      addRoutingBar()
+      state.sidebar.active = 'ToolBar';
+      toolbar.currtool.name = "Routing (RoutingTools)";
+      //addRoutingBar()
     }
 
     return { routingTo }

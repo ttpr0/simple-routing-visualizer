@@ -1,25 +1,49 @@
 import { VectorLayer } from '/map/VectorLayer';
 import { VectorImageLayer } from '/map/VectorImageLayer'
-import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api'
-import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
-import { GeoJSON } from 'ol/format';
 import { getMap } from '/map';
+import { getToolbarState } from '/state';
 import { ITool } from '/components/sidebar/toolbar/ITool';
-import { getMultiGraph, getRouting } from '/routing/api';
+import { getRouting, getRoutingDrawContext, getRoutingStep } from '/routing/api';
 import { LineStyle } from '/map/style';
 
 
 const map = getMap();
+const toolbar = getToolbarState();
 
-class Routing implements ITool
+const handleClose = (type: string) => {
+    const layer = map.getLayerByName("routing_points");
+    if (layer !== undefined) {
+        for (let id of layer.getAllFeatures()) {
+            const t = layer.getProperty(id, "type")
+            if (t === type) {
+                layer.removeFeature(id)
+                if (type === "start")
+                    toolbar.currtool.params["startpoint"] = undefined;
+                if (type === "finish")
+                    toolbar.currtool.params["endpoint"] = undefined;
+            }
+        }
+    }
+    else {
+        if (type === "start")
+            toolbar.currtool.params["startpoint"] = undefined;
+        if (type === "finish")
+            toolbar.currtool.params["endpoint"] = undefined;
+    }
+}
+
+class Routing implements ITool 
 {
     name: string = "Routing";
     param = [
-        {name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype:'Point', text:"Layer:"},
-        {name: "draw", title: "Draw Routing", info: "", type: "check", values: [], text:"draw?" },
-        {name: "routingtype", title: "Routing Algorithm", info: "", type: "select", values: ['Dijktra', 'A*', 'Bidirect-Dijkstra', 'Bidirect-A*'], text:"Routing-Alg"}
+        { name: "startpoint", title: "Start", info: "", type: "closeable_tag", values: [], onClose: () => handleClose('start') },
+        { name: "endpoint", title: "Finish", info: "", type: "closeable_tag", values: [], onClose: () => handleClose('finish') },
+        { name: "draw", title: "Draw Routing", info: "", type: "check", values: [], text: "draw?" },
+        { name: "routingtype", title: "Routing Algorithm", info: "", type: "select", values: ['Dijktra', 'A*', 'Bidirect-Dijkstra', 'Bidirect-A*'], text: "Routing-Alg" },
+        { name: 'outname', title: 'Output Name', info: 'Name des Output-Layers', type: 'text', text: 'Name' },
     ]
     out = [
+        { name: 'outlayer', type: 'layer' },
     ]
 
     getToolName(): string {
@@ -32,60 +56,79 @@ class Routing implements ITool
         return this.out;
     }
     getDefaultParameters(): object {
-        return { draw: false, routingtype: "Djkstra" };
+        let start = undefined;
+        let end = undefined;
+        const layer = map.getLayerByName("routing_points");
+        if (layer !== undefined) {
+            for (let id of layer.getAllFeatures()) {
+                let type = layer.getProperty(id, "type")
+                if (type === "start")
+                    start = layer.getGeometry(id)["coordinates"]
+                if (type === "finish")
+                    end = layer.getGeometry(id)["coordinates"]
+            }
+        }
+        return {
+            startpoint: start,
+            endpoint: end,
+            draw: false,
+            routingtype: "Djkstra",
+            outname: "routing_layer"
+        };
     }
-  
-    async run(param, out, addMessage)
-    {
-        const layer = map.getLayerByName(param.layer);
-        if (layer == null || layer.getType() != "Point")
-        {
-          throw new Error("pls select a pointlayer!");
-        }
-        let selectedfeatures = layer.getSelectedFeatures();
-        if (selectedfeatures.length != 2)
-        {
-          throw new Error("pls mark two features!");
-        }
-        let feature = layer.getFeature(selectedfeatures[0]);
-        let startpoint = feature.geometry.coordinates;
-        feature = layer.getFeature(selectedfeatures[1]);
-        let endpoint = feature.geometry.coordinates;
 
-        if (param.draw) 
-        {
-            var key = -1;
-            var finished = false;
-            var geojson = null;
-            let routinglayer = new VectorLayer([], 'LineString', "routinglayer");
-            routinglayer.setStyle(new LineStyle('green', 2));
-            map.addLayer(routinglayer);
-            var start = new Date().getTime();
-            do
-            {
-                geojson = await getRouting(startpoint, endpoint, key, true, 1000, param.routingtype);
-                key = geojson.key;
-                finished = geojson.finished;
-                for (let feature of geojson["features"]) {
-                    routinglayer.addFeature(feature);
-                }
-            } while (!geojson.finished)
-            var end = new Date().getTime();
-            addMessage(end - start);
-            routinglayer = new VectorLayer(geojson["features"], 'LineString', 'routinglayer');
-            routinglayer.setStyle(new LineStyle('#ffcc33', 10));
-            map.addLayer(routinglayer);
+    async run(param, out, addMessage) {
+        let startpoint = param["startpoint"];
+        let endpoint = param["endpoint"];
+        let routing_type = param["routingtype"];
+        if (startpoint === undefined) {
+            throw new Error("pls select a valid start-point");
         }
-        else 
-        {
-            var key = -1;
-            var start = new Date().getTime();
-            var geojson = await getRouting(startpoint, endpoint, key, false, 1, param.routingtype);
-            var end = new Date().getTime();
-            addMessage(end - start);
-            let routinglayer = new VectorLayer(geojson["features"], 'LineString', 'routinglayer');
-            routinglayer.setStyle(new LineStyle('#ffcc33', 10));
-            map.addLayer(routinglayer);
+        if (endpoint === undefined) {
+            throw new Error("pls select a valid end-point");
+        }
+        if (routing_type === undefined) {
+            throw new Error("pls select a valid routing type");
+        }
+
+        try {
+            if (param["draw"]) {
+                let context = await getRoutingDrawContext(startpoint, endpoint, routing_type);
+                let key = context["key"];
+                var finished = false;
+                var geojson = null;
+                let routinglayer = new VectorImageLayer([], 'LineString', "routing_layer");
+                routinglayer.setStyle(new LineStyle('green', 2));
+                map.addLayer(routinglayer);
+                var start = new Date().getTime();
+                while (true) {
+                    geojson = await getRoutingStep(key, 1000);
+                    if (geojson.finished) {
+                        break;
+                    }
+                    routinglayer.addFeatures(geojson["features"]);
+                    // for (let feature of geojson["features"]) {
+                    //     routinglayer.addFeature(feature);
+                    // }
+                    console.log(routinglayer.ol_layer.getSource().getFeatures().length)
+                }
+                var end = new Date().getTime();
+                routinglayer = new VectorImageLayer(geojson["features"], 'LineString', param.outname);
+                routinglayer.setStyle(new LineStyle('#ffcc33', 10));
+                out.outlayer = routinglayer;
+            }
+            else {
+                var key = -1;
+                var start = new Date().getTime();
+                var geojson = await getRouting(startpoint, endpoint, key, false, 1, routing_type);
+                var end = new Date().getTime();
+                let routinglayer = new VectorImageLayer(geojson["features"], 'LineString', param.outname);
+                routinglayer.setStyle(new LineStyle('#ffcc33', 10));
+                out.outlayer = routinglayer;
+            }
+        }
+        catch (e) {
+            alert("An Exception has occured: " + e)
         }
     }
 }

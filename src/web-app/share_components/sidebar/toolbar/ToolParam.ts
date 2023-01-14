@@ -2,10 +2,10 @@ import { computed, ref, reactive, watch, toRef} from 'vue';
 import { getMapState } from '/state';
 import './ToolParam.css'
 import { VIcon } from 'vuetify/components';
-import { NSlider, NSpace, NSelect, NInput, NPopover, NDynamicTags, NCheckbox } from 'naive-ui';
+import { NSlider, NSpace, NSelect, NInput, NPopover, NDynamicTags, NCheckbox, NTag } from 'naive-ui';
 
 const toolparam = {
-    components: { VIcon, NSlider, NSpace, NSelect, NInput, NPopover, NDynamicTags, NCheckbox },
+    components: { VIcon, NSlider, NSpace, NSelect, NInput, NPopover, NDynamicTags, NCheckbox, NTag },
     emits: [ 'update:modelValue' ],
     props: [ 'modelValue', 'param' ],
     setup(props, ctx) {
@@ -28,7 +28,7 @@ const toolparam = {
                 {
                     layers.push(element.name);
                 }
-            }); 
+            });
         }
 
         return { value, layers }
@@ -79,6 +79,11 @@ const toolparam = {
                 <n-space vertical>
                     <n-select v-model:value="value" :options="layers.map((item) => { return {label: item, value: item} })" />
                 </n-space>
+            </div>
+            <div v-if="param.type==='closeable_tag'">
+                <n-tag closable @close="param.onClose()">
+                    {{ value }}
+                </n-tag>
             </div>
         </div>
     </div>
