@@ -81,7 +81,7 @@ const sidebar = {
     <div class="sidebar">
         <n-config-provider :theme="darkTheme">
             <div class="sidebar-tabs">
-                <div v-for="[name, icon, comp] in comps" :class="['sidebar-tab', {active: active === name}]" @click="handleClick(name)">
+                <div v-for="[name, icon, comp] in comps" :key="name" :class="['sidebar-tab', {active: active === name}]" @click="handleClick(name)">
                     <v-icon size="40" color="gray" theme="x-small">
                         {{ icon }}
                     </v-icon>

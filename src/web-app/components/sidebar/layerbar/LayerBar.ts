@@ -17,7 +17,7 @@ const layerbar = {
     },
     template: `
     <div class="layerbar">
-        <layertreeitem v-for="layer in layers" :layer="layer"></layertreeitem>
+        <layertreeitem v-for="layer in layers" :key="layer.name" :layer="layer"></layertreeitem>
     </div>
     `
 } 
