@@ -67,6 +67,17 @@
             ],
             "layertree": [
                 "RemoveLayer"
+            ],
+            "filetree:root-dir": [
+                "RefreshConnection",
+                "CreateNew",
+                "CloseConnection"
+            ],
+            "filetree:dir": [
+                "CreateNew"
+            ],
+            "filetree:layer": [
+                "AddToMap"
             ]
         }
     }

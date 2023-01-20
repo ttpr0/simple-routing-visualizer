@@ -13,27 +13,34 @@ const filetree = {
 
         const open = ref(false);
 
-        function onClose() {
-            open.value = false;
-            if (props.path.split('/').length === 2)
-            {
-                var key = props.path.split('/')[0];
-                state.filetree.connections = state.filetree.connections.filter(item => item.key !== key);
-                closeDirectory(key)
+        function onRightClick(e) {
+            state.contextmenu.pos = [e.pageX, e.pageY]
+            state.contextmenu.display = true
+            state.contextmenu.context.path = props.path;
+            state.contextmenu.context.name = props.item.name;
+            state.contextmenu.context.type = props.item.type;
+            if (props.item.type === 'dir') {
+                if (props.path.split("/").length === 2) {
+                    state.contextmenu.type = "filetree:root-dir";
+                }
+                else {
+                    state.contextmenu.type = "filetree:dir";
+                }
+            }
+            else if (['vector', 'raster'].includes(props.item.type)) {
+                state.contextmenu.type = "filetree:layer";
+            }
+            else {
+                state.contextmenu.display = false;
             }
         }
 
-        async function onRefresh() {
-            let dir = await refreshDirectory(props.path + '/' + props.item.name);
-            props.item.children = dir.children;
-        }
-
-        return { open, onClose, onRefresh }
+        return { open, onRightClick }
     },
     template: `
     <div class="filetree">
-        <filetreeitem :path="path" :name="item.name" :type="item.type" :open="open" @click="open=!open" @close="onClose" @refresh="onRefresh"></filetreeitem>
-        <div class="children" v-if="item.children.length > 0 && open">
+        <filetreeitem :path="path" :name="item.name" :type="item.type" :open="open" @click="open=!open" @contextmenu="onRightClick"></filetreeitem>
+        <div class="children" v-if="item.children !== undefined && open">
             <filetree v-for="child in item.children" :path="path + item.name + '/'" :item="child"></filetree>
         </div>
     </div>

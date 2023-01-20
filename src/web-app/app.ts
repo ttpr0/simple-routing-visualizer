@@ -2,6 +2,7 @@ import { createApp, ref, reactive, onMounted, computed} from 'vue'
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState, getMapState, getToolbarState } from '/state';
 import { getToolManager } from '/components/sidebar/toolbar/ToolManager';
+import { getConnectionManager } from '/components/sidebar/filebar/ConnectionManager';
 import { getMap } from '/map';
 import { mapregion } from '/app/mapregion/MapRegion';
 import { footerbar } from '/app/footerbar/FooterBar';
@@ -13,6 +14,7 @@ import { contextmenu } from '/app/contextmenu/ContextMenu';
 import { toolbox as orstoolbox } from "/tools/orstools/ORSToolBox";
 import { toolbox as testtoolbox } from "/tools/testtools/TestToolBox";
 import { toolbox as routingtoolbox } from "/tools/routingtools/RoutingToolBox";
+import { DummyConnection } from '/components/sidebar/filebar/DummyConnection';
 
 
 const app = createApp({
@@ -23,10 +25,13 @@ const app = createApp({
     const state = getAppState();
     const toolbar = getToolbarState();
     const toolmanager = getToolManager();
+    const connmanager = getConnectionManager();
 
     toolmanager.loadTools(testtoolbox.tools, testtoolbox.name);
     toolmanager.loadTools(orstoolbox.tools, orstoolbox.name);
     toolmanager.loadTools(routingtoolbox.tools, routingtoolbox.name);
+
+    connmanager.addConnection(new DummyConnection());
 
     fetch(window.location.origin + '/datalayers/hospitals.geojson')
       .then(response => response.json())

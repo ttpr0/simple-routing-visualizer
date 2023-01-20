@@ -18,8 +18,8 @@ const filesbar = {
     },
     template: `
     <div class="filesbar">
-        <div v-for="dir in directories">
-            <filetree :path="dir.key + '/'" :item="dir.tree"></filetree>
+        <div v-for="(value, key) in directories">
+            <filetree :path="key + '/'" :item="directories[key]"></filetree>
             <div class="divider"></div>
         </div>
     </div>

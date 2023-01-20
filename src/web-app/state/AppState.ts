@@ -19,6 +19,9 @@ class AppState
         context: {
             map_pos: [0, 0],
             layer: null,
+            path: null,
+            name: null,
+            type: null,
         },
         pos: [0, 0],
         display: false,
@@ -34,7 +37,7 @@ class AppState
     }
 
     filetree = {
-        connections: []
+        connections: {}
     }
 }
 
