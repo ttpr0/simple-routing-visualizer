@@ -17,9 +17,9 @@ async function openDirectory()
     return json;
 }
 
-async function refreshDirectory(path)
+async function getTree(path)
 {
-    var url = "http://localhost:5052/refresh";
+    var url = "http://localhost:5052/get_tree";
     var response = await fetch(url, {
         method: 'POST', 
         mode: 'cors',
@@ -76,4 +76,4 @@ async function openLayer(path)
     return await response.json()
 }
 
-export { openDirectory, openLayer, refreshDirectory, closeDirectory }
+export { openDirectory, openLayer, getTree, closeDirectory }

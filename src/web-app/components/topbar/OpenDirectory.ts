@@ -1,11 +1,8 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
-import { VectorLayer } from '/map/VectorLayer'
 import { getAppState, getMapState, getToolbarState } from '/state';
-import { topbaritem } from '/share_components/topbar/TopBarItem';
 import { topbarbutton } from '/share_components/topbar/TopBarButton';
-import { topbarseperator } from '/share_components/topbar/TopBarSeperator';
-import { openDirectory } from '/util/fileapi'
-import { GeoJSON } from "ol/format"
+import { getConnectionManager } from '/components/sidebar/filebar/ConnectionManager';
+import { FileAPIConnection } from '/components/sidebar/filebar/FileAPIConnection';
 
 const open_directory = {
     components: { topbarbutton },
@@ -15,13 +12,11 @@ const open_directory = {
       const state = getAppState();
       const map = getMapState();
       const toolbar = getToolbarState();
-
-      const layerdialog = ref(null);
-      const tooldialog = ref(null);
+      const connmanager = getConnectionManager();
 
       async function openFolder() {
-        var dir = await openDirectory();
-        state.filetree.connections.push(dir);
+        let conn = new FileAPIConnection();
+        await connmanager.addConnection(conn);
       }
 
       return { openFolder }
