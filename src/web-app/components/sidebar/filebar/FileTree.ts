@@ -2,7 +2,7 @@ import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState } from '/state';
 import { filetreeitem } from './FileTreeItem';
-import { refreshDirectory, closeDirectory } from '/util/fileapi';
+import { getTree, closeDirectory } from '/util/fileapi';
 
 const filetree = {
     name: 'filetree',
@@ -41,7 +41,7 @@ const filetree = {
     <div class="filetree">
         <filetreeitem :path="path" :name="item.name" :type="item.type" :open="open" @click="open=!open" @contextmenu="onRightClick"></filetreeitem>
         <div class="children" v-if="item.children !== undefined && open">
-            <filetree v-for="child in item.children" :path="path + item.name + '/'" :item="child"></filetree>
+            <filetree v-for="child in item.children" :key="child.name" :path="path + item.name + '/'" :item="child"></filetree>
         </div>
     </div>
     `

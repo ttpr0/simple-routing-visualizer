@@ -32,8 +32,18 @@ const filetreeitem = {
             icon_open = "mdi-checkerboard";
             icon_close = "mdi-checkerboard";
         }
+        if (['gpkg'].includes(props.type) ) {
+            icon_open = "mdi-package-variant";
+            icon_close = "mdi-package-variant-closed";
+        }
+
+        const item = ref(null);
 
         function onClick() {
+            item.value.classList.add("clicked");
+            setTimeout(() => {
+                item.value.classList.value = ["filetreeitem"];
+            }, 300);            
             ctx.emit('click');
         }
 
@@ -41,14 +51,12 @@ const filetreeitem = {
             ctx.emit('contextmenu', e);
         }
 
-        return { onClick, onContextmenu, icon_close, icon_open}
+        return { onClick, onContextmenu, icon_close, icon_open, item }
     },
     template: `
-    <div class="filetreeitem" @contextmenu.prevent="onContextmenu">
-        <div class="item" @click="onClick">
-            <div class="icon"><v-icon size=18 color="rgb(119, 118, 118)">{{ open ? icon_open : icon_close }}</v-icon></div>
+    <div class="filetreeitem" ref="item" @click="onClick" @contextmenu.prevent="onContextmenu">
+            <div class="icon"><v-icon size=18 color="rgb(173, 173, 173)">{{ open ? icon_open : icon_close }}</v-icon></div>
             <div class="text"><p>  {{ name }}</p></div>
-        </div>
     </div>
     `
 } 
