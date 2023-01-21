@@ -6,6 +6,7 @@ import { IStyle } from '/map/style/IStyle';
 interface ILayer
 {
     getName() : string;
+    setName(name: string);
     getType() : string;
     getOlLayer() : any;
 

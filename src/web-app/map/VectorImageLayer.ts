@@ -74,6 +74,9 @@ class VectorImageLayer implements ILayer
     getName() : string {
         return this.name;
     }
+    setName(name: string) {
+        this.name = name;
+    }
     getType() : string {
         return this.type;
     }

@@ -64,6 +64,11 @@ class Map2D {
   getLayerByName(layername) {
     return this.layers.find(layer => layer.getName() == layername);
   }
+  renameLayer(layername, newname) {
+    const layer = this.layers.find(layer => layer.getName() == layername);
+    layer.setName(newname);
+    this.updateLayerState();
+  }
 
   updateLayerState() {
     MAP_STATE.layers = [];

@@ -66,6 +66,7 @@
                 "RoutingTo"
             ],
             "layertree": [
+                "RenameLayer",
                 "RemoveLayer"
             ],
             "filetree:root-dir": [
