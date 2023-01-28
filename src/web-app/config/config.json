@@ -56,7 +56,8 @@
             "default": "FeatureInfo"
         },
         "window": {
-            "toolinfo": "BasicToolInfo"
+            "toolinfo": "BasicToolInfo",
+            "fileselect": "FileSelect"
         },
         "contextmenu": {
             "map": [

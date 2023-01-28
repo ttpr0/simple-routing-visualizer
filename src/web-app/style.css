@@ -3,23 +3,3 @@ body {
   padding: 0;
   background-color: white;
 }
-
-.appcontainer {
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  color: rgb(165, 165, 165);
-  font-size: 15;
-  font-style: normal;
-  font-family: sans-serif;
-  font-stretch: normal;
-  line-height: 1.5;
-}
-
-.middlecontainer {
-  height: calc(100vh - 57px);
-  width: 100%;
-  position: relative;
-  z-index: 1;
-  display: flex;
-}

@@ -1,8 +1,8 @@
-import { layerbar } from './layerbar/LayerBar';
-import { toolbar } from './toolbar/ToolBar';
-import { filesbar } from './filebar/FilesBar';
-import { routingbar } from './routingbar/RoutingBar';
-import { accessibilitybar } from './accessibilitybar/AccessibilityBar';
-import { symbologybar } from './symbologybar/SymbologyBar';
+import layerbar from './layerbar/LayerBar.vue';
+import toolbar from './toolbar/ToolBar.vue';
+import filesbar from './filebar/FilesBar.vue';
+import routingbar from './routingbar/RoutingBar.vue';
+import accessibilitybar from './accessibilitybar/AccessibilityBar.vue';
+import symbologybar from './symbologybar/SymbologyBar.vue';
 
 export { layerbar, toolbar, filesbar, routingbar, accessibilitybar, symbologybar }
