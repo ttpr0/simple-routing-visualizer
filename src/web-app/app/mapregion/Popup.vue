@@ -2,13 +2,13 @@
 import { computed, ref, reactive, onMounted, watch, onUnmounted} from 'vue';
 import { getAppState } from '/state';
 import { getMap } from '/map';
-import { NDataTable, NConfigProvider, darkTheme } from 'naive-ui';
+import { NDataTable } from 'naive-ui';
 import { CONFIG, POPUPCOMPS, SIDEBARCOMPS } from "/config" 
 import "ol/ol.css"
 import { Overlay } from 'ol';
 
 export default {
-    components: { NDataTable, NConfigProvider },
+    components: { NDataTable },
     props: [],
     setup() {
         const state = getAppState();
@@ -55,7 +55,7 @@ export default {
             map.removeOverlay(popup)
         })
 
-        return { popup_div, closePopup, comp, darkTheme }
+        return { popup_div, closePopup, comp }
     }
 }
 </script>
@@ -67,16 +67,14 @@ export default {
                 <v-icon size=24 color="white">mdi-close</v-icon>
             </div>
         </div>
-        <n-config-provider :theme="darkTheme">
-            <component :is="comp"></component>
-        </n-config-provider>
+        <component :is="comp"></component>
     </div>
 </template>
 
 <style scoped>
 .popup {
     position: absolute;
-    background-color: rgb(61, 61, 61);
+    background-color: var(--bg-color);
     box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     padding: 10px;
     border-radius: 5px;
@@ -92,7 +90,7 @@ export default {
     width: 0;
     position: absolute;
     pointer-events: none;
-    border-top-color: rgb(61, 61, 61);
+    border-top-color: var(--bg-color);
     border-width: 10px;
     left: 48px;
     margin-left: -10px;

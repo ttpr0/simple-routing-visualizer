@@ -68,7 +68,7 @@ export default {
 
 <template>
     <div class="topbar">
-        <v-icon size=33 color="white" style="float: left;" small>mdi-navigation-variant-outline</v-icon>
+        <v-icon size=33 color="var(--text-color)" style="float: left;" small>mdi-navigation-variant-outline</v-icon>
         <div @click="clickInside">
             <topbaritem v-for="[title, childs] in comps" :name="title" :active="active === title" @click="handleClick(title)" @hover="handleHover(title)">
                 <component v-for="comp in childs" :is="comp"></component>
@@ -81,10 +81,10 @@ export default {
 .topbar {
     height: 33px;
     width: 100%;
-    background-color: rgb(71, 71, 71);
+    background-color: var(--bg-light-color);
     position: relative;
     z-index: 2;
     user-select: none;
-    color: rgb(195, 195, 195);
+    color: var(--text-light-color);
 }
 </style>

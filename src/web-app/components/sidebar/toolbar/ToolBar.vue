@@ -98,7 +98,7 @@ export default {
                     <n-space vertical>
                         <n-tag v-for="(item, i) in tool_list" @click="setCurrTool(item)" size="large">
                             <div style="cursor: pointer;">
-                                <v-icon icon="mdi-tools" color="white"></v-icon>
+                                <v-icon icon="mdi-tools" color="var(--text-color)"></v-icon>
                                 {{ item }}
                             </div>
                         </n-tag>
@@ -118,8 +118,8 @@ export default {
 .toolbar {
     height: 100%;
     width: 100%;
-    background-color: rgb(51, 51, 51);
-    color: white;
+    background-color: var(--bg-dark-color);
+    color: var(--text-color);
     padding: 20px;
 }
 </style>

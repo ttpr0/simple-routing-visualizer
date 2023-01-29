@@ -1,25 +1,27 @@
 .topbaritem {
-    height: 33px;
+    height: 23px;
     width: fit-content;
     position: relative;
     float: left;
-    background-color: rgb(71, 71, 71);
+    background-color: var(--bg-light-color);
+    margin: 5px 5px;
+    border-radius: 5px;
 }
 
-.topbaritem  .tab {
-    height: 33px;
+.topbaritem .tab {
+    height: 23px;
     width: fit-content;
-    padding: 5px 15px;
+    padding: 0px 10px;
 }
 
 .topbaritem:hover {
-    background-color: rgb(81, 81, 81);
+    background-color: var(--bg-hover-color);
 }
 .topbaritem.active {
-    background-color: rgb(81, 81, 81);
+    background-color: var(--bg-hover-color);
 }
 .topbaritem.active:hover {
-    background-color: rgb(81, 81, 81);
+    background-color: var(--bg-hover-color);
 }
 
 .topbaritem.active .menu {
@@ -28,7 +30,7 @@
     left: 0%;
     height: fit-content;
     width: 200px;
-    background-color: rgb(71, 71, 71);
+    background-color: var(--bg-light-color);
     z-index: 100;
     border-radius: 3px;
     padding-top: 6px;

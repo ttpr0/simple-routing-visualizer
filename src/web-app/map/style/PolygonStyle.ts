@@ -23,11 +23,11 @@ class PolygonStyle implements IStyle
         }
 
         let highlight_stroke = new Stroke({
-            color: 'lightseagreen',
+            color: getComputedStyle(document.documentElement).getPropertyValue('--theme-color'),
             width: width
         });
         let highlight_fill = new Fill({
-            color: 'rgba(0,255,255,0.5)',
+            color: getComputedStyle(document.documentElement).getPropertyValue('--theme-thin-color'),
         })
 
         this.style = new Style({

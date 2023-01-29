@@ -16,9 +16,10 @@ import { toolbox as testtoolbox } from "/tools/testtools/TestToolBox";
 import { toolbox as routingtoolbox } from "/tools/routingtools/RoutingToolBox";
 import { DummyConnection } from '/components/sidebar/filebar/DummyConnection';
 import TopBar from '/app/topbar/Topbar.vue';
+import { NConfigProvider, darkTheme } from 'naive-ui';
 
 export default {
-    components: { SideBar, toolbar, MapRegion, FooterBar, Window, ContextMenu, TopBar },
+    components: { NConfigProvider, SideBar, MapRegion, FooterBar, Window, ContextMenu, TopBar },
     setup() {
         const map = getMap();
         const map_state = getMapState();
@@ -42,13 +43,14 @@ export default {
                 map_state.focuslayer = layer.name;
             });
 
-        return {}
+        return { darkTheme }
     }
 }
 </script>
 
 <template>
     <div class="appcontainer">
+        <n-config-provider>
         <TopBar></TopBar>
         <div class="middlecontainer">
             <SideBar></SideBar>
@@ -57,6 +59,7 @@ export default {
         <FooterBar></FooterBar>
         <Window></Window>
         <ContextMenu></ContextMenu>
+        </n-config-provider>
     </div>
 </template>
 
@@ -65,7 +68,7 @@ export default {
     position: fixed;
     height: 100%;
     width: 100%;
-    color: rgb(165, 165, 165);
+    color: var(--text-color);
     font-size: 15;
     font-style: normal;
     font-family: sans-serif;

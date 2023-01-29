@@ -3,10 +3,9 @@ import { computed, ref, reactive, onMounted, watch} from 'vue';
 import { getAppState } from '/state';
 import { CONFIG, SIDEBARCOMPS } from "/config" 
 import { VIcon } from 'vuetify/components';
-import { NConfigProvider, darkTheme } from 'naive-ui';
 
 export default {
-    components: { VIcon, NConfigProvider },
+    components: { VIcon },
     props: [],
     setup() {
         const state = getAppState();
@@ -75,29 +74,27 @@ export default {
                 state.sidebar.active = item;
         }
 
-        return { active, handleClick, resizer, sidebar_item, darkTheme, comps }
+        return { active, handleClick, resizer, sidebar_item, comps }
     }
 }
 </script>
 
 <template>
     <div class="sidebar">
-        <n-config-provider :theme="darkTheme">
-            <div class="sidebar-tabs">
-                <div v-for="[name, icon, comp] in comps" :key="name" :class="['sidebar-tab', {active: active === name}]" @click="handleClick(name)">
-                    <v-icon size="40" color="gray" theme="x-small">
-                        {{ icon }}
-                    </v-icon>
-                </div>
+        <div class="sidebar-tabs">
+            <div v-for="[name, icon, comp] in comps" :key="name" :class="['sidebar-tab', {active: active === name}]" @click="handleClick(name)">
+                <v-icon size="40" theme="x-small">
+                    {{ icon }}
+                </v-icon>
             </div>
-            <div ref="sidebar_item" class="sidebar-item" v-show="active!==''">
-                <div class="content">
-                    <component v-for="[name, icon, comp] in comps" :is="comp" v-show="active === name"></component>
-                </div>
-                <div ref="resizer" class="resizer">
-                </div>
+        </div>
+        <div ref="sidebar_item" class="sidebar-item" v-show="active!==''">
+            <div class="content">
+                <component v-for="[name, icon, comp] in comps" :is="comp" v-show="active === name"></component>
             </div>
-        </n-config-provider>
+            <div ref="resizer" class="resizer">
+            </div>
+        </div>
     </div>
 </template>
 
@@ -105,7 +102,7 @@ export default {
 .sidebar {
     height: 100%;
     width: max-content;
-    background-color: rgb(61, 61, 61);
+    background-color: var(--bg-color);
     position: relative;
     z-index: 1;
     float: left;
@@ -114,7 +111,7 @@ export default {
 .sidebar-tabs {
     height: 100%;
     width: 50px;
-    background-color: rgb(61, 61, 61);
+    background-color: var(--bg-color);
     position: relative;
     z-index: 1;
     float: left;
@@ -124,17 +121,18 @@ export default {
     width: 50px;
     height: 60px;
     background-color: transparent;
+    color: var(--text-color);
     padding-left: 5px;
     padding-top: 10px;
 }
 
 .sidebar-tab:hover {
-    color: white;
+    color: var(--text-hover-color);
 }
 
 .sidebar-tab.active {
-    border-left: 3px solid rgb(65, 163, 170);
-    color: white;
+    border-left: 3px solid var(--theme-color);
+    color: var(--text-hover-color);
 }
 
 .sidebar-item {
@@ -143,7 +141,7 @@ export default {
     width: 300px;
     max-width: 600px;
     height: 100%;
-    background-color: rgb(51, 51, 51);
+    background-color: var(--bg-dark-color);
     z-index: 1;
 }
 
@@ -166,6 +164,7 @@ export default {
     cursor: ew-resize;
 }
 .sidebar-item .resizer:hover {
-    background-color: rgba(65, 163, 170, 0.5);
+    background-color: var(--theme-color);
+    opacity: 0.5;
 }
 </style>

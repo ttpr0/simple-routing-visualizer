@@ -1,10 +1,9 @@
 import { createApp, ref, reactive, onMounted, watch} from 'vue'
 import "./DragableWindow.css"
 import { VIcon } from 'vuetify/components';
-import { NConfigProvider, darkTheme } from 'naive-ui';
 
 const dragablewindow = {
-    components: { VIcon, NConfigProvider },
+    components: { VIcon },
     props: [ "icon", "name", "pos"],
     emits: [ "onclose" ],
     setup(props) {
@@ -159,19 +158,17 @@ const dragablewindow = {
             resizer.value.onmousedown = resizeBoth;
         })
 
-        return { window, windowheader, resizer, resizerheight, resizerwidth, darkTheme }
+        return { window, windowheader, resizer, resizerheight, resizerwidth }
     },
     template: `
     <div class="dragablewindow" ref="window">
         <div class="dragablewindow-header" ref="windowheader">
-            <div class="dragablewindow-header-info"><v-icon size=22 color="white">{{ icon }}</v-icon></div>
+            <div class="dragablewindow-header-info"><v-icon size=22 color="var(--text-theme-color)">{{ icon }}</v-icon></div>
             <div class="dragablewindow-header-name">{{ name }}</div>
-            <div class="dragablewindow-header-close" @click="$emit('onclose')"><v-icon size=24 color="white">mdi-close</v-icon></div>
+            <div class="dragablewindow-header-close" @click="$emit('onclose')"><v-icon size=24 color="var(--text-theme-color)">mdi-close</v-icon></div>
         </div>
         <div class="dragablewindow-body">
-            <n-config-provider :theme="darkTheme">
-                <slot></slot>
-            </n-config-provider>
+            <slot></slot>
         </div>
         <div class="resizer-right" ref="resizerwidth"></div>
         <div class="resizer-bottom" ref="resizerheight"></div>

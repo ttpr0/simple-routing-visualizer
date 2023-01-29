@@ -59,7 +59,7 @@ export default {
 
 <template>
     <div class="filetreeitem" ref="item" @click="onClick" @contextmenu.prevent="onContextmenu">
-            <div class="icon"><v-icon size=18 color="rgb(173, 173, 173)">{{ open ? icon_open : icon_close }}</v-icon></div>
+            <div class="icon"><v-icon size=18 color="var(--button-color)">{{ open ? icon_open : icon_close }}</v-icon></div>
             <div class="text"><p>  {{ name }}</p></div>
     </div>
 </template>
@@ -74,7 +74,7 @@ export default {
     border-width: 1px;
     border-style: dashed;
     border-color: transparent;
-    color: rgb(173, 173, 173);
+    color: var(--button-color);
     user-select: none;
     cursor: pointer;
 
@@ -83,18 +83,18 @@ export default {
 }
 
 .filetreeitem:hover {
-    color: #7cd4b7;
-    border-color: #6bd1af;
+    color: var(--theme-color);
+    border-color: var(--theme-light-color);
     transition: color 0.2s;
     transition: border 0.6s;
 }
 
 .filetreeitem.clicked {
-    color: #7cd4b7;
-    border-color: #6bd1af;
+    color: var(--theme-color);
+    border-color: var(--theme-light-color);
     transition: color 0.2s;
     transition: border 0.6s;    
-    box-shadow: 0px 0px 4px #6bd1af;
+    box-shadow: 0px 0px 4px var(--theme-light-color);
     transition: box-shadow 0.3s;
 }
 

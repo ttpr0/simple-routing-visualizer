@@ -79,8 +79,8 @@ export default {
             <slot></slot>
         </div>
         <div class="footer">
-            <v-progress-linear model-value="100" :active="running || finished || error" :indeterminate="running" :color="error ? 'red' : 'rgb(65, 163, 170)'"></v-progress-linear>
-            <button class="info" @click="oninfo()" style="float= left;" :disabled="disableinfo"><v-icon size=20 color="white">mdi-information</v-icon></button>
+            <v-progress-linear model-value="100" :active="running || finished || error" :indeterminate="running" :color="error ? 'red' : 'var(--theme-color)'"></v-progress-linear>
+            <button class="info" @click="oninfo()" style="float= left;" :disabled="disableinfo"><v-icon size=20 color="var(--text-theme-color)">mdi-information</v-icon></button>
             <button class="run" @click="onrun()" :disabled="disablerun">Run Tool</button>
         </div>
     </div>
@@ -114,26 +114,26 @@ export default {
 
 .toolcontainer .footer .run {
     border-radius: 5px;
-    background-color: lightblue;
-    color: white;
+    background-color: var(--theme-color);
+    color: var(--text-theme-color);
     margin-top: 15px;
     padding: 5px;
     float: right;
     cursor: pointer;
 }
 .toolcontainer .footer .run:disabled {
-    background-color: lightgray;
+    background-color: var(--button-disabled-color);
 }
 
 .toolcontainer .footer .info {
     border-radius: 5px;
-    background-color: lightblue;
+    background-color: var(--theme-color);
     margin-top: 15px;
     padding: 5px;
     float: left;
     cursor: pointer;
 }
 .toolcontainer .footer .info:disabled {
-    background-color: lightgray;
+    background-color: var(--button-disabled-color);
 }
 </style>

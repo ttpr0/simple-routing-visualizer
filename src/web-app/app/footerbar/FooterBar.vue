@@ -34,6 +34,6 @@ export default {
     padding: 0px;
     position: absolute;
     bottom: 0px;
-    background-color: rgb(65, 163, 170);
+    background-color: var(--theme-color);
 }
 </style>

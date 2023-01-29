@@ -8,13 +8,16 @@
     cursor: pointer;
     font-size: 13;
     text-align: left;
+    color: var(--text-light-color);
 }
 .topbarbutton:hover {
-    background-color: rgb(81, 81, 81);;  
+    background-color: var(--bg-hover-color);  
 }
 .topbarbutton.highlight {
-    background-color: rgb(65, 163, 170);
+    background-color: var(--theme-color);
+    color: var(--text-theme-color);
 }
 .topbarbutton.highlight:hover {
-    background-color: rgb(65, 163, 170);
+    background-color: var(--theme-color);
+    color: var(--text-theme-color);
 }

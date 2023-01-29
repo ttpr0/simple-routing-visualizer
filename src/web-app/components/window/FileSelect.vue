@@ -49,7 +49,7 @@ export default {
 .fileselect .divider {
     height: 1px;
     width: 100%;
-    background-color: darkgray;
+    background-color: var(--bg-dark-color);
     margin: 5px 0px;
 }
 </style>

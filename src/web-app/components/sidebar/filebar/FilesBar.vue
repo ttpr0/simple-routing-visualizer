@@ -55,7 +55,7 @@ export default {
 .filesbar .divider {
     height: 1px;
     width: 100%;
-    background-color: darkgray;
+    background-color: var(--divider-color);
     margin: 15px 0px;
 }
 </style>

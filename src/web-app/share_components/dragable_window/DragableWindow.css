@@ -7,7 +7,8 @@
 .dragablewindow-header {
     width: 100%;
     height: 30px;
-    background-color: rgb(65, 163, 170, 0.7);
+    background-color: var(--theme-color);
+    opacity: 0.7;
     cursor: move;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
@@ -22,7 +23,7 @@
 .dragablewindow-header-name {
     padding: 3px;
     float: left;
-    color: white;
+    color: var(--text-theme-color);
     font-size: 1.2rem;
     line-height: 23px;
 }
@@ -30,7 +31,7 @@
 .dragablewindow-header-info {
     padding: 4px;
     float: left;
-    color: white;
+    color:  var(--text-theme-color);
     font-size: 1.2rem;
     line-height: 23px;
 }
@@ -38,7 +39,7 @@
 .dragablewindow-body {
     width: 100%;
     height: calc(100% - 30px);
-    background-color: rgb(61, 61, 61);
+    background-color: var(--bg-color);
     overflow: hidden;
 }
 

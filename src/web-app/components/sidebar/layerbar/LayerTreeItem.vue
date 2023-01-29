@@ -74,9 +74,11 @@ export default {
     width: calc(100% - 20px);
     height: 35px;
     margin: 5px 10px;
+    color: var(--text-color);
 }
 .layertreeitem.highlight {
-    background-color: rgba(65, 163, 170);
+    background-color: var(--theme-color);
+    color: var(--text-theme-color);
 }
 
 .layertreeitem .check {
@@ -95,7 +97,6 @@ export default {
     width: calc(100% - 75px);
     height: 25px;
     float: left;
-    color: white;
     cursor: default;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -105,7 +106,6 @@ export default {
     float: right;
     width: 50px;
     height: 25px;
-    color: white;
 }
 .layertreeitem .arrows .icon {
     cursor: pointer;

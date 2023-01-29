@@ -13,7 +13,7 @@ class LineStyle implements IStyle
             width: width
         });
         let highlight_stroke = new Stroke({
-            color: 'lightseagreen',
+            color: getComputedStyle(document.documentElement).getPropertyValue('--theme-color'),
             width: width
         });
 

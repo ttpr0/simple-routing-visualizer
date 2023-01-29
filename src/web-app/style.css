@@ -3,3 +3,35 @@ body {
   padding: 0;
   background-color: white;
 }
+
+:root {
+  /* --text-color: rgb(165, 165, 165);
+  --text-light-color: rgb(195, 195, 195);
+  --text-hover-color: white;
+  --text-theme-color: white;
+  --theme-color: rgb(65, 163, 170);
+  --theme-thin-color: rgba(65, 163, 170, 0.5);
+  --theme-light-color: rgb(82, 198, 206);
+  --bg-color: rgb(61, 61, 61);
+  --bg-light-color: rgb(71, 71, 71);
+  --bg-dark-color: rgb(51, 51, 51);
+  --bg-hover-color: rgb(81, 81, 81);
+  --divider-color: rgb(165, 165, 165);
+  --button-color: rgb(173, 173, 173);
+  --button-disabled-color: rgb(199, 198, 198); */
+
+  --text-color: rgb(69, 68, 68);
+  --text-light-color: rgb(132, 131, 131);
+  --text-hover-color: rgb(181, 180, 180);
+  --text-theme-color: white;
+  --theme-color: rgb(170, 65, 154);
+  --theme-thin-color: rgba(170, 65, 154, 0.5);
+  --theme-light-color: rgb(169, 100, 159);
+  --bg-color: rgb(241, 241, 241);
+  --bg-light-color: rgb(251, 251, 251);
+  --bg-dark-color: rgb(231, 231, 231);
+  --bg-hover-color: rgb(207, 205, 205);
+  --divider-color: white;
+  --button-color: rgb(62, 60, 60);
+  --button-disabled-color: rgb(199, 198, 198);
+}

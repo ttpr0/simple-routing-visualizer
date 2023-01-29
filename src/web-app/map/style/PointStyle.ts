@@ -32,10 +32,10 @@ class PointStyle implements IStyle
         let image;
 
         let highlight_stroke = new Stroke({
-            color: 'lightseagreen',
+            color: getComputedStyle(document.documentElement).getPropertyValue('--theme-color'),
         });
         let highlight_fill = new Fill({
-            color: 'rgba(0,255,255,0.5)',
+            color: getComputedStyle(document.documentElement).getPropertyValue('--theme-thin-color'),
         });
         let highlight_image;
 
