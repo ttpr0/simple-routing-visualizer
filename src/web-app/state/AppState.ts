@@ -10,7 +10,6 @@ class AppState
 
     popup = {
         type: null,
-        feature: null,
         pos: [0,0],
         display: false,
     }
@@ -34,6 +33,7 @@ class AppState
         icon: "mdi-information-outline",
         name: "Window",
         type: null,
+        context: {} as any,
     }
 
     filetree = {

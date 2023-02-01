@@ -5,7 +5,7 @@ import { layerbar, filesbar, toolbar, routingbar, accessibilitybar, symbologybar
 import { map_addlayer, map_addpoint, map_delpoint, map_dragbox, open_directory, open_file, open_toolbox, feature_info, feature_select, open_accessibility } from "/components/topbar";
 import { feature_info_popup } from "/components/popup";
 import { routing_from, routing_to, remove_layer, add_to_map, create_new, close_connection, refresh_connection, rename_layer } from "/components/contextmenu";
-import { basic_tool_info, file_select } from "/components/window";
+import { basic_tool_info, file_select, feature_info_window } from "/components/window";
 
 const CONFIG = reactive(config);
 
@@ -52,7 +52,8 @@ const POPUPCOMPS = {
 
 const WINDOWCOMPS = {
     "BasicToolInfo": basic_tool_info,
-    "FileSelect": file_select
+    "FileSelect": file_select,
+    "FeatureInfo": feature_info_window,
 }
 
 export { CONFIG, FOOTERCOMPS, SIDEBARCOMPS, TOPBARCOMPS, POPUPCOMPS, WINDOWCOMPS }

@@ -1,109 +1,105 @@
 <script lang="ts">
-import { computed, ref, reactive, onMounted, watch, onUnmounted} from 'vue';
+import { computed, ref, reactive, onMounted, watch, onUnmounted } from 'vue';
 import { getAppState } from '/state';
 import { getMap } from '/map';
 import { NDataTable } from 'naive-ui';
-import { CONFIG, POPUPCOMPS, SIDEBARCOMPS } from "/config" 
+import { CONFIG, POPUPCOMPS, SIDEBARCOMPS } from "/config"
 import "ol/ol.css"
 import { Overlay } from 'ol';
 
 export default {
-    components: { NDataTable },
-    props: [],
-    setup() {
-        const state = getAppState();
-        const map = getMap();
+  components: { NDataTable },
+  props: [],
+  setup() {
+    const state = getAppState();
+    const map = getMap();
 
-        const comp = computed(() => {
-            const popup_conf = CONFIG["app"]["popup"]
-            let type = state.popup.type;
-            if (type === null) {
-                type = "default"
-            }
-            let comp = POPUPCOMPS[popup_conf[type]]
-            return comp;
-        })
+    const show = computed(() => { return state.popup.display; });
+    const pos = computed(() => { return state.popup.pos; });
 
-        const show = computed(() => { return state.popup.display; });
-        const pos = computed(() => { return state.popup.pos; });
+    watch([show, pos], ([newS, newP]) => {
+      if (newS === true) {
+        popup.setPosition(newP);
+      }
+      else {
+        popup.setPosition(undefined);
+        state.popup.display = false;
+      }
+    })
 
-        watch([show, pos], ([newS, newP]) => {
-            if (newS === true) {
-                popup.setPosition(newP);
-            }
-            else {
-                closePopup();
-            }
-        })
+    const popup_div = ref(null)
+    let popup = null;
 
-        const popup_div = ref(null)
-        let popup = null;
+    onMounted(() => {
+      popup = new Overlay({
+        element: popup_div.value,
+      })
+      map.addOverlay(popup)
+    })
 
-        const closePopup = () => {
-            popup.setPosition(undefined);
-            state.popup.display = false;
-        }
+    onUnmounted(() => {
+      map.removeOverlay(popup)
+    })
 
-        onMounted(() => {
-            popup = new Overlay({
-                element: popup_div.value,
-            })
-            map.addOverlay(popup)
-        })
-
-        onUnmounted(() => {
-            map.removeOverlay(popup)
-        })
-
-        return { popup_div, closePopup, comp }
-    }
+    return { popup_div }
+  }
 }
 </script>
 
 <template>
-    <div ref="popup_div" class="popup">
-        <div class="popup-header" ref="windowheader">
-            <div class="popup-header-close"  @click="closePopup()">
-                <v-icon size=24 color="white">mdi-close</v-icon>
-            </div>
-        </div>
-        <component :is="comp"></component>
-    </div>
+  <div ref="popup_div" class="popup">
+    <v-icon size="36" color="var(--theme-color)" theme="x-small">
+      mdi-map-marker
+    </v-icon>
+    <div class='pulse'></div>
+  </div>
 </template>
 
 <style scoped>
 .popup {
-    position: absolute;
-    background-color: var(--bg-color);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    padding: 10px;
-    border-radius: 5px;
-    bottom: 12px;
-    left: -50px;
+  position: absolute;
+  top: -36px;
+  left: -18px;
+  pointer-events: none;
 }
 
-.popup:after {
-    top: 100%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-    border-top-color: var(--bg-color);
-    border-width: 10px;
-    left: 48px;
-    margin-left: -10px;
+.pulse {
+  border-radius: 50%;
+  height: 14px;
+  width: 14px;
+  position: absolute;
+  margin: 0px 0px 0px 11px;
+  transform: rotateX(55deg);
+  z-index: -2;
 }
 
-.popup-header {
-    width: 100%;
-    height: 16px;
+.pulse:after {
+  content: "";
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+  position: absolute;
+  margin: -13px 0 0 -13px;
+  animation: pulsate 1s ease-out;
+  animation-iteration-count: infinite;
+  opacity: 0;
+  box-shadow: 0 0 1px 2px var(--theme-light-color);
+  animation-delay: 1.1s;
 }
 
-.popup-header-close {
-    float: right;
-    cursor: pointer;
-    margin-top: -8px;
+@keyframes pulsate {
+  0% {
+    transform: scale(0.1, 0.1);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.2, 1.2);
+    opacity: 0;
+  }
 }
 </style>

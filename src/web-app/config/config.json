@@ -52,12 +52,10 @@
             "Position",
             "Zoom"
         ],
-        "popup": {
-            "default": "FeatureInfo"
-        },
         "window": {
             "toolinfo": "BasicToolInfo",
-            "fileselect": "FileSelect"
+            "fileselect": "FileSelect",
+            "featureinfo": "FeatureInfo"
         },
         "contextmenu": {
             "map": [

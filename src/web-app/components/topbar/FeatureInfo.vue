@@ -18,22 +18,20 @@ export default {
         const state = getAppState();
         const map = getMap();
 
-        function setFeatureInfo(feature, pos, display) {
-            if (feature != null) state.popup.feature = feature;
-            if (pos != null) state.popup.pos = pos;
-            if (display != null) state.popup.display = display;
-        }
-
         function featureinfoListener(e) {
             let features = [];
             map.forEachFeatureAtPixel(e.pixel, function (layer, id) {
                 features.push(layer.getFeature(id));
             });
             if (features.length > 0) {
-                setFeatureInfo(features[0], features[0].geometry.coordinates, true);
+                state.window.show = true;
+                state.window.pos = [400, 400];
+                state.window.name = "Feature Info";
+                state.window.type = "featureinfo";
+                state.window.context.features = features;
             }
             else {
-                setFeatureInfo(null, null, false);
+                state.window.context.features = features;
             }
         }
 
