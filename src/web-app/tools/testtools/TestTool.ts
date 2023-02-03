@@ -27,6 +27,9 @@ class TestTool implements ITool
     getDefaultParameters(): object {
         return {};
     }
+    updateParameterInfo(param: object, param_info: object[], changed: string): [object[], object] {
+        return [null, param];
+    }
     
     async run(param, out, addMessage) {
         const layer: ILayer = map.getLayerByName(param.layer);

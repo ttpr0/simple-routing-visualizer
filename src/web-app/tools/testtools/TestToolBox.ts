@@ -18,7 +18,6 @@ class TestTool implements ITool
         {name: "travelmode", title: "Travel Mode", info: "Gibt Einheit der Reichweiten an (time=[s], distance=[m])", type: "multiselect", values: ['time', 'distance', 'test', 'more_test', 'many_test'], text:"Travel-Mode"},
         {name: "locationtype", title: "Location Type", info: "Gibt an ob Routing an locations starten (Routing vorwärts) oder enden (Routing rückwärts) soll", type: "select", values: ['start', 'destination'], text:"Location-Type"},
         {name: "outputtype", title: "Output Type", info: "Gibt an ob Polygone vollständig oder als Ringe (kleinere Polygone von größeren abgezogen) zurückgegeben werden sollen", type: "check", values: ['polygon ring', 'full polygon'], text:'Output-Type'},
-        {name: 'outname', title: 'Output Name', info: 'Name des Output-Layers', type: 'text', text: 'Name'},
     ]
     out = [
     ]
@@ -35,8 +34,16 @@ class TestTool implements ITool
     getDefaultParameters(): object {
         return {
             range: 90,
-            test: ['1','200','1000']
+            test: ['1','200','1000'],
+            url: "http://localhost:8080/v1",
+            outputtype: false,
         };
+    }
+    updateParameterInfo(param: object, param_info: object[], changed: string): [object[], object] {
+        if (changed === "url") {
+            param["url"] = "http://localhost:8080/v1";
+        }
+        return [null, param];
     }
     
     async run(param, out, addMessage) {

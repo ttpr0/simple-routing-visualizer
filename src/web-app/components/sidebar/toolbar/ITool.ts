@@ -6,6 +6,8 @@ interface ITool
     
     getParameterInfo() : Array<object>;
 
+    updateParameterInfo(param: object, param_info: object[], changed: string): [object[], object];
+
     getOutputInfo() : Array<object>;
 
     getDefaultParameters() : object;

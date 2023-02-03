@@ -37,13 +37,8 @@ export default {
             }
         })
 
-        const param_info = computed(() => {
-            const tool = toolmanager.getTool(toolbar.currtool.name);
-            if (tool !== undefined) {
-                return tool.getParameterInfo();
-            }
-            return [];
-        })
+        const param_info = ref(null);
+
         const out_info = computed(() => {
             const tool = toolmanager.getTool(toolbar.currtool.name);
             if (tool !== undefined) {
@@ -55,8 +50,25 @@ export default {
             return toolbar.currtool.params;
         })
         const tool_name = computed(() => {
+            const tool = toolmanager.getTool(toolbar.currtool.name);
+            if (tool !== undefined) {
+                param_info.value = tool.getParameterInfo();
+            }
+            else {
+                param_info.value = [];
+            }
             return toolbar.currtool.name;
         })
+
+        function setParam(name, value) {
+            toolbar.currtool.params[name] = value;
+            const tool = toolmanager.getTool(toolbar.currtool.name);
+            const [newI, newP] = tool.updateParameterInfo(params, param_info.value, name);
+            if (newI !== null) {
+                param_info.value = newI;
+                toolbar.currtool.params = newP;
+            }
+        }
 
         function setCurrTool(name) {
             toolbar.currtool.name = name;
@@ -84,7 +96,7 @@ export default {
             });
         }
 
-        return { tool_search, showSearch, tool_params, tool_list, param_info, tool_name , runTool, setToolInfo, setCurrTool}
+        return { tool_search, showSearch, tool_params, tool_list, param_info, tool_name , runTool, setToolInfo, setCurrTool, setParam}
     }
 }
 </script>
@@ -96,7 +108,7 @@ export default {
             <div style="height: calc(100% - 34px); padding-top: 20px;">
                 <n-scrollbar>
                     <n-space vertical>
-                        <n-tag v-for="(item, i) in tool_list" @click="setCurrTool(item)" size="large">
+                        <n-tag v-for="(item, i) in tool_list" :key="i" @click="setCurrTool(item)" size="large">
                             <div style="cursor: pointer;">
                                 <v-icon icon="mdi-tools" color="var(--text-color)"></v-icon>
                                 {{ item }}
@@ -108,7 +120,7 @@ export default {
         </div>
         <div v-if="!showSearch">
             <ToolContainer :toolname="tool_name" @close="setCurrTool(undefined)" @run="runTool()" @info="setToolInfo()">
-                <toolparam v-for="param in param_info" v-model="tool_params[param.name]" :param="param"></toolparam>
+                <toolparam v-for="param in param_info" :key="param" :modelValue="tool_params[param.name]" @update:modelValue="value => setParam(param.name, value)" :param="param"></toolparam>
             </ToolContainer>
         </div>
     </div>

@@ -24,7 +24,7 @@ const toolparam = {
         if (props.param.type === 'layer')
         {
             map_state.layers.forEach(element => {
-                if (element.type === props.param.layertype)
+                if (element.type === props.param.layertype || props.param.layertype === 'any')
                 {
                     layers.push(element.name);
                 }

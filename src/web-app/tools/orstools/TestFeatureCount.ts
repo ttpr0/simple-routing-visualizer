@@ -31,6 +31,9 @@ class TestFeatureCount implements ITool
     getDefaultParameters(): object {
         return { testmode: 'Isochrone' };
     }
+    updateParameterInfo(param: object, param_info: object[], changed: string): [object[], object] {
+        return [null, param];
+    }
     
     async run(param, out, addMessage) 
     {

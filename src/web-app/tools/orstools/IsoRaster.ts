@@ -51,6 +51,9 @@ class IsoRaster implements ITool
       "outname": "isoraster_layer"
     };
   }
+  updateParameterInfo(param: object, param_info: object[], changed: string): [object[], object] {
+    return [null, param];
+  }
   
   async run(param, out, addMessage)
   {
