@@ -61,6 +61,9 @@ export default {
   top: -36px;
   left: -18px;
   pointer-events: none;
+  animation-name: bounce;
+  animation-fill-mode: both;
+  animation-duration: 1s;
 }
 
 .pulse {
@@ -100,6 +103,23 @@ export default {
   100% {
     transform: scale(1.2, 1.2);
     opacity: 0;
+  }
+}
+
+@keyframes bounce {
+  0% {
+    opacity: 0;
+    transform: translateY(-2000px)
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(30px);
+  }
+  80% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
   }
 }
 </style>
