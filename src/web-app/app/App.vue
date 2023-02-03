@@ -14,6 +14,7 @@ import ContextMenu from '/app/contextmenu/ContextMenu.vue';
 import { toolbox as orstoolbox } from "/tools/orstools/ORSToolBox";
 import { toolbox as testtoolbox } from "/tools/testtools/TestToolBox";
 import { toolbox as routingtoolbox } from "/tools/routingtools/RoutingToolBox";
+import { toolbox as utilitytoolbox } from "/tools/utilitytools/UtilityToolBox";
 import { DummyConnection } from '/components/sidebar/filebar/DummyConnection';
 import TopBar from '/app/topbar/Topbar.vue';
 import { NConfigProvider, darkTheme } from 'naive-ui';
@@ -31,6 +32,7 @@ export default {
         toolmanager.loadTools(testtoolbox.tools, testtoolbox.name);
         toolmanager.loadTools(orstoolbox.tools, orstoolbox.name);
         toolmanager.loadTools(routingtoolbox.tools, routingtoolbox.name);
+        toolmanager.loadTools(utilitytoolbox.tools, utilitytoolbox.name);
 
         connmanager.addConnection(new DummyConnection());
 
