@@ -181,6 +181,17 @@ class Map2D {
   }
 
   forEachFeatureAtPixel(pixel: number[], func: (ILayer, number) => void) {
+    const coord = this.olmap.getCoordinateFromPixel(pixel);
+    for (const layer of this.layers) {
+      if (!layer.getVisibile()) {
+        continue;
+      }
+      const features = layer.getFeaturesAtCoordinate(coord);
+      for (const feature of features) {
+        func(layer, feature);
+      }
+    }
+
     this.olmap.forEachFeatureAtPixel(pixel, (feature, layer) => {
       let l = this.layers.find(element => element.getOlLayer() === layer)
       func(l, feature.getId());

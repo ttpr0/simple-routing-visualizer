@@ -6,9 +6,10 @@ import { NSpace, NColorPicker } from 'naive-ui';
 import pointsymbologybar from './PointSymbologyBar.vue';
 import linesymbologybar from './LineSymbologyBar.vue';
 import polygonsymbologybar from './PolygonSymbologyBar.vue';
+import rastersymbologybar from './RasterSymbologyBar.vue';
 
 export default {
-    components: { pointsymbologybar, linesymbologybar, polygonsymbologybar },
+    components: { pointsymbologybar, linesymbologybar, polygonsymbologybar, rastersymbologybar },
     props: [ ],
     setup(props) {
         const state = getAppState();
@@ -34,6 +35,7 @@ export default {
         <pointsymbologybar v-if="layer_type === 'Point'"></pointsymbologybar>
         <linesymbologybar v-if="layer_type === 'LineString'"></linesymbologybar>
         <polygonsymbologybar v-if="layer_type === 'Polygon'"></polygonsymbologybar>
+        <rastersymbologybar v-if="layer_type === 'Raster'"></rastersymbologybar>
     </div>
 </template>
 
