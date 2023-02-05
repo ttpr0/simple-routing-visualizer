@@ -1,5 +1,6 @@
 import { VectorLayer } from '/map/VectorLayer';
-import { VectorImageLayer } from '/map/VectorImageLayer'
+import { VectorImageLayer } from '/map/VectorImageLayer';
+import { VisualRoutingLayer } from '/map/layer/VisualRoutingLayer';
 import { getMap } from '/map';
 import { getToolbarState } from '/state';
 import { ITool } from '/components/sidebar/toolbar/ITool';
@@ -100,23 +101,18 @@ class Routing implements ITool
                 let key = context["key"];
                 var finished = false;
                 var geojson = null;
-                let routinglayer = new VectorImageLayer([], 'LineString', "routing_layer");
-                routinglayer.setStyle(new LineStyle('green', 2));
-                map.addLayer(routinglayer);
+                let visualroutinglayer = new VisualRoutingLayer(null, null, "routing_layer");
+                map.addLayer(visualroutinglayer);
                 var start = new Date().getTime();
                 while (true) {
                     geojson = await getRoutingStep(key, 1000);
                     if (geojson.finished) {
                         break;
                     }
-                    routinglayer.addFeatures(geojson["features"]);
-                    // for (let feature of geojson["features"]) {
-                    //     routinglayer.addFeature(feature);
-                    // }
-                    console.log(routinglayer.ol_layer.getSource().getFeatures().length)
+                    visualroutinglayer.addFeatures(geojson["features"]);
                 }
                 var end = new Date().getTime();
-                routinglayer = new VectorImageLayer(geojson["features"], 'LineString', param.outname);
+                let routinglayer = new VectorImageLayer(geojson["features"], 'LineString', param.outname);
                 routinglayer.setStyle(new LineStyle('#ffcc33', 10));
                 out.outlayer = routinglayer;
             }
