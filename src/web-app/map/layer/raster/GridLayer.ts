@@ -256,8 +256,8 @@ class GridLayer implements ILayer
         const cols = this.canvas.width;
         const height = this.extend[3] - this.extend[1];
         const width = this.extend[2] - this.extend[0];
-        const col = Math.floor((x - this.extend[0]) / width * cols);
-        const row = Math.floor((this.extend[3] - y) / height * rows);
+        const col = Math.round((x - this.extend[0]) / width * cols);
+        const row = Math.round((this.extend[3] - y) / height * rows);
         return [col, row];
     }
 
