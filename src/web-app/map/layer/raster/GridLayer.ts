@@ -7,6 +7,7 @@ import { asArray } from 'ol/color';
 import { IStyle } from "/map/style/IStyle";
 import { RasterStyle } from "/map/style";
 import { QuadTree } from './QuadTree';
+import { fromLonLat, toLonLat, get as getProjection } from 'ol/proj.js';
 
 
 class GridLayer implements ILayer
@@ -20,11 +21,12 @@ class GridLayer implements ILayer
     name: any;
     type: string;
     style: RasterStyle;
+    proj: any;
 
-    constructor(features, extend, size, name, style = null)
+    constructor(features, extend, size, name, projection, style = null)
     {
         if (style === null) {
-            this.style = new RasterStyle("value", [255,125,0,255], [0,125,255,255], [100, 300, 600, 1000, 1600, 2400, 3600]);
+            this.style = new RasterStyle("first", [255,125,0,255], [0,125,255,255], [100, 300, 600, 1000, 1600, 2400, 3600]);
         }
         else {
             this.style = style;
@@ -35,11 +37,12 @@ class GridLayer implements ILayer
         this.canvas.width = size[0];
         this.ctx = this.canvas.getContext("2d");
         this.extend = extend;
-        this.features = new QuadTree;
+        this.features = new QuadTree();
         this.addFeatures(features);
 
         this.name = name;
         this.type = "Raster";
+        this.proj = getProjection(projection);
 
         this.setStyle(this.style);
 
@@ -63,7 +66,7 @@ class GridLayer implements ILayer
 
                 return canvas;
             },
-            projection: "EPSG:4326",
+            projection: projection,
         });
         this.ol_layer = new Image({source: source}); 
     }
@@ -95,42 +98,41 @@ class GridLayer implements ILayer
     }
 
     addFeature(feature: any) {
-        const [x, y] = this.rasterizeCoordinates(feature["x"], feature["y"]);
-        this.features.insert(x, y, feature["value"]);
+        const [px, py] = this.getPixelFromCoordinates(feature["x"], feature["y"]);
+        this.features.insert(px, py, feature["value"]);
         const [r, g, b, a] = this.style.getRGBA(feature["value"]);
-        const [px, py] = this.getPixelFromCoordinates(x, y);
         this.drawPixel(px, py, r, g, b, a);
     }
     addFeatures(features: any) {
         for (let feature of features) {
-            const [x, y] = this.rasterizeCoordinates(feature["x"], feature["y"]);
-            this.features.insert(x, y, feature["value"]);
+            const [px, py] = this.getPixelFromCoordinates(feature["x"], feature["y"]);
+            this.features.insert(px, py, feature["value"]);
         }
         this.setStyle(this.style);
     }
     getFeature(id: number) {
-        const [x, y] = this.getCoordinatesFromId(id);
-        let value = this.features.get(x, y);
+        const [px, py] = this.getPixelFromId(id);
+        let value = this.features.get(px, py);
+        const [x, y] = this.getCoordinatesFromPixel(px, py);
         const [dx, dy] = this.getGridSize();
         return {
             type: "Feature",
             geometry: {
                 type: "Point",
-                coordinates: [x+dx/2, y+dy/2]
+                coordinates: toLonLat([x+dx/2, y+dy/2], this.proj),
             },
             properties: value,
         };
     }
     removeFeature(id: number) {
-        const [x, y] = this.getCoordinatesFromId(id);
-        this.features.remove(x, y);
         const [px, py] = this.getPixelFromId(id);
+        this.features.remove(px, py);
         this.drawPixel(px, py, 0, 0, 0, 0);
     }
     getAllFeatures(): number[] {
         let features = []
         for (let feature of this.features.getAllNodes()) {
-            const id = this.getIdFromCoordinates(feature["x"], feature["y"]);
+            const id = this.getIdFromPixel(feature["x"], feature["y"]);
             features.push(id);
         }
         return features;
@@ -147,26 +149,26 @@ class GridLayer implements ILayer
     }
 
     setProperty(id: number, prop: string, value: any) {
-        const [x, y] = this.getCoordinatesFromId(id);
-        const f = this.features.get(x, y);
+        const [px, py] = this.getPixelFromId(id);
+        const f = this.features.get(px, py);
         f.value.prop = value;
         const [r, g, b, a] = this.style.getRGBA(value);
-        const [px, py] = this.getPixelFromId(id);
         this.drawPixel(px, py, r, g, b, a);
     }
     getProperty(id: number, prop: string) : any {
-        const [x, y] = this.getCoordinatesFromId(id);
-        const f = this.features.get(x, y);
+        const [px, py] = this.getPixelFromId(id);
+        const f = this.features.get(px, py);
         return f.value.prop;
     }
 
     setGeometry(id: number, geom: any) {}
     getGeometry(id: number) {
-        const [x, y] = this.getCoordinatesFromId(id);
+        const [px, py] = this.getPixelFromId(id);
+        const [x, y] = this.getCoordinatesFromPixel(px, py);
         const [dx, dy] = this.getGridSize();
         return {
             type: "Point",
-            coordinates: [x+dx/2, y+dy/2],
+            coordinates: toLonLat([x+dx/2, y+dy/2], this.proj),
         }
     }
 
@@ -177,12 +179,13 @@ class GridLayer implements ILayer
         return [];
     }
     getFeaturesAtCoordinate(coord: number[]): number[] {
-        const [x, y] = this.rasterizeCoordinates(coord[0], coord[1]);
-        let value = this.features.get(x, y);
+        const [x, y] = fromLonLat(coord, this.proj);
+        const [px, py] = this.getPixelFromCoordinates(x, y);
+        let value = this.features.get(px, py);
         if (value === null) {
             return [];
         }
-        return [this.getIdFromCoordinates(coord[0], coord[1])];
+        return [this.getIdFromPixel(px, py)];
     }
 
     isSelected(id: number) : boolean {
@@ -202,8 +205,10 @@ class GridLayer implements ILayer
         this.style = style as RasterStyle;
         for (let feature of this.features.getAllNodes()) {
             const [r, g, b, a] = this.style.getRGBA(feature["value"]);
-            const [px, py] = this.getPixelFromCoordinates(feature["x"], feature["y"]);
-            this.drawPixel(px, py, r, g, b, a);
+            this.drawPixel(feature["x"], feature["y"], r, g, b, a);
+        }
+        if (this.ol_layer !== undefined) {
+            this.ol_layer.getSource().changed();
         }
     }
 
@@ -217,56 +222,36 @@ class GridLayer implements ILayer
       this.ol_layer.un(type, listener);
     }
 
-    private rasterizeCoordinates(x: number, y: number): [number, number] {
-        const rows = this.canvas.height;
-        const cols = this.canvas.width;
-        const height = this.extend[3] - this.extend[1];
-        const width = this.extend[2] - this.extend[0];
-        const dx = width / cols;
-        const dy = height / rows;
-        const nx = dx * Math.floor(x / dx);
-        const ny = dy * Math.floor(y / dy);
-        return [nx, ny];
-    }
-
-    private getIdFromCoordinates(x: number, y: number): number {
-        const rows = this.canvas.height;
-        const cols = this.canvas.width;
-        const height = this.extend[3] - this.extend[1];
-        const width = this.extend[2] - this.extend[0];
-        const col = Math.floor((x - this.extend[0]) / width * cols);
-        const row = rows - Math.floor((y - this.extend[1]) / height * rows);
-        return row*cols + col;
-    }
-
-    private getCoordinatesFromId(id: number): [number, number] {
-        const rows = this.canvas.height;
-        const cols = this.canvas.width;
-        const row = Math.floor(id / cols);
-        const col = id % cols;
-        const height = this.extend[3] - this.extend[1];
-        const width = this.extend[2] - this.extend[0];
-        const x = col * width/cols + this.extend[0];
-        const y = this.extend[3] - row * height/rows;
-        return [x, y];
-    }
-
     private getPixelFromCoordinates(x: number, y: number): [number, number] {
         const rows = this.canvas.height;
         const cols = this.canvas.width;
         const height = this.extend[3] - this.extend[1];
         const width = this.extend[2] - this.extend[0];
-        const col = Math.round((x - this.extend[0]) / width * cols);
-        const row = Math.round((this.extend[3] - y) / height * rows);
+        const col = Math.floor((x - this.extend[0]) / width * cols);
+        const row = Math.floor((this.extend[3] - y) / height * rows);
         return [col, row];
     }
 
-    private getPixelFromId(id: number): [number, number] {
+    private getCoordinatesFromPixel(px: number, py: number): [number, number] {
         const rows = this.canvas.height;
         const cols = this.canvas.width;
-        const row = Math.floor(id / cols);
-        const col = id % cols;
-        return [row, col];
+        const height = this.extend[3] - this.extend[1];
+        const width = this.extend[2] - this.extend[0];
+        const x = px * width/cols + this.extend[0];
+        const y = this.extend[3] - (py+1) * height/rows;
+        return [x, y];
+    }
+
+    private getPixelFromId(id: number): [number, number] {
+        const cols = this.canvas.width;
+        const py = Math.floor(id / cols);
+        const px = id % cols;
+        return [px, py];
+    }
+
+    private getIdFromPixel(px: number, py: number): number {
+        const cols = this.canvas.width;
+        return py*cols + px
     }
 
     private getGridSize(): [number, number] {
@@ -277,22 +262,17 @@ class GridLayer implements ILayer
         return [width/cols, height/rows];
     }
 
-    private drawPixel(x: number, y: number, r, g, b, a) {
-        this.ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a}`;
-        this.ctx.fillRect(x, y, 1, 1);
+    private checkInExtend(x: number, y: number): boolean {
+        if (x > this.extend[2] || x < this.extend[0] || y > this.extend[3] || y < this.extend[1]) {
+            return false;
+        }
+        return true;
     }
 
-    private drawPixels(pixels: number[][], r, g, b, a) {
-        const imgdata = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-        const data = imgdata.data;
-        for (let [x, y] of pixels) {
-            const index = 4 * (x * this.canvas.width + y);
-            data[index] = r;
-            data[index + 1] = g;
-            data[index + 2] = b;
-            data[index + 3] = a;
-        }
-        this.ctx.putImageData(imgdata, 0, 0);
+    private drawPixel(x: number, y: number, r, g, b, a) {
+        this.ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+        this.ctx.clearRect(x, y, 1, 1);
+        this.ctx.fillRect(x, y, 1, 1);
     }
 }
 
