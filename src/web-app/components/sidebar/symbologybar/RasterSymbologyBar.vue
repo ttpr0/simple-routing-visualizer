@@ -54,6 +54,7 @@ export default {
             for (let i of t) {
                 rgba.push(parseInt(i));
             }
+            rgba[3] = parseFloat(t[3]);
             return rgba;
         }
 
@@ -64,6 +65,9 @@ export default {
             const attr = attribute.value;
             for (let node of layer.features.getAllNodes()) {
                 const value = node.value[attr];
+                if (value === -9999) {
+                    continue;
+                }
                 if (value < min) min = value;
                 if (value > max) max = value;
             }
