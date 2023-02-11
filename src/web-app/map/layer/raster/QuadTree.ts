@@ -31,23 +31,14 @@ class QuadTree
         this.root = null;
     }
 
-    get(x: number, y: number): any {
-        for (let node of this.traverse(this.root)) {
-            if (Math.abs(x-node.x)<0.00001 && Math.abs(y-node.y)<0.00001) {
-                return node.value;
-            }
-        }
-        return null;
-    }
-
-    get2(x: number, y: number): any 
+    get(x: number, y: number): any 
     {
         let focus: QuadNode = this.root;
         if (focus === null) {
             return null;
         }
         while (true) {
-            if ((x-focus.x)<0.1 && (y-focus.y)<0.1) {
+            if ((Math.abs(x-focus.x)<0.00001 && Math.abs(y-focus.y)<0.00001)) {
                 return focus.value;
             }
             if (x >= focus.x && y >= focus.y) {
