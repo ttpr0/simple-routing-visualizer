@@ -19,8 +19,11 @@ export default {
         const map = getMap();
 
         function selectListener(e) {
-            var count = 0;
+            let count = 0;
             map.forEachFeatureAtPixel(e.pixel, function (layer: ILayer, id: number) {
+                if (layer === undefined) {
+                    return;
+                }
                 count++;
                 if (layer.isSelected(id)) {
                     layer.unselectFeature(id);
@@ -38,7 +41,7 @@ export default {
             }
         }
 
-        var active = ref(false);
+        let active = ref(false);
         activateSelect();
 
         function activateSelect() {
