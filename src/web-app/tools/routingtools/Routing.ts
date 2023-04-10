@@ -39,7 +39,7 @@ class Routing implements ITool {
         { name: "startpoint", title: "Start", info: "", type: "closeable_tag", values: [], onClose: () => handleClose('start') },
         { name: "endpoint", title: "Finish", info: "", type: "closeable_tag", values: [], onClose: () => handleClose('finish') },
         { name: "draw", title: "Draw Routing", info: "", type: "check", values: [], text: "draw?" },
-        { name: "routingtype", title: "Routing Algorithm", info: "", type: "select", values: ['Dijkstra', 'A*', 'Bidirect-Dijkstra', 'Bidirect-A*', 'Distributed-Dijkstra'], text: "Routing-Alg" },
+        { name: "routingtype", title: "Routing Algorithm", info: "", type: "select", values: ['Dijkstra', 'A*', 'Bidirect-Dijkstra', 'Bidirect-A*', 'Distributed-Dijkstra', 'BODijkstra'], text: "Routing-Alg" },
         { name: 'outname', title: 'Output Name', info: 'Name des Output-Layers', type: 'text', text: 'Name' },
     ]
     out = [
