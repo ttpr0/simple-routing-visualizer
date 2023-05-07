@@ -14,7 +14,7 @@ import { NSpace, NTag, NSelect, NCheckbox, NButton } from "naive-ui";
 import { getRouting } from "/routing/api";
 import { AccessibilityStyle } from "./AccessibilityStyle";
 import { GridLayer } from "/map/layer/raster/GridLayer";
-import hospitals from "/datalayers/kitas.json";
+import { RasterStyle } from "/map/style";
 import { getIsoRaster } from "/external/api";
 
 const dragBox = new DragBox({
@@ -104,8 +104,9 @@ export default {
         return;
       }
 
-      let ranges = [180, 420, 900, 1800];
-      let factors = [1.0, 0.6, 0.4, 0.2];
+      // let ranges = [180, 420, 900, 1800];
+      let ranges = [60, 180, 300, 420, 540, 660, 780, 900];
+      let factors = [1.0, 0.8, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
       let locations = [];
       for (let id of selectedfeatures) {
         locations.push(layer.getGeometry(id).coordinates);
@@ -124,9 +125,14 @@ export default {
         range_factors: factors,
         envelop: envelope,
         mode: mode,
+        range: 300,
+        compute_type: "mean",
+        population: {
+          envelop: envelope,
+        },
       };
 
-      const response = await fetch("http://localhost:5000/v1/fca", {
+      const response = await fetch("http://localhost:5000/v1/fca/grid", {
         method: "POST",
         mode: "cors",
         cache: "no-cache",
@@ -167,12 +173,19 @@ export default {
       let geojson = await response.json();
       console.log(geojson);
 
+      let style = new RasterStyle(
+        "accessibility",
+        [255, 0, 0, 0.6],
+        [0, 255, 0, 0.6],
+        [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+      );
       let vec_layer = new GridLayer(
         geojson.features,
         geojson.extend,
         geojson.size,
         "accessibility",
-        "EPSG:25832"
+        "EPSG:25832",
+        style
       );
 
       map.addLayer(vec_layer);
