@@ -33,14 +33,13 @@ const handleClose = (type: string) => {
     }
 }
 
-class Routing implements ITool 
-{
+class Routing implements ITool {
     name: string = "Routing";
     param = [
         { name: "startpoint", title: "Start", info: "", type: "closeable_tag", values: [], onClose: () => handleClose('start') },
         { name: "endpoint", title: "Finish", info: "", type: "closeable_tag", values: [], onClose: () => handleClose('finish') },
         { name: "draw", title: "Draw Routing", info: "", type: "check", values: [], text: "draw?" },
-        { name: "routingtype", title: "Routing Algorithm", info: "", type: "select", values: ['Dijktra', 'A*', 'Bidirect-Dijkstra', 'Bidirect-A*'], text: "Routing-Alg" },
+        { name: "routingtype", title: "Routing Algorithm", info: "", type: "select", values: ['Dijkstra', 'A*', 'Bidirect-Dijkstra', 'Bidirect-A*', 'Distributed-Dijkstra', 'BODijkstra'], text: "Routing-Alg" },
         { name: 'outname', title: 'Output Name', info: 'Name des Output-Layers', type: 'text', text: 'Name' },
     ]
     out = [
@@ -103,15 +102,19 @@ class Routing implements ITool
                 var geojson = null;
                 let visualroutinglayer = new VisualRoutingLayer(null, null, "routing_layer");
                 map.addLayer(visualroutinglayer);
-                var start = new Date().getTime();
+                let start = new Date().getTime();
+                let steps = 1000;
+                if (routing_type === 'Distributed-Dijkstra') {
+                    steps = 10000;
+                }
                 while (true) {
-                    geojson = await getRoutingStep(key, 1000);
+                    geojson = await getRoutingStep(key, steps);
                     if (geojson.finished) {
                         break;
                     }
                     visualroutinglayer.addFeatures(geojson["features"]);
                 }
-                var end = new Date().getTime();
+                let end = new Date().getTime();
                 let routinglayer = new VectorImageLayer(geojson["features"], 'LineString', param.outname);
                 routinglayer.setStyle(new LineStyle('#ffcc33', 10));
                 out.outlayer = routinglayer;
