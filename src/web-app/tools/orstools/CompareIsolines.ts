@@ -1,7 +1,7 @@
 import { computed, ref, reactive, watch, toRef } from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { VectorImageLayer } from '/map/VectorImageLayer';
-import { getBingPolygon, getMapBoxPolygon, getTargamoPolygon } from '/external/api';
+import { getBingPolygon, getMapBoxPolygon, getTargamoPolygon } from '/util/external/api';
 import { getMap } from '/map';
 import { ITool } from '/components/sidebar/toolbar/ITool';
 import { PolygonStyle } from '/map/style';

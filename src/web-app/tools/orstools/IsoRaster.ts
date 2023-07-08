@@ -2,7 +2,7 @@ import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { VectorImageLayer } from '/map/VectorImageLayer';
 import { AccessibilityStyle } from '/map/styles';
-import { getIsoRaster } from '/external/api';
+import { getIsoRaster } from '/util/external/api';
 import { getMap } from '/map';
 import { ITool } from '/components/sidebar/toolbar/ITool';
 

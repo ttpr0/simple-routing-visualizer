@@ -48,7 +48,7 @@ export default {
 
     connmanager.addConnection(new DummyConnection());
 
-    fetch(window.location.origin + "/datalayers/hospitals.geojson")
+    fetch(window.location.origin + "/data/datalayers/hospitals.geojson")
       .then((response) => response.json())
       .then((response) => {
         //var points = new GeoJSON().readFeatures(response);

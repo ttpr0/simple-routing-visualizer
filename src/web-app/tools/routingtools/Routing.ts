@@ -4,7 +4,7 @@ import { VisualRoutingLayer } from '/map/layer/VisualRoutingLayer';
 import { getMap } from '/map';
 import { getToolbarState } from '/state';
 import { ITool } from '/components/sidebar/toolbar/ITool';
-import { getRouting, getRoutingDrawContext, getRoutingStep } from '/routing/api';
+import { getRouting, getRoutingDrawContext, getRoutingStep } from '/util/routing/api';
 import { LineStyle } from '/map/style';
 
 
