@@ -14,7 +14,7 @@ export default {
 
         const features = computed(() => {
             index.value = 0;
-            return state.window.context.features;
+            return state.featureinfo.features;
         });
 
         const hasNext = computed(() => {

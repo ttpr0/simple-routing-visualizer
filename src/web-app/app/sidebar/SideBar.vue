@@ -21,6 +21,10 @@ export default {
             return comps;
         })
 
+        const width = computed(() => {
+            return state.sidebar.width.toString() + "px";
+        })
+
         const resizer = ref(null);
         const sidebar_item = ref(null);
 
@@ -33,11 +37,11 @@ export default {
             function dragMouseDown(e) {
                 e.preventDefault();
                 start_x = e.clientX;
-                let width = sidebar_item.value.style.width;
-                if (width === "")
+                let width = state.sidebar.width;
+                if (width === 0)
                     start_width = 300;
                 else
-                    start_width = Number(width.replace("px", ""))
+                    start_width = width;
                 document.body.style.cursor = "ew-resize";
                 document.onmouseup = closeDragElement;
                 document.onmousemove = elementDrag;
@@ -47,22 +51,25 @@ export default {
                 e.preventDefault();
                 let curr_x = e.clientX;
                 let new_width = start_width + curr_x - start_x;
-                if (new_width < 200 && new_width < start_width)
-                    sidebar_item.value.style.display = "none";
-                else
-                    sidebar_item.value.style.display = "block";
-                curr_width = new_width;
-                sidebar_item.value.style.width = new_width.toString() + "px";
+                if (new_width < 200 && new_width < start_width) {
+                    state.sidebar.width = 0;
+                }
+                else if (new_width > 600 && new_width > start_width) {
+                    state.sidebar.width = 600;
+                }
+                else {
+                    curr_width = new_width;
+                    state.sidebar.width = new_width;
+                }
             }
 
             function closeDragElement() {
                 document.onmouseup = null;
                 document.onmousemove = null;
                 document.body.style.cursor = "default";
-                if (curr_width < 200)
-                {
+                if (state.sidebar.width < 200) {
                     state.sidebar.active = "";
-                    sidebar_item.value.style.width = "300px";
+                    state.sidebar.width = 300;
                 }
             }
         })
@@ -74,7 +81,7 @@ export default {
                 state.sidebar.active = item;
         }
 
-        return { active, handleClick, resizer, sidebar_item, comps }
+        return { active, handleClick, resizer, sidebar_item, comps, width }
     }
 }
 </script>
@@ -82,15 +89,15 @@ export default {
 <template>
     <div class="sidebar">
         <div class="sidebar-tabs">
-            <div v-for="[name, icon, comp] in comps" :key="name" :class="['sidebar-tab', {active: active === name}]" @click="handleClick(name)">
+            <div v-for="[name, icon, _] in comps" :key="name" :class="['sidebar-tab', {active: active === name}]" @click="handleClick(name)">
                 <v-icon size="40" theme="x-small">
                     {{ icon }}
                 </v-icon>
             </div>
         </div>
-        <div ref="sidebar_item" class="sidebar-item" v-show="active!==''">
+        <div class="sidebar-item" v-show="active!==''" :style="{width: width}">
             <div class="content">
-                <component v-for="[name, icon, comp] in comps" :is="comp" v-show="active === name"></component>
+                <component v-for="[name, _, comp] in comps" :key="name" :is="comp" v-show="active === name"></component>
             </div>
             <div ref="resizer" class="resizer">
             </div>

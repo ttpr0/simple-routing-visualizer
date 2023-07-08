@@ -4,7 +4,8 @@ import { zoom, position, focus_layer, osm_link } from "/components/footer"
 import { layerbar, filesbar, toolbar, routingbar, accessibilitybar, symbologybar } from "/components/sidebar";
 import { map_addlayer, map_addpoint, map_delpoint, map_dragbox, open_directory, open_file, open_toolbox, feature_info, feature_select, open_accessibility } from "/components/topbar";
 import { routing_from, routing_to, remove_layer, add_to_map, create_new, close_connection, refresh_connection, rename_layer } from "/components/contextmenu";
-import { basic_tool_info, file_select, feature_info_window } from "/components/window";
+import { file_select } from "/components/window";
+import { basic_tool_info, feature_info as feature_info_window } from "/components/infobar";
 
 const CONFIG = reactive(config);
 
@@ -22,6 +23,11 @@ const SIDEBARCOMPS = {
     "FileBar": filesbar,
     "RoutingBar": routingbar,
     "AccessibilityBar": accessibilitybar,
+}
+
+const INFOBARCOMPS = {
+    "ToolInfo": basic_tool_info,
+    "FeatureInfo": feature_info_window
 }
 
 const TOPBARCOMPS = {
@@ -46,9 +52,7 @@ const TOPBARCOMPS = {
 }
 
 const WINDOWCOMPS = {
-    "BasicToolInfo": basic_tool_info,
     "FileSelect": file_select,
-    "FeatureInfo": feature_info_window,
 }
 
-export { CONFIG, FOOTERCOMPS, SIDEBARCOMPS, TOPBARCOMPS, POPUPCOMPS, WINDOWCOMPS }
+export { CONFIG, FOOTERCOMPS, SIDEBARCOMPS, TOPBARCOMPS, INFOBARCOMPS, WINDOWCOMPS }

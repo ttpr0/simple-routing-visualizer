@@ -33,10 +33,7 @@ class ToolManager
     }
 
     setToolInfo() {
-        state.window.show = true; 
-        state.window.pos = [400, 400];
-        state.window.name = "Tool-Info";
-        state.window.type = "toolinfo"         
+        state.infobar.active = "ToolInfo";       
     }
 
     async runTool(tool: string, params) {

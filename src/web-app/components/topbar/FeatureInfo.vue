@@ -24,14 +24,11 @@ export default {
                 features.push(layer.getFeature(id));
             });
             if (features.length > 0) {
-                state.window.show = true;
-                state.window.pos = [400, 400];
-                state.window.name = "Feature Info";
-                state.window.type = "featureinfo";
-                state.window.context.features = features;
+                state.infobar.active = "FeatureInfo";
+                state.featureinfo.features = features;
             }
             else {
-                state.window.context.features = features;
+                state.featureinfo.features = features;
             }
         }
 

@@ -6,6 +6,16 @@ class AppState
 
     sidebar = {
         active: '',
+        width: 300,
+    }
+
+    infobar = {
+        active: "",
+        height: 300,
+    }
+
+    featureinfo = {
+        features: [],
     }
 
     popup = {
