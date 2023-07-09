@@ -3,22 +3,20 @@ package access
 import (
 	"sync"
 
+	"github.com/ttpr0/simple-routing-visualizer/src/go-routing/algorithm"
 	"github.com/ttpr0/simple-routing-visualizer/src/go-routing/graph"
-	"github.com/ttpr0/simple-routing-visualizer/src/go-routing/routing"
 	. "github.com/ttpr0/simple-routing-visualizer/src/go-routing/util"
 )
 
-func CalcTiledEnhanced2SFCA(g graph.ITiledGraph2, supply_locs, demand_locs [][2]float32, supply_weights, demand_weights []float32, max_range float32) []float32 {
+func CalcRPHASTEnhanced2SFCA(g graph.ICHGraph, supply_locs, demand_locs [][2]float32, supply_weights, demand_weights []float32, max_range float32) []float32 {
+	node_queue := NewQueue[int32]()
+
 	population_nodes := NewArray[int32](len(demand_locs))
-	node_flag := NewArray[bool](int(g.NodeCount()))
-	node_tiles := NewDict[int16, bool](10)
 	for i, loc := range demand_locs {
 		id, ok := g.GetClosestNode(loc)
 		if ok {
 			population_nodes[i] = id
-			node_flag[id] = true
-			tile := g.GetNodeTile(id)
-			node_tiles[tile] = true
+			node_queue.Push(id)
 		} else {
 			population_nodes[i] = -1
 		}
@@ -28,12 +26,39 @@ func CalcTiledEnhanced2SFCA(g graph.ITiledGraph2, supply_locs, demand_locs [][2]
 		facility_chan <- MakeTuple(facility, supply_weights[i])
 	}
 
+	graph_subset := NewArray[bool](int(g.NodeCount()))
+	for {
+		if node_queue.Size() == 0 {
+			break
+		}
+		node, _ := node_queue.Pop()
+		if graph_subset[node] {
+			continue
+		}
+		graph_subset[node] = true
+		node_level := g.GetNodeLevel(node)
+		edges := g.GetAdjacentEdges(node, graph.BACKWARD)
+		for {
+			ref, ok := edges.Next()
+			if !ok {
+				break
+			}
+			if graph_subset[ref.OtherID] {
+				continue
+			}
+			if node_level >= g.GetNodeLevel(ref.OtherID) {
+				continue
+			}
+			node_queue.Push(ref.OtherID)
+		}
+	}
+
 	access := NewArray[float32](len(demand_locs))
 	wg := sync.WaitGroup{}
 	for i := 0; i < 8; i++ {
 		wg.Add(1)
 		go func() {
-			spt := routing.NewSPT3(g)
+			spt := algorithm.NewRPHAST(g, graph_subset)
 			for {
 				if len(facility_chan) == 0 {
 					break
@@ -48,48 +73,14 @@ func CalcTiledEnhanced2SFCA(g graph.ITiledGraph2, supply_locs, demand_locs [][2]
 				spt.Init(id, float64(max_range))
 				spt.CalcSPT()
 				flags := spt.GetSPT()
-				active_tiles := spt.GetActiveTiles()
 
-				for tile, _ := range active_tiles {
-					if !node_tiles.ContainsKey(tile) {
-						continue
-					}
-					for _, border_node := range g.GetBorderNodes(tile) {
-						b_flag := flags[border_node]
-						if !b_flag.Visited {
-							continue
-						}
-						b_range := float32(b_flag.PathLength)
-						iter := g.GetTileRanges(tile, border_node)
-						for {
-							item, ok := iter.Next()
-							if !ok {
-								break
-							}
-							node := item.A
-							if !node_flag[node] {
-								continue
-							}
-							dist := item.B
-							if dist == 1000000 {
-								continue
-							}
-							flag := flags[node]
-							if flag.PathLength > float64(b_range+dist) {
-								flag.PathLength = float64(b_range + dist)
-							}
-							flag.Visited = true
-							flags[node] = flag
-						}
-					}
-				}
 				facility_weight := float32(0.0)
 				for i, node := range population_nodes {
 					if node == -1 {
 						continue
 					}
 					flag := flags[node]
-					if !flag.Visited {
+					if flag.PathLength > float64(max_range) {
 						continue
 					}
 					distance_decay := float32(1 - flag.PathLength/float64(max_range))
@@ -100,7 +91,7 @@ func CalcTiledEnhanced2SFCA(g graph.ITiledGraph2, supply_locs, demand_locs [][2]
 						continue
 					}
 					flag := flags[node]
-					if !flag.Visited {
+					if flag.PathLength > float64(max_range) {
 						continue
 					}
 					distance_decay := float32(1 - flag.PathLength/float64(max_range))
