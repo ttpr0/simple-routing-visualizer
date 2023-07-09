@@ -69,7 +69,7 @@ export default {
 <template>
     <div class="topbar">
         <div class="topbaricon">
-            <div style="padding: 4px 4px 4px 4px;">
+            <div style="padding: 4px 4px 4px 10px;">
                 <img src="/data/assets/earth_img.png" style="height: 25px; width: 25px;"> 
             </div>
         </div>

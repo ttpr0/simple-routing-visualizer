@@ -2,11 +2,11 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState, getToolbarState } from '/state';
-import { VProgressLinear, VIcon } from 'vuetify/components';
 import Icon from "/share_components/bootstrap/Icon.vue";
+import ProgressBar from "/share_components/ProgressBar.vue";
 
 export default {
-    components: { VProgressLinear, Icon },
+    components: { Icon, ProgressBar },
     emits: ['close', 'run', 'info' ],
     props: [ 'toolname' ],
     setup(props, ctx) {
@@ -80,7 +80,10 @@ export default {
             <slot></slot>
         </div>
         <div class="footer">
-            <v-progress-linear model-value="100" :active="running || finished || error" :indeterminate="running" :color="error ? 'red' : 'var(--theme-color)'"></v-progress-linear>
+            <div :style="{width: '100%', display: running || finished || error ? 'block':'none'}">
+                <ProgressBar height="5px" :animation="running" :progress="100" :color="error ? 'red' : 'var(--theme-color)'" />
+            </div>
+            <!-- <v-progress-linear model-value="100" :active="running || finished || error" :indeterminate="running" :color="error ? 'red' : 'var(--theme-color)'"></v-progress-linear> -->
             <button class="info" @click="oninfo()" style="float= left;" :disabled="disableinfo"><Icon icon="bi-info-circle" size="20px" color="var(--text-theme-color)" /></button>
             <button class="run" @click="onrun()" :disabled="disablerun">Run Tool</button>
         </div>

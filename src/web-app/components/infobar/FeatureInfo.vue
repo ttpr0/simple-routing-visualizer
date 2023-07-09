@@ -2,9 +2,10 @@
 import { computed, ref, reactive, onMounted, watch, onUnmounted} from 'vue';
 import { getAppState, getMapState } from '/state';
 import { NDataTable } from 'naive-ui';
+import Icon from "/share_components/bootstrap/Icon.vue";
 
 export default {
-    components: { NDataTable },
+    components: { NDataTable, Icon },
     props: [],
     setup() {
         const state = getAppState();
@@ -81,8 +82,12 @@ export default {
             />
         </div>
         <div class="footer">
-            <button :class="{disabled: !hasPrev}" :disabled="!hasPrev" @click="prev()"><v-icon size="24" theme="x-small">mdi-arrow-left</v-icon></button>
-            <button :class="{disabled: !hasNext}" :disabled="!hasNext" @click="next()"><v-icon size="24" theme="x-small">mdi-arrow-right</v-icon></button>
+            <div class="footerpart">
+                <button :class="{disabled: !hasPrev}" :disabled="!hasPrev" @click="prev()"><Icon icon="bi-arrow-left" size="24px" /></button>
+            </div>
+            <div class="footerpart">
+                <button :class="{disabled: !hasNext}" :disabled="!hasNext" @click="next()"><Icon icon="bi-arrow-right" size="24px" /></button>
+            </div>
         </div>
     </div>
 </template>
@@ -98,9 +103,15 @@ export default {
 .footer {
     padding-top: 5px;
 }
-.footer button {
+.footer .footerpart {
+    display: inline-block;
     width: 50%;
+}
+.footer button {
+    width: 100%;
     color: var(--theme-color);
+    display: flex;
+    justify-content: center;
 }
 .footer button.disabled {
     color: var(--text-color);
