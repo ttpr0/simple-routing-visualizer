@@ -2,10 +2,10 @@
 import { computed, ref, reactive, onMounted, defineExpose} from 'vue'
 import { getAppState, getMapState } from '/state';
 import { getMap } from '/map';
-import { VIcon } from 'vuetify/components';
+import Icon from "/share_components/bootstrap/Icon.vue";
 
 export default {
-    components: { VIcon },
+    components: { Icon },
     props: ["layer"],
     setup(props) {
         const state = getAppState();
@@ -62,8 +62,8 @@ export default {
             {{"  "+layer.name}}
         </div>
         <div class="arrows">
-            <v-icon class="icon" @click="handleMoveDown">mdi-arrow-down-thin-circle-outline</v-icon>
-            <v-icon class="icon" @click="handleMoveUp">mdi-arrow-up-thin-circle-outline</v-icon>
+            <div class="icon"><Icon icon="bi-arrow-down" @click="handleMoveDown" /></div>
+            <div class="icon"><Icon icon="bi-arrow-up" @click="handleMoveUp" /></div>
         </div>
     </div>
 </template>
@@ -109,5 +109,6 @@ export default {
 }
 .layertreeitem .arrows .icon {
     cursor: pointer;
+    display: inline-block;
 }
 </style>

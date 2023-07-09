@@ -20,7 +20,7 @@ export default {
 </script>
 
 <template>
-    <footerbaritem icon="mdi-bookmark-multiple" :text="focuslayer">
+    <footerbaritem icon="bi-bookmarks" side="left" :text="focuslayer">
     </footerbaritem>
 </template>
 

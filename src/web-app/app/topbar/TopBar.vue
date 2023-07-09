@@ -1,13 +1,13 @@
 <script lang="ts">
 import { computed, ref, reactive, onMounted, defineExpose, watch, defineComponent } from 'vue';
 import { getAppState } from '/state';
-import { VIcon } from 'vuetify/components';
 import { topbaritem } from '/share_components/topbar/TopBarItem';
 import { topbarseperator } from '/share_components/topbar/TopBarSeperator';
 import { CONFIG, TOPBARCOMPS } from "/config";
+import Icon from "/share_components/bootstrap/Icon.vue";
 
 export default {
-    components: { VIcon, topbaritem },
+    components: { Icon, topbaritem },
     props: [],
     setup(props) {
         const state = getAppState();
@@ -68,7 +68,11 @@ export default {
 
 <template>
     <div class="topbar">
-        <v-icon size=33 color="var(--text-color)" style="float: left;" small>mdi-navigation-variant-outline</v-icon>
+        <div class="topbaricon">
+            <div style="padding: 4px 4px 4px 4px;">
+                <img src="/data/assets/earth_img.png" style="height: 25px; width: 25px;"> 
+            </div>
+        </div>
         <div @click="clickInside">
             <topbaritem v-for="[title, childs] in comps" :name="title" :active="active === title" @click="handleClick(title)" @hover="handleHover(title)">
                 <component v-for="comp in childs" :is="comp"></component>
@@ -86,5 +90,9 @@ export default {
     z-index: 2;
     user-select: none;
     color: var(--text-light-color);
+}
+
+.topbar .topbaricon {
+    float: left;
 }
 </style>

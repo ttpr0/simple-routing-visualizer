@@ -1,9 +1,9 @@
 import { createApp, ref, reactive, onMounted, watch} from 'vue'
 import "./DragableWindow.css"
-import { VIcon } from 'vuetify/components';
+import Icon from "/share_components/bootstrap/Icon.vue";
 
 const dragablewindow = {
-    components: { VIcon },
+    components: { Icon },
     props: [ "icon", "name", "pos"],
     emits: [ "onclose" ],
     setup(props) {
@@ -163,9 +163,9 @@ const dragablewindow = {
     template: `
     <div class="dragablewindow" ref="window">
         <div class="dragablewindow-header" ref="windowheader">
-            <div class="dragablewindow-header-info"><v-icon size=22 color="var(--text-theme-color)">{{ icon }}</v-icon></div>
+            <div class="dragablewindow-header-info"><Icon :icon="icon" size="22px" color="var(--text-theme-color)" /></div>
             <div class="dragablewindow-header-name">{{ name }}</div>
-            <div class="dragablewindow-header-close" @click="$emit('onclose')"><v-icon size=24 color="var(--text-theme-color)">mdi-close</v-icon></div>
+            <div class="dragablewindow-header-close" @click="$emit('onclose')"><Icon icon="bi-x-lg" size="24px" color="var(--text-theme-color)" /></div>
         </div>
         <div class="dragablewindow-body">
             <slot></slot>

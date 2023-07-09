@@ -1,7 +1,7 @@
 import { reactive } from "vue";
 import config from "./config.json"
-import { zoom, position, focus_layer, osm_link } from "/components/footer"
-import { layerbar, filesbar, toolbar, routingbar, accessibilitybar, symbologybar } from "/components/sidebar";
+import { zoom, position, focus_layer, osm_link, img_attribution } from "/components/footer"
+import { layerbar, filesbar, toolbar, routingbar, accessibilitybar, symbologybar, settingsbar } from "/components/sidebar";
 import { map_addlayer, map_addpoint, map_delpoint, map_dragbox, open_directory, open_file, open_toolbox, feature_info, feature_select, open_accessibility } from "/components/topbar";
 import { routing_from, routing_to, remove_layer, add_to_map, create_new, close_connection, refresh_connection, rename_layer } from "/components/contextmenu";
 import { file_select } from "/components/window";
@@ -13,7 +13,8 @@ const FOOTERCOMPS = {
     "Zoom": zoom,
     "Position": position,
     "Layer": focus_layer,
-    "OSMLink": osm_link
+    "OSMLink": osm_link,
+    "ImgAttribution": img_attribution,
 }
 
 const SIDEBARCOMPS = {
@@ -23,6 +24,7 @@ const SIDEBARCOMPS = {
     "FileBar": filesbar,
     "RoutingBar": routingbar,
     "AccessibilityBar": accessibilitybar,
+    "SettingsBar": settingsbar,
 }
 
 const INFOBARCOMPS = {

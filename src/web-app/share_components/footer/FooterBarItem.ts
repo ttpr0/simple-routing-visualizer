@@ -2,9 +2,10 @@ import { computed, ref, reactive, onMounted, watch} from 'vue';
 import { getAppState } from '/state';
 import { VIcon } from 'vuetify/components';
 import "./FooterBarItem.css"
+import Icon from "/share_components/bootstrap/Icon.vue";
 
 const footerbaritem = {
-    components: { VIcon },
+    components: { Icon },
     props: { 
         "icon": {default: null}, 
         "text": {default: null}, 
@@ -19,7 +20,7 @@ const footerbaritem = {
     },
     template: `
     <div class="footerbaritem" :style="{float: side}" @click="onclick()">
-        <v-icon v-if="icon != null" size=16 color="var(--text-theme-color)">{{ icon }}</v-icon>
+        <div style="float: left;"><Icon v-if="icon != null" :icon="icon" size="16px" color="var(--text-theme-color)" /></div>
         <div v-if="text != null">{{text}}</div>
     </div>
     `

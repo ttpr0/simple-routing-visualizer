@@ -7,18 +7,18 @@ export default {
     components: { footerbaritem },
     props: [],
     setup() {
-        const map_state = getMapState();
+        const map = getMapState();
         const state = getAppState();
 
-        const position = computed(() => map_state.map_position )
+        const openAttribution = () => { window.open("https://www.vecteezy.com/free-png/earth"); }
 
-        return { position }
+        return { openAttribution }
     }
 }
 </script>
 
 <template>
-    <footerbaritem icon="bi-aspect-ratio" side="left" :text="position[0]">
+    <footerbaritem text="@Earth PNGs by Vecteezy" side="right" @click="openAttribution()">
     </footerbaritem>
 </template>
 

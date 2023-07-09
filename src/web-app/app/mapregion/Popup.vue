@@ -3,12 +3,15 @@ import { computed, ref, reactive, onMounted, watch, onUnmounted } from 'vue';
 import { getAppState } from '/state';
 import { getMap } from '/map';
 import { NDataTable } from 'naive-ui';
-import { CONFIG, POPUPCOMPS, SIDEBARCOMPS } from "/config"
+import { CONFIG, SIDEBARCOMPS } from "/config"
 import "ol/ol.css"
 import { Overlay } from 'ol';
+import Icon from "/share_components/bootstrap/Icon.vue";
 
 export default {
-  components: { NDataTable },
+  components: { 
+    NDataTable, Icon
+  },
   props: [],
   setup() {
     const state = getAppState();
@@ -48,9 +51,7 @@ export default {
 
 <template>
   <div ref="popup_div" class="popup">
-    <v-icon size="36" color="var(--theme-color)" theme="x-small">
-      mdi-map-marker
-    </v-icon>
+    <Icon icon="bi-geo-alt-fill" size="36" color="var(--theme-color)" />
     <div class='pulse'></div>
   </div>
 </template>

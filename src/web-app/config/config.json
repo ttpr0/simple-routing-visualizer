@@ -31,19 +31,24 @@
         "sidebar": [
             {
                 "comp": "LayerBar",
-                "icon": "mdi-layers-outline"
+                "icon": "bi-layers"
             },
             {
                 "comp": "SymbologyBar",
-                "icon": "mdi-brush"
+                "icon": "bi-brush"
             },
             {
                 "comp": "ToolBar",
-                "icon": "mdi-toolbox-outline"
+                "icon": "bi-tools"
             },
             {
                 "comp": "FileBar",
-                "icon": "mdi-folder-arrow-up-down-outline"
+                "icon": "bi-folder2"
+            },
+            {
+                "comp": "SettingsBar",
+                "icon": "bi-gear",
+                "position": "bottom"
             }
         ],
         "infobar": [
@@ -51,6 +56,7 @@
         ],
         "footer": [
             "OSMLink",
+            "ImgAttribution",
             "Layer",
             "Position",
             "Zoom"

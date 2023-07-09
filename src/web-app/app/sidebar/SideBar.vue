@@ -1,33 +1,53 @@
 <script lang="ts">
-import { computed, ref, reactive, onMounted, watch} from 'vue';
+import { computed, ref, reactive, onMounted, watch, shallowRef } from 'vue';
 import { getAppState } from '/state';
 import { CONFIG, SIDEBARCOMPS } from "/config" 
-import { VIcon } from 'vuetify/components';
+import Icon from "/share_components/bootstrap/Icon.vue";
 
 export default {
-    components: { VIcon },
+    components: { Icon },
     props: [],
     setup() {
         const state = getAppState();
 
-        const active = computed(() => state.sidebar.active )
+        const active = computed(() => state.sidebar.active );
+        const active_comp = shallowRef(null);
+        watch(active, (newVal) => {
+            const side_conf = CONFIG["app"]["sidebar"];
+            for (let comp of side_conf) {
+                if (comp["comp"] === active.value) {
+                    active_comp.value = SIDEBARCOMPS[comp["comp"]];
+                }
+            }
+        });
 
         const comps = computed(() => {
             const side_conf = CONFIG["app"]["sidebar"]
             let comps = [];
             for (let comp of side_conf) {
-                comps.push([comp["comp"], comp["icon"], SIDEBARCOMPS[comp["comp"]]])
+                if (comp["position"] === "top" || comp["position"] === undefined) {
+                    comps.push([comp["comp"], comp["icon"], SIDEBARCOMPS[comp["comp"]]]);
+                }
+            }
+            return comps;
+        })
+        const bottom_comps = computed(() => {
+            const side_conf = CONFIG["app"]["sidebar"]
+            let comps = [];
+            for (let comp of side_conf) {
+                if (comp["position"] === "bottom") {
+                    comps.push([comp["comp"], comp["icon"], SIDEBARCOMPS[comp["comp"]]])
+                }
             }
             return comps;
         })
 
+
         const width = computed(() => {
             return state.sidebar.width.toString() + "px";
         })
-
         const resizer = ref(null);
         const sidebar_item = ref(null);
-
         onMounted(() => {
             let start_x = 0;
             let start_width = 0;
@@ -81,7 +101,7 @@ export default {
                 state.sidebar.active = item;
         }
 
-        return { active, handleClick, resizer, sidebar_item, comps, width }
+        return { active, handleClick, resizer, sidebar_item, comps, width, bottom_comps, active_comp }
     }
 }
 </script>
@@ -89,15 +109,16 @@ export default {
 <template>
     <div class="sidebar">
         <div class="sidebar-tabs">
-            <div v-for="[name, icon, _] in comps" :key="name" :class="['sidebar-tab', {active: active === name}]" @click="handleClick(name)">
-                <v-icon size="40" theme="x-small">
-                    {{ icon }}
-                </v-icon>
+            <div v-for="([name, icon, _], index) in comps" :key="name" :class="['sidebar-tab', {active: active === name}]" :style="{top: (index*55)+'px'}" @click="handleClick(name)">
+                <div style="padding: 5px 5px 5px 5px"><Icon :icon="icon" size="30px" /></div>
+            </div>
+            <div v-for="([name, icon, _], index) in bottom_comps" :key="name" :class="['sidebar-tab', {active: active === name}]" :style="{bottom: (index*55)+'px'}" @click="handleClick(name)">
+                <div style="padding: 5px 5px 5px 5px"><Icon :icon="icon" size="30px" /></div>
             </div>
         </div>
         <div class="sidebar-item" v-show="active!==''" :style="{width: width}">
             <div class="content">
-                <component v-for="[name, _, comp] in comps" :key="name" :is="comp" v-show="active === name"></component>
+                <component :is="active_comp"></component>
             </div>
             <div ref="resizer" class="resizer">
             </div>
@@ -125,12 +146,14 @@ export default {
 }
 
 .sidebar-tab {
+    position: absolute;
     width: 50px;
-    height: 60px;
+    height: 55px;
     background-color: transparent;
     color: var(--text-color);
     padding-left: 5px;
-    padding-top: 10px;
+    padding-top: 5px;
+    vertical-align: bottom;
 }
 
 .sidebar-tab:hover {

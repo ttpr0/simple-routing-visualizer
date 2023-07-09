@@ -2,9 +2,12 @@
 import { computed, ref, reactive, onMounted, watch } from "vue";
 import { getAppState } from "/state";
 import { CONFIG, INFOBARCOMPS } from "/config";
+import Icon from "/share_components/bootstrap/Icon.vue";
 
 export default {
-  components: { },
+  components: { 
+    Icon
+  },
   props: [],
   setup() {
     const state = getAppState();
@@ -101,7 +104,7 @@ export default {
       <div class="infotab" v-for="[name, _] in comps" :key="name" :class="{active: active===name}" @click="makeActive(name)">{{ name }}</div>
     </div>
     <div class="infoicon">
-      <v-icon size="25" theme="x-small" @click="makeActive('')">mdi-close</v-icon>
+      <Icon icon="bi-x-lg" size="25" @click="makeActive('')" />
     </div>
     <div class="inforegion">
         <component v-for="[name, comp] in comps" :key="name" :is="comp" v-show="active === name"></component>

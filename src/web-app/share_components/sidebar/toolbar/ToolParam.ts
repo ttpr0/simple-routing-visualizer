@@ -3,9 +3,10 @@ import { getMapState } from '/state';
 import './ToolParam.css'
 import { VIcon } from 'vuetify/components';
 import { NSlider, NSpace, NSelect, NInput, NPopover, NDynamicTags, NCheckbox, NTag } from 'naive-ui';
+import Icon from "/share_components/bootstrap/Icon.vue";
 
 const toolparam = {
-    components: { VIcon, NSlider, NSpace, NSelect, NInput, NPopover, NDynamicTags, NCheckbox, NTag },
+    components: { Icon, NSlider, NSpace, NSelect, NInput, NPopover, NDynamicTags, NCheckbox, NTag },
     emits: [ 'update:modelValue' ],
     props: [ 'modelValue', 'param' ],
     setup(props, ctx) {
@@ -40,7 +41,7 @@ const toolparam = {
             <div style="float: right;">
                 <n-popover trigger="hover" placement="right">
                     <template #trigger>
-                        <v-icon size="16">mdi-information-outline</v-icon>
+                        <Icon icon="bi-info-circle" size="16px" />
                     </template>
                     <span>{{ param.info }}</span>
                 </n-popover>

@@ -3,14 +3,14 @@ import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState, getToolbarState } from '/state';
 import { getMap } from '/map';
-import { VIcon } from 'vuetify/components';
+import Icon from "/share_components/bootstrap/Icon.vue";
 import { NSpace, NInput, NTag, NScrollbar } from 'naive-ui';
 import ToolContainer from './ToolContainer.vue';
 import { toolparam } from '/share_components/sidebar/toolbar/ToolParam';
 import { getToolManager } from './ToolManager';
 
 export default {
-    components: { VIcon, NSpace, NInput, NTag, NScrollbar, ToolContainer, toolparam },
+    components: { Icon, NSpace, NInput, NTag, NScrollbar, ToolContainer, toolparam },
     props: [ ],
     setup(props) {
         const state = getAppState();
@@ -110,7 +110,7 @@ export default {
                     <n-space vertical>
                         <n-tag v-for="(item, i) in tool_list" :key="i" @click="setCurrTool(item)" size="large">
                             <div style="cursor: pointer;">
-                                <v-icon icon="mdi-tools" color="var(--text-color)"></v-icon>
+                                <div style="float: left; margin-right: 5px;"><Icon icon="bi-wrench-adjustable-circle" size="15px" color="var(--text-color)" /></div>
                                 {{ item }}
                             </div>
                         </n-tag>

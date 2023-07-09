@@ -1,5 +1,9 @@
 class AppState
 {
+    settings = {
+        dark_mode: false,
+    }
+
     topbar = {
         active: null,
     }

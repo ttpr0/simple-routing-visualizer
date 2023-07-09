@@ -3,9 +3,10 @@ import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState, getToolbarState } from '/state';
 import { VProgressLinear, VIcon } from 'vuetify/components';
+import Icon from "/share_components/bootstrap/Icon.vue";
 
 export default {
-    components: { VProgressLinear, VIcon },
+    components: { VProgressLinear, Icon },
     emits: ['close', 'run', 'info' ],
     props: [ 'toolname' ],
     setup(props, ctx) {
@@ -70,8 +71,8 @@ export default {
 <template>
     <div class="toolcontainer">
         <div class="header">
-            <v-icon @click="onclose()">mdi-arrow-left</v-icon>
-            <div style="width: calc(100% - 24px); float: right;">
+            <div class="icon"><Icon icon="bi-arrow-left" @click="onclose()" /></div>
+            <div style="width: calc(100% - 24px); float: right; height: 30px;">
                 <p style="display: inline-block; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ toolname }}</p>
             </div>
         </div>
@@ -80,7 +81,7 @@ export default {
         </div>
         <div class="footer">
             <v-progress-linear model-value="100" :active="running || finished || error" :indeterminate="running" :color="error ? 'red' : 'var(--theme-color)'"></v-progress-linear>
-            <button class="info" @click="oninfo()" style="float= left;" :disabled="disableinfo"><v-icon size=20 color="var(--text-theme-color)">mdi-information</v-icon></button>
+            <button class="info" @click="oninfo()" style="float= left;" :disabled="disableinfo"><Icon icon="bi-info-circle" size="20px" color="var(--text-theme-color)" /></button>
             <button class="run" @click="onrun()" :disabled="disablerun">Run Tool</button>
         </div>
     </div>
@@ -98,6 +99,10 @@ export default {
     height: 30px;
 }
 
+.toolcontainer .header .icon {
+    float: left;
+    cursor: pointer;
+}
 
 .toolcontainer .body {
     width: 100%;
