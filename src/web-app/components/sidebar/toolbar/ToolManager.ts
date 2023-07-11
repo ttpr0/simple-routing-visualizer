@@ -6,24 +6,31 @@ const state = getAppState();
 
 class ToolManager
 {
-    tools: Map<string, ITool>;
+    toolboxes: Map<string, Map<string, ITool>>;
 
     constructor() 
     {
-        this.tools = new Map<string, ITool>();
+        this.toolboxes = new Map<string, Map<string, ITool>>();
     }
 
     loadTools(tools: ITool[], group_name: string) {
+        const toolbox = new Map<string, ITool>();
+        const toollist = [];
         for (let t of tools)
         {
-            let toolname = t.getToolName() + " (" + group_name + ")";
-            this.tools.set(toolname, t);
-            toolbar.tools.push(toolname);
+            toolbox.set(t.getToolName(), t);
+            toollist.push(t.getToolName());
         }
+        this.toolboxes.set(group_name, toolbox);
+        toolbar.tools[group_name] = toollist;
     }
     
-    getTool(toolname: string) : ITool {
-        return this.tools.get(toolname);
+    getTool(toolbox: string, tool: string) : ITool {
+        const tbx = this.toolboxes.get(toolbox);
+        if (tbx === undefined) {
+            return undefined;
+        }
+        return tbx.get(tool);
     }
 
     addMessage(message, color="black") {
@@ -36,9 +43,13 @@ class ToolManager
         state.infobar.active = "ToolInfo";       
     }
 
-    async runTool(tool: string, params) {
-        const Tool = this.tools.get(tool);
-        toolbar.state = 'running';
+    async runTool(toolbox: string, tool: string, params) {
+        console.log(params);
+        const Tool = this.getTool(toolbox, tool);
+        toolbar.currtool.toolbox = toolbox;
+        toolbar.currtool.tool = tool;
+        toolbar.currtool.state = 'running';
+        toolbar.currtool.params = params;
         toolbar.toolinfo.text = "";
         const out = {};
         this.addMessage("Started " + tool + ":", 'green');
@@ -48,12 +59,12 @@ class ToolManager
             let end = new Date().getTime();
             let time = end - start;
             this.addMessage("Succesfully finished in " + time + " ms", 'green');
-            toolbar.state = 'finished';
+            toolbar.currtool.state = 'finished';
             return out;
         }
         catch (e) {
             this.addMessage(e, 'red');
-            toolbar.state = 'error';
+            toolbar.currtool.state = 'error';
         }
     }
 }

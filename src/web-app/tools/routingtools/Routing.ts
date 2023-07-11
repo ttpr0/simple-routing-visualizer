@@ -19,17 +19,17 @@ const handleClose = (type: string) => {
             if (t === type) {
                 layer.removeFeature(id)
                 if (type === "start")
-                    toolbar.currtool.params["startpoint"] = undefined;
+                    toolbar.toolview.params["startpoint"] = undefined;
                 if (type === "finish")
-                    toolbar.currtool.params["endpoint"] = undefined;
+                    toolbar.toolview.params["endpoint"] = undefined;
             }
         }
     }
     else {
         if (type === "start")
-            toolbar.currtool.params["startpoint"] = undefined;
+            toolbar.toolview.params["startpoint"] = undefined;
         if (type === "finish")
-            toolbar.currtool.params["endpoint"] = undefined;
+            toolbar.toolview.params["endpoint"] = undefined;
     }
 }
 

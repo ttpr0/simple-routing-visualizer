@@ -62,14 +62,15 @@ export default {
             for (let id of layer.getAllFeatures()) {
                 let type = layer.getProperty(id, "type")
                 if (type === "start")
-                    toolbar.currtool.params["startpoint"] = layer.getGeometry(id)["coordinates"]
+                    toolbar.toolview.params["startpoint"] = layer.getGeometry(id)["coordinates"]
                 if (type === "finish")
-                    toolbar.currtool.params["endpoint"] = layer.getGeometry(id)["coordinates"]
+                    toolbar.toolview.params["endpoint"] = layer.getGeometry(id)["coordinates"]
             }
             state.contextmenu.display = false
 
             state.sidebar.active = 'ToolBar';
-            toolbar.currtool.name = "Routing (RoutingTools)";
+            toolbar.toolview.tool = "Routing";
+            toolbar.toolview.toolbox = "RoutingTools";
             //addRoutingBar()
         }
 

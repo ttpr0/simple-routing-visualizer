@@ -1,17 +1,27 @@
 
 class ToolbarState
 {
+    tools = {}
+    toolsearch = {
+        opened: {},
+        search: "",
+    }
+    toolview = {
+        toolbox: undefined,
+        tool: undefined,
+        params: {},
+    }
+
     toolinfo = {
         tool: "",
         text: "",
     }
-    tools = []
     currtool = {
-        name: undefined,
-        params: {}
+        toolbox: undefined,
+        tool: undefined,
+        params: {},
+        state: null,
     }
-    state = null
-    running = ""
 }
 
 export { ToolbarState }

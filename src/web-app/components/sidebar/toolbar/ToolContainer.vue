@@ -8,7 +8,7 @@ import ProgressBar from "/share_components/ProgressBar.vue";
 export default {
     components: { Icon, ProgressBar },
     emits: ['close', 'run', 'info' ],
-    props: [ 'toolname' ],
+    props: [ 'tool', 'toolbox' ],
     setup(props, ctx) {
         const state = getAppState();
         const toolbar = getToolbarState();
@@ -26,41 +26,41 @@ export default {
         }
 
         const running = computed(() => {
-            if (toolbar.toolinfo.tool === props.toolname)
+            if (toolbar.currtool.tool === props.tool && toolbar.currtool.toolbox === props.toolbox)
             {
-                return toolbar.state === 'running'; 
+                return toolbar.currtool.state === 'running'; 
             }
             else
             { return false; }
         });
 
         const error = computed(() => {
-            if (toolbar.toolinfo.tool === props.toolname)
+            if (toolbar.currtool.tool === props.tool && toolbar.currtool.toolbox === props.toolbox)
             {
-                return toolbar.state === 'error'; 
+                return toolbar.currtool.state === 'error'; 
             }
             else
             { return false; }
         });
 
         const finished = computed(() => {
-            if (toolbar.toolinfo.tool === props.toolname)
+            if (toolbar.currtool.tool === props.tool && toolbar.currtool.toolbox === props.toolbox)
             {
-                return toolbar.state === 'finished'; 
+                return toolbar.currtool.state === 'finished'; 
             }
             else
             { return false; }
         })
 
         const disableinfo = computed(() => {
-            if (toolbar.toolinfo.tool !== props.toolname)
+            if (toolbar.currtool.tool !== props.tool || toolbar.currtool.toolbox !== props.toolbox)
             { return true; }
             else 
             { return false; }
         });
 
         const disablerun = computed(() => {
-            return toolbar.running === 'running';
+            return toolbar.currtool.state === 'running';
         });
 
         return { onclose, onrun, oninfo, running, disablerun, disableinfo, error, finished }
@@ -73,7 +73,7 @@ export default {
         <div class="header">
             <div class="icon"><Icon icon="bi-arrow-left" @click="onclose()" /></div>
             <div style="width: calc(100% - 24px); float: right; height: 30px;">
-                <p style="display: inline-block; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ toolname }}</p>
+                <p style="display: inline-block; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ tool }} ({{ toolbox }})</p>
             </div>
         </div>
         <div class="body" style="overflow-y: auto;">
