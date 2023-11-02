@@ -23,7 +23,7 @@ export default {
 
 <template>
     <div class="footerbar">
-        <component v-for="comp in comps" :is="comp"></component>
+        <component v-for="comp in comps" :key="comp" :is="comp"></component>
     </div>
 </template>
 

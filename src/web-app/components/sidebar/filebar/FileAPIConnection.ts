@@ -1,5 +1,5 @@
 import { IConnection } from "./IConnection";
-import { openDirectory, closeDirectory, getTree, openLayer } from '/util/fileapi'
+import { openDirectory, closeDirectory, getTree, openLayer } from '/util/file_api/fileapi'
 
 class FileAPIConnection implements IConnection
 {

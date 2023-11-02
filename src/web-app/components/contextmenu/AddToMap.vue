@@ -6,7 +6,7 @@ import { VectorLayer } from '/map/VectorLayer';
 import { PointStyle, LineStyle, PolygonStyle } from '/map/style';
 import { topbarbutton } from '/share_components/topbar/TopBarButton';
 import { getConnectionManager } from '/components/sidebar/filebar/ConnectionManager';
-import { getKeyFromPath, getPathFromPath } from '/util';
+import { getKeyFromPath, getPathFromPath } from '/util/file_api';
 
 export default {
   components: { topbarbutton },

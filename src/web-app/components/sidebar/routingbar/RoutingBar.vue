@@ -3,9 +3,9 @@ import { computed, ref, reactive, watch, toRef, onMounted} from 'vue';
 import { VectorImageLayer } from '/map/VectorImageLayer';
 import { getAppState, getMapState } from '/state';
 import { getMap } from '/map';
-import { CONFIG, POPUPCOMPS, SIDEBARCOMPS } from "/config" 
+import { CONFIG, SIDEBARCOMPS } from "/config" 
 import { NSpace, NTag, NSelect, NCheckbox, NButton } from 'naive-ui';
-import { getRouting, getRoutingDrawContext, getRoutingStep } from '/routing/api';
+import { getRouting, getRoutingDrawContext, getRoutingStep } from '/util/routing/api';
 import { LineStyle } from '/map/style/LineStyle';
 
 export default {

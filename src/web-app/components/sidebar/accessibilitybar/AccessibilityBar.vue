@@ -9,13 +9,11 @@ import { toLonLat, get as getProjection } from "ol/proj";
 import { Style, Stroke, Fill } from "ol/style";
 import { getAppState, getMapState } from "/state";
 import { getMap } from "/map";
-import { CONFIG, POPUPCOMPS, SIDEBARCOMPS } from "/config";
+import { CONFIG, SIDEBARCOMPS } from "/config";
 import { NSpace, NTag, NSelect, NCheckbox, NButton } from "naive-ui";
-import { getRouting } from "/routing/api";
 import { AccessibilityStyle } from "./AccessibilityStyle";
 import { GridLayer } from "/map/layer/raster/GridLayer";
 import { RasterStyle } from "/map/style";
-import { getIsoRaster } from "/external/api";
 
 const dragBox = new DragBox({
   condition: (e) => {

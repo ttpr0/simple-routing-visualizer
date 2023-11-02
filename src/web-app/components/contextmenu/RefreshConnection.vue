@@ -4,7 +4,7 @@ import { getAppState, getMapState } from '/state';
 import { getMap } from '/map';
 import { topbarbutton } from '/share_components/topbar/TopBarButton';
 import { getConnectionManager } from '/components/sidebar/filebar/ConnectionManager';
-import { getKeyFromPath } from '/util';
+import { getKeyFromPath } from '/util/file_api';
 
 export default {
     components: { topbarbutton },

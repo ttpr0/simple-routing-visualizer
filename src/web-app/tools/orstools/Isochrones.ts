@@ -1,8 +1,8 @@
 import { computed, ref, reactive, watch, toRef } from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { VectorImageLayer } from '/map/VectorImageLayer';
-import { getDockerPolygon } from '/external/api';
-import { randomRanges } from '/util/util';
+import { getDockerPolygon } from '/util/external/api';
+import { randomRanges } from '/util/utils';
 import { getMap } from '/map';
 import { ITool } from '/components/sidebar/toolbar/ITool';
 import { PolygonStyle } from '/map/style';

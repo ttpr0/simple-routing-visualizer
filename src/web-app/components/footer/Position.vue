@@ -18,7 +18,7 @@ export default {
 </script>
 
 <template>
-    <footerbaritem icon="mdi-axis-arrow" :text="position[0]">
+    <footerbaritem icon="bi-aspect-ratio" side="left" :text="position[0]">
     </footerbaritem>
 </template>
 

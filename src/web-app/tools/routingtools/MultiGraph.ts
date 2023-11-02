@@ -1,12 +1,12 @@
 import { VectorLayer } from '/map/VectorLayer';
 import { VectorImageLayer } from '/map/VectorImageLayer'
 import { AccessibilityStyle } from '/map/styles';
-import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/external/api'
-import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/util'
+import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/util/external/api'
+import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/utils'
 import { GeoJSON } from 'ol/format';
 import { getMap } from '/map';
 import { ITool } from '/components/sidebar/toolbar/ITool';
-import { getMultiGraph, getRouting } from '/routing/api';
+import { getMultiGraph, getRouting } from '/util/routing/api';
 
 
 const map = getMap();

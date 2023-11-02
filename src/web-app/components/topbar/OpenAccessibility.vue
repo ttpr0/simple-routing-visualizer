@@ -25,7 +25,7 @@ export default {
             if (active === false) {
                 side_conf.push({
                     comp: "AccessibilityBar",
-                    icon: "mdi-human"
+                    icon: "bi-person-circle"
                 })
             }
             state.sidebar.active = "AccessibilityBar";

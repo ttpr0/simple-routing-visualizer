@@ -18,7 +18,7 @@ export default {
 </script>
 
 <template>
-    <footerbaritem icon="mdi-contrast-box" :text="position[1]">
+    <footerbaritem icon="bi-zoom-in" side="left" :text="position[1]">
     </footerbaritem>
 </template>
 

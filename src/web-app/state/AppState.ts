@@ -1,11 +1,25 @@
 class AppState
 {
+    settings = {
+        dark_mode: false,
+    }
+
     topbar = {
         active: null,
     }
 
     sidebar = {
         active: '',
+        width: 300,
+    }
+
+    infobar = {
+        active: "",
+        height: 300,
+    }
+
+    featureinfo = {
+        features: [],
     }
 
     popup = {

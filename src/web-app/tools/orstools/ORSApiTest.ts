@@ -1,8 +1,8 @@
 import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { VectorImageLayer } from '/map/VectorImageLayer';
-import { getORSPolygon } from '/external/api';
-import { randomRanges } from '/util/util';
+import { getORSPolygon } from '/util/external/api';
+import { randomRanges } from '/util/utils';
 import { GeoJSON } from 'ol/format';
 import { getMap } from '/map';
 import { ITool } from '/components/sidebar/toolbar/ITool';

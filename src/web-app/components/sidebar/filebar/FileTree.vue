@@ -3,7 +3,7 @@ import { computed, ref, reactive, watch, toRef} from 'vue';
 import { VectorLayer } from '/map/VectorLayer';
 import { getAppState } from '/state';
 import FileTreeItem from './FileTreeItem.vue';
-import { getTree, closeDirectory } from '/util/fileapi';
+import { getTree, closeDirectory } from '/util/file_api/fileapi';
 
 export default {
     name: "FileTree",
