@@ -1,17 +1,15 @@
 import { computed, ref, reactive, watch, toRef } from 'vue';
-import { VectorLayer } from '/map/VectorLayer';
-import { VectorImageLayer } from '/map/VectorImageLayer';
+import { PolygonLayer } from '/map/layers';
 import { getDockerPolygon } from '/util/external/api';
 import { randomRanges } from '/util/utils';
 import { getMap } from '/map';
 import { ITool } from '/components/sidebar/toolbar/ITool';
-import { PolygonStyle } from '/map/style';
+import { PolygonStyle } from '/map/styles';
 
 
 const map = getMap();
 
-class Isochrones implements ITool 
-{
+class Isochrones implements ITool {
   name: string = "Isochrones";
   param: object[] = [
     { name: 'url', title: 'URL', info: 'URL zum ORS-Server (bis zum API-Endpoint, z.B. localhost:5000/v2)', type: 'text', text: 'API-URL' },
@@ -33,30 +31,29 @@ class Isochrones implements ITool
     return this.name;
   }
   getParameterInfo(): object[] {
-      return this.param;
+    return this.param;
   }
   getOutputInfo(): object[] {
-      return this.out;
+    return this.out;
   }
   getDefaultParameters(): object {
-      return {
-        "url": 'http://localhost:8082/v2',
-        "range": 900,
-        "count": 1,
-        "profile": 'driving-car',
-        "smoothing": 5,
-        "travelmode": "time",
-        "locationtype": "destination",
-        "outputtype": "polygon ring",
-        "outname": "docker_layer"
-      };
+    return {
+      "url": 'http://localhost:8082/v2',
+      "range": 900,
+      "count": 1,
+      "profile": 'driving-car',
+      "smoothing": 5,
+      "travelmode": "time",
+      "locationtype": "destination",
+      "outputtype": "polygon ring",
+      "outname": "docker_layer"
+    };
   }
   updateParameterInfo(param: object, param_info: object[], changed: string): [object[], object] {
     return [null, param];
   }
 
-  async run(param: any, out: any, addMessage: any): Promise<void> 
-  {
+  async run(param: any, out: any, addMessage: any): Promise<void> {
     const layer = map.getLayerByName(param.layer);
     if (layer == null || layer.getType() != "Point") {
       throw new Error("pls select a pointlayer!");
@@ -83,8 +80,7 @@ class Isochrones implements ITool
     }));
     var end = new Date().getTime();
     addMessage(start - end);
-    out.dockerlayer = new VectorLayer(polygons, 'Polygon', outname);
-    out.dockerlayer.setStyle(new PolygonStyle('black', 2));
+    out.dockerlayer = new PolygonLayer(polygons, outname, new PolygonStyle([0, 0, 0, 0], [0, 0, 0, 200]));
   }
 }
 

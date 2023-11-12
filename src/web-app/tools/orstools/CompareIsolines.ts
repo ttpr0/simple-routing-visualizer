@@ -1,15 +1,13 @@
 import { computed, ref, reactive, watch, toRef } from 'vue';
-import { VectorLayer } from '/map/VectorLayer';
-import { VectorImageLayer } from '/map/VectorImageLayer';
+import { PolygonLayer } from '/map/layers';
 import { getBingPolygon, getMapBoxPolygon, getTargamoPolygon } from '/util/external/api';
 import { getMap } from '/map';
 import { ITool } from '/components/sidebar/toolbar/ITool';
-import { PolygonStyle } from '/map/style';
+import { PolygonStyle } from '/map/styles';
 
 const map = getMap();
 
-class CompareIsolines implements ITool 
-{
+class CompareIsolines implements ITool {
   name: string = "CompareIsolines";
   param = [
     { name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype: 'Point', text: "Layer:" },
@@ -55,12 +53,12 @@ class CompareIsolines implements ITool
     var mapboxfeature = await mapbox;
     var targamofeature = await targamo;
     var bingfeature = await bing;
-    out.binglayer = new VectorLayer(bingfeature["features"], 'Polygon', 'binglayer');
-    out.binglayer.setStyle(new PolygonStyle('blue', 2));
-    out.mapboxlayer = new VectorLayer(mapboxfeature["features"], 'Polygon', 'mapboxlayer');
-    out.mapboxlayer.setStyle(new PolygonStyle('red', 2));
-    out.targamolayer = new VectorLayer(targamofeature["features"], 'Polygon', 'targamolayer');
-    out.targamolayer.setStyle(new PolygonStyle('green', 2));
+    out.binglayer = new PolygonLayer(bingfeature["features"], 'binglayer');
+    out.binglayer.setStyle(new PolygonStyle([0, 0, 0, 0], [0, 0, 255, 200]));
+    out.mapboxlayer = new PolygonLayer(mapboxfeature["features"], 'mapboxlayer');
+    out.mapboxlayer.setStyle(new PolygonStyle([0, 0, 0, 0], [255, 0, 0, 200]));
+    out.targamolayer = new PolygonLayer(targamofeature["features"], 'targamolayer');
+    out.targamolayer.setStyle(new PolygonStyle([0, 0, 0, 0], [0, 255, 0, 200]));
   }
 }
 

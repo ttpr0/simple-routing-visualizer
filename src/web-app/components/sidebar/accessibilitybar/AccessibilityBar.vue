@@ -11,9 +11,8 @@ import { getAppState, getMapState } from "/state";
 import { getMap } from "/map";
 import { CONFIG, SIDEBARCOMPS } from "/config";
 import { NSpace, NTag, NSelect, NCheckbox, NButton } from "naive-ui";
-import { AccessibilityStyle } from "./AccessibilityStyle";
-import { GridLayer } from "/map/layer/raster/GridLayer";
-import { RasterStyle } from "/map/style";
+import { GridLayer } from "/map/layers";
+import { GridStyle, ContinousGridStyle } from "/map/styles";
 
 const dragBox = new DragBox({
   condition: (e) => {
@@ -59,7 +58,7 @@ export default {
 
           area_extent.value = null;
           area_extent.value = [ll[0], ll[1], ur[0], ur[1]];
-          map.olmap.removeLayer(layer);
+          map.removeOLLayer("access_drag_layer");
           const feature = new Feature({
             geometry: new Polygon([
               [
@@ -79,14 +78,14 @@ export default {
           layer.setSource(source);
           layer.setZIndex(1000);
           layer.setVisible(true);
-          map.olmap.addLayer(layer);
+          map.addOLLayer("access_drag_layer", layer);
         });
         map.addInteraction(dragBox);
       } else {
         area_selection.value = "";
         area_extent.value = null;
         map.removeInteraction(dragBox);
-        map.olmap.removeLayer(layer);
+        map.removeOLLayer("access_drag_layer");
       }
     }
 
@@ -103,11 +102,13 @@ export default {
       }
 
       // let ranges = [180, 420, 900, 1800];
-      let ranges = [60, 180, 300, 420, 540, 660, 780, 900];
-      let factors = [1.0, 0.8, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
+      let ranges = [60, 180, 300, 420, 540, 660, 780, 900, 1800];
+      let factors = [1.0, 0.8, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05];
       let locations = [];
+      let weights = [];
       for (let id of selectedfeatures) {
         locations.push(layer.getGeometry(id).coordinates);
+        weights.push(100);
       }
       let envelope = area_extent.value;
       let mode = calc_type.value;
@@ -119,6 +120,7 @@ export default {
 
       const request = {
         facility_locations: locations,
+        facility_weights: weights,
         ranges: ranges,
         range_factors: factors,
         envelop: envelope,
@@ -130,7 +132,7 @@ export default {
         },
       };
 
-      const response = await fetch("http://localhost:5000/v1/fca/grid", {
+      const response = await fetch("http://localhost:5000/v1/fca2/grid", {
         method: "POST",
         mode: "cors",
         cache: "no-cache",
@@ -170,21 +172,41 @@ export default {
 
       let geojson = await response.json();
       console.log(geojson);
+      geojson.min = 0;
+      geojson.max = 1800;
 
-      let style = new RasterStyle(
+      const step_count = 10;
+      const step_size = (geojson.max - geojson.min) / step_count;
+      const steps = [];
+      for (let i = 1; i <= step_count; i++) {
+        steps.push(geojson.min + i * step_size);
+      }
+
+      // let style = new RasterStyle(
+      //   "accessibility",
+      //   [255, 0, 0, 180],
+      //   [0, 255, 0, 180],
+      //   steps,
+      //   -9999,
+      //   [25, 25, 25, 125]
+      // );
+      let style = new ContinousGridStyle(
         "accessibility",
-        [255, 0, 0, 0.6],
-        [0, 255, 0, 0.6],
-        [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        [255, 0, 0, 180],
+        [0, 255, 0, 180],
+        geojson.min,
+        geojson.max,
+        -9999,
+        [25, 25, 25, 125]
       );
-      let vec_layer = new GridLayer(
-        geojson.features,
-        geojson.extend,
-        geojson.size,
-        "accessibility",
-        "EPSG:25832",
-        style
-      );
+      let vec_layer = new GridLayer(geojson.features, 100, style);
+      // let vec_layer = new RemoteGridLayer(
+      //   geojson.url,
+      //   geojson.id,
+      //   "accessibility",
+      //   geojson.crs,
+      //   style
+      // );
 
       map.addLayer(vec_layer);
     }
@@ -223,6 +245,11 @@ export default {
             { label: 'Isochronen', value: 'isochrones' },
             { label: 'Matrix', value: 'matrix' },
             { label: 'IsoRaster', value: 'isoraster' },
+            { label: 'Isochronen 2', value: 'isochrones_2' },
+            { label: 'Matrix 2', value: 'matrix_2' },
+            { label: 'IsoRaster 2', value: 'isoraster_2' },
+            { label: 'Isochronen 3', value: 'isochrones_3' },
+            { label: 'Matrix 3', value: 'matrix_3' },
           ]"
         />
       </n-space>

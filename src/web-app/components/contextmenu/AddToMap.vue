@@ -1,12 +1,12 @@
 <script lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue';
-import { getAppState, getMapState } from '/state';
-import { getMap } from '/map';
-import { VectorLayer } from '/map/VectorLayer';
-import { PointStyle, LineStyle, PolygonStyle } from '/map/style';
-import { topbarbutton } from '/share_components/topbar/TopBarButton';
-import { getConnectionManager } from '/components/sidebar/filebar/ConnectionManager';
-import { getKeyFromPath, getPathFromPath } from '/util/file_api';
+import { ref, reactive, computed, watch, onMounted } from "vue";
+import { getAppState, getMapState } from "/state";
+import { getMap } from "/map";
+import { PointLayer, LineStringLayer, PolygonLayer } from "/map/layers";
+import { PointStyle, LineStyle, PolygonStyle } from "/map/style";
+import { topbarbutton } from "/share_components/topbar/TopBarButton";
+import { getConnectionManager } from "/components/sidebar/filebar/ConnectionManager";
+import { getKeyFromPath, getPathFromPath } from "/util/file_api";
 
 export default {
   components: { topbarbutton },
@@ -20,7 +20,9 @@ export default {
 
     async function addToMap() {
       let key = getKeyFromPath(state.contextmenu.context.path);
-      let path = getPathFromPath(state.contextmenu.context.path) + state.contextmenu.context.name;
+      let path =
+        getPathFromPath(state.contextmenu.context.path) +
+        state.contextmenu.context.name;
       const conn = connmanager.getConnection(key);
       const geojson = await conn.openFile(path);
       const features = geojson["features"];
@@ -29,21 +31,19 @@ export default {
       const layername = prompt("Please enter a Layer-Name", "");
       let layer = null;
       if (["Point", "MultiPoint"].includes(type)) {
-        layer = new VectorLayer(features, "Point", layername, new PointStyle());
-      }
-      else if (["LineString", "MultiLineString"].includes(type)) {
-        layer = new VectorLayer(features, "LineString", layername, new LineStyle());
-      }
-      else if (["Polygon", "MultiPolygon"].includes(type)) {
-        layer = new VectorLayer(features, "Polygon", layername, new PolygonStyle());
+        layer = new PointLayer(features, layername);
+      } else if (["LineString", "MultiLineString"].includes(type)) {
+        layer = new LineStringLayer(features, layername);
+      } else if (["Polygon", "MultiPolygon"].includes(type)) {
+        layer = new PolygonLayer(features, layername);
       }
       map.addLayer(layer);
       state.contextmenu.display = false;
     }
 
-    return { addToMap }
-  }
-}
+    return { addToMap };
+  },
+};
 </script>
 
 <template>
@@ -51,5 +51,4 @@ export default {
 </template>
 
 <style scoped>
-
 </style>

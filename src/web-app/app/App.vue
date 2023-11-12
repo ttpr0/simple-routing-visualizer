@@ -1,6 +1,6 @@
 <script lang="ts">
 import { createApp, ref, reactive, onMounted, computed } from "vue";
-import { VectorLayer } from "/map/VectorLayer";
+import { PointLayer } from "/map/layers/PointLayer";
 import { getAppState, getMapState, getToolbarState } from "/state";
 import { getToolManager } from "/components/sidebar/toolbar/ToolManager";
 import { getConnectionManager } from "/components/sidebar/filebar/ConnectionManager";
@@ -51,8 +51,7 @@ export default {
     fetch(window.location.origin + "/data/datalayers/hospitals.geojson")
       .then((response) => response.json())
       .then((response) => {
-        //var points = new GeoJSON().readFeatures(response);
-        var layer = new VectorLayer(response.features, "Point", "hospitals");
+        let layer = new PointLayer(response.features, "hospitals");
         map.addLayer(layer);
         map_state.focuslayer = layer.name;
       });
@@ -67,9 +66,9 @@ export default {
     <n-config-provider>
       <TopBar></TopBar>
       <div class="middlecontainer">
-          <SideBar></SideBar>
-          <MainBar></MainBar>
-          <InfoBar></InfoBar>
+        <SideBar></SideBar>
+        <MainBar></MainBar>
+        <InfoBar></InfoBar>
       </div>
       <FooterBar></FooterBar>
       <Window></Window>

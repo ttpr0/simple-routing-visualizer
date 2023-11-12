@@ -1,23 +1,22 @@
-import { VectorLayer } from '/map/VectorLayer';
-import { VectorImageLayer } from '/map/VectorImageLayer';
-import { VisualRoutingLayer } from '/map/layer/VisualRoutingLayer';
+import { VisualRoutingLayer } from '/map/layers/ol/VisualRoutingLayer';
+import { LineStringLayer } from '/map/layers';
+import { LineStyle } from '/map/styles';
 import { getMap } from '/map';
 import { getToolbarState } from '/state';
 import { ITool } from '/components/sidebar/toolbar/ITool';
 import { getRouting, getRoutingDrawContext, getRoutingStep } from '/util/routing/api';
-import { LineStyle } from '/map/style';
 
 
 const map = getMap();
 const toolbar = getToolbarState();
 
 const handleClose = (type: string) => {
-    const layer = map.getLayerByName("routing_points");
+    const layer = map.getOLLayer("routing_points");
     if (layer !== undefined) {
-        for (let id of layer.getAllFeatures()) {
-            const t = layer.getProperty(id, "type")
+        for (let feat of layer.getSource().getFeatures()) {
+            const t = feat.get("type")
             if (t === type) {
-                layer.removeFeature(id)
+                layer.getSource().removeFeature(feat);
                 if (type === "start")
                     toolbar.toolview.params["startpoint"] = undefined;
                 if (type === "finish")
@@ -58,14 +57,14 @@ class Routing implements ITool {
     getDefaultParameters(): object {
         let start = undefined;
         let end = undefined;
-        const layer = map.getLayerByName("routing_points");
+        const layer = map.getOLLayer("routing_points");
         if (layer !== undefined) {
-            for (let id of layer.getAllFeatures()) {
-                let type = layer.getProperty(id, "type")
+            for (let feat of layer.getSource().getFeatures()) {
+                let type = feat.get("type");
                 if (type === "start")
-                    start = layer.getGeometry(id)["coordinates"]
+                    start = feat.getGeometry().getCoordinates();
                 if (type === "finish")
-                    end = layer.getGeometry(id)["coordinates"]
+                    end = feat.getGeometry().getCoordinates();
             }
         }
         return {
@@ -100,8 +99,8 @@ class Routing implements ITool {
                 let key = context["key"];
                 var finished = false;
                 var geojson = null;
-                let visualroutinglayer = new VisualRoutingLayer(null, null, "routing_layer");
-                map.addLayer(visualroutinglayer);
+                let visualroutinglayer = new VisualRoutingLayer(null, null);
+                map.addOLLayer("routing_layer", visualroutinglayer);
                 let start = new Date().getTime();
                 let steps = 1000;
                 if (routing_type === 'Distributed-Dijkstra') {
@@ -115,8 +114,8 @@ class Routing implements ITool {
                     visualroutinglayer.addFeatures(geojson["features"]);
                 }
                 let end = new Date().getTime();
-                let routinglayer = new VectorImageLayer(geojson["features"], 'LineString', param.outname);
-                routinglayer.setStyle(new LineStyle('#ffcc33', 10));
+                map.removeOLLayer("routing_layer");
+                let routinglayer = new LineStringLayer(geojson["features"], param.outname, new LineStyle([138, 43, 226, 200], 100));
                 out.outlayer = routinglayer;
             }
             else {
@@ -124,8 +123,7 @@ class Routing implements ITool {
                 var start = new Date().getTime();
                 var geojson = await getRouting(startpoint, endpoint, key, false, 1, routing_type);
                 var end = new Date().getTime();
-                let routinglayer = new VectorImageLayer(geojson["features"], 'LineString', param.outname);
-                routinglayer.setStyle(new LineStyle('#ffcc33', 10));
+                let routinglayer = new LineStringLayer(geojson["features"], param.outname, new LineStyle([138, 43, 226, 200], 100));
                 out.outlayer = routinglayer;
             }
         }

@@ -1,6 +1,6 @@
-import { Map2D } from "./Map2D";
+import { Map3D } from "./Map3D";
 
-const MAP = new Map2D();
+const MAP = new Map3D();
 
 function getMap() {
     return MAP;

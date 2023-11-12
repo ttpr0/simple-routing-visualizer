@@ -1,5 +1,4 @@
-import { VectorLayer } from '/map/VectorLayer';
-import { VectorImageLayer } from '/map/VectorImageLayer'
+import { PolygonLayer } from '/map/layers';
 import { AccessibilityStyle } from '/map/styles';
 import { getDockerPolygon, getORSPolygon, getBingPolygon, getMapBoxPolygon, getTargamoPolygon, getIsoRaster } from '/util/external/api'
 import { randomRanges, calcMean, calcStd, selectRandomPoints } from '/util/utils'
@@ -11,8 +10,7 @@ import { getMultiGraph, getRouting } from '/util/routing/api';
 
 const map = getMap();
 
-class MultiGraph implements ITool 
-{
+class MultiGraph implements ITool {
   name: string = "MultiGraph";
   param = [
     { name: "layer", title: "Layer", info: "Punkt-Layer", type: "layer", layertype: 'Point', text: "Layer:" },
@@ -58,7 +56,7 @@ class MultiGraph implements ITool
     var geojson = await getMultiGraph(locations, param.range, param.count);
     var end = new Date().getTime();
     addMessage(start - end);
-    out.multigraphlayer = new VectorImageLayer(geojson["features"], 'Polygon', 'multigraphlayer');
+    out.multigraphlayer = new PolygonLayer(geojson["features"], 'multigraphlayer');
     out.multigraphlayer.setStyle(new AccessibilityStyle());
   }
 }
